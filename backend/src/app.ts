@@ -29,40 +29,20 @@ class WebApp {
 	constructor() {
 	}
 	start() { 
-		/* const redisClient = redis.createClient(); */
-		/* const redisStore = connectRedisStore(session);
-		redisClient.on('error', (err:Error) => setlog('redisClient',err));
-		const store = new redisStore({ host: 'localhost', port: 6379, client: redisClient, ttl: 86400 }); */
-
 		const app = express()
 		const server = http.createServer(app);
-		const cert = fs.readFileSync(__dirname+'/../certs/swanswap_io.crt');
-		const caBundle:any = fs.readFileSync(__dirname+'/../certs/swanswap_io.ca-bundle',{encoding:'utf8'});
+		const cert = fs.readFileSync(__dirname+'/../certs/cert.crt');
+		const caBundle:any = fs.readFileSync(__dirname+'/../certs/cert.ca-bundle',{encoding:'utf8'});
 		const ca = caBundle.split('-----END CERTIFICATE-----\r\n') .map((cert:any) => cert +'-----END CERTIFICATE-----\r\n');
 		ca.pop();
-		// const cert = fs.readFileSync(__dirname+'/../certs/swanswap.key');
-		const key = fs.readFileSync(__dirname+'/../certs/swanswap.key');
+		const key = fs.readFileSync(__dirname+'/../certs/cert.key');
 		let options = {
-			cert: cert, // fs.readFileSync('./ssl/example.crt');
-			ca: ca, // fs.readFileSync('./ssl/example.ca-bundle');
-			key: key // fs.readFileSync('./ssl/example.key');
+			cert: cert,
+			ca: ca,
+			key: key 
 		};
 		const httpsServer = https.createServer(options,app);
 
-		/* app.use((req, res, next) => {
-			let hostname = req.headers.host;
-			if(req.protocol==='http') {
-				if(typeof hostname==='string' && hostname.indexOf('ngrok.io')===-1) {
-					if(!req.url || req.url.indexOf('/.well-known/acme-challenge')===-1) {
-						return res.redirect('https://' + hostname + (req.url||''));
-					} else {
-						return;
-					}
-				}
-			}
-			// res.setHeader("Content-Security-Policy","script-src-elem 'self' https://"+hostname+' https://cdnjs.cloudflare.com');
-			next();
-		}); */
 		app.use(cors());
 		
 		const FRONTENDPATH = path.normalize(__dirname + '/../../frontend/build');
@@ -101,13 +81,6 @@ class WebApp {
 					});
 				});
 				setlog(`Started HTTPS service on port ${port}. ${+new Date()-time}ms`);
-				/* time = +new Date();
-				G.onConnection(new Socket(httpsServer,{origin: 'https://'+process.env.DOMAIN+(process.env.HTTPS_PORT==='443'?'':':'+process.env.HTTPS_PORT)}));
-				setlog(`Started client socket with https service. ${+new Date()-time}ms`);
-				time = +new Date();
-				require('./controllers/adam');
-				G.onAdamConnection(new Socket(server));
-				setlog(`Started admin socket with http service. ${+new Date()-time}ms`); */
 			} else {
 				setlog('MySQL',res);
 				return process.exit(1)
