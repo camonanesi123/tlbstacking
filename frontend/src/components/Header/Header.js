@@ -1,19 +1,46 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     Link
 } from "react-router-dom";
+import Logo from '../../img/logo.webp'
 
-import './Header.css'
-function Header(props) {
+const Head = styled.header`
+	background: #0e1525;
+    padding: 15px 36px;
+    @media (max-width: 575px) {
+        padding: 8px 15px;
+    }
+    @media (max-width: 767px) {
+        .logo {
+        height: 60px;
+        @media (max-width: 575px) {
+            height: 40px;
+        }
+        }
+        .toggle_wrapper {
+            .fa-5x {
+                font-size: 3rem;
+                @media (max-width: 575px) {
+                font-size: 2rem;
+                }
+            }
+        }
+    }
+`
+
+
+export default function (props) {
     return (
-        <header className="Header">
+        <Head>
             <div className="header_wrapper d-flex justify-content-between align-items-center">
 
                 <Link to="/">
-                    <img className="logo" src={require('./logo.png').default} alt="logo" />
+                    <img className="logo" src={Logo} alt="logo" />
                 </Link>
                 <div className="col_wrapper d-flex align-items-center">
                     <Link to="/" className="btn bg-black rounded-pill font_size_29 text-white font_family_alibabapuhuiti">
@@ -43,7 +70,6 @@ function Header(props) {
                     </div>
                 </div>
             </div>
-        </header>
+        </Head>
     );
 }
-export default Header;

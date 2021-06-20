@@ -103,6 +103,23 @@ input[type="number"] {
   }
 }
 
+.font_size_90 {
+  font-size: 90.15px;
+}
+
+@media (max-width: 991px) {
+  .font_size_90 {
+    font-size: 70px;
+  }
+}
+
+@media (max-width: 991px) and (max-width: 575px) {
+  .font_size_90 {
+    font-size: 45px;
+  }
+}
+
+
 .font_size_79 {
   font-size: 79.17px;
 }
@@ -119,11 +136,6 @@ input[type="number"] {
   }
 }
 
-@media (max-width: 991px) and (max-width: 575px) and (max-width: 400px) {
-  .font_size_79 {
-    font-size: 25px;
-  }
-}
 
 .font_size_49 {
   font-size: 49.38px;
@@ -131,13 +143,13 @@ input[type="number"] {
 
 @media (max-width: 991px) {
   .font_size_49 {
-    font-size: 22px;
+    font-size: 38px;
   }
 }
 
 @media (max-width: 991px) and (max-width: 575px) {
   .font_size_49 {
-    font-size: 17px;
+    font-size: 26px;
   }
 }
 
@@ -147,19 +159,19 @@ input[type="number"] {
 
 @media (max-width: 991px) {
   .font_size_58 {
-    font-size: 35px;
+    font-size: 40px;
   }
 }
 
 @media (max-width: 991px) and (max-width: 575px) {
   .font_size_58 {
-    font-size: 20px;
+    font-size: 30px;
   }
 }
 
 @media (max-width: 991px) and (max-width: 575px) and (max-width: 400px) {
   .font_size_58 {
-    font-size: 16px;
+    font-size: 30px;
   }
 }
 
@@ -179,31 +191,10 @@ input[type="number"] {
   }
 }
 
+
 @media (max-width: 991px) and (max-width: 575px) and (max-width: 400px) {
-  .font_size_37 {
-    font-size: 14px;
-  }
-}
-
-.font_size_90 {
-  font-size: 90.15px;
-}
-
-@media (max-width: 991px) {
-  .font_size_90 {
-    font-size: 70px;
-  }
-}
-
-@media (max-width: 991px) and (max-width: 575px) {
   .font_size_90 {
     font-size: 35px;
-  }
-}
-
-@media (max-width: 991px) and (max-width: 575px) and (max-width: 400px) {
-  .font_size_90 {
-    font-size: 25px;
   }
 }
 
