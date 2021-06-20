@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.6.12+commit.27d51765"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"ref/presale.sol": "Context"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"ref/presale.sol": {
+			"keccak256": "0x7b5d5f34786b6111a24d8e2ab2ba836d3f9a73334e666767a895ae2e45b79b44",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e3ceca8caeef47e4a5ca0cda2f7583398267808a46020c6e243f315d6c98370c",
+				"dweb:/ipfs/QmdEwx1ZgVV9qaPM6MDebBAMsTNrbqa2tVsZjcV1vyRse1"
+			]
+		}
+	},
+	"version": 1
+}

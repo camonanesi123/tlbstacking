@@ -1,0 +1,47 @@
+{
+	"compiler": {
+		"version": "0.6.12+commit.27d51765"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"details": "Assorted math operations",
+			"kind": "dev",
+			"methods": {},
+			"title": "Math",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"lib/Math.sol": "Math"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"lib/Math.sol": {
+			"keccak256": "0x9c39cd11589a6217f9607d04320678d092076b1b09a766110b19801e83233f3a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://684df1b6046f0c8e3a3245ffe48fd418aa19f48d3b80dcdfeea8dfae695b8183",
+				"dweb:/ipfs/QmZ2Q5UTsPo6ZBZjL8YAZi6rtzoX7vk9XHvWEeHaGm3SDD"
+			]
+		}
+	},
+	"version": 1
+}

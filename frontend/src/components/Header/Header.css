@@ -1,0 +1,35 @@
+header.Header {
+  background: #0e1525;
+  padding: 15px 36px;
+}
+
+@media (max-width: 575px) {
+  header.Header {
+    padding: 8px 15px;
+  }
+}
+
+@media (max-width: 767px) {
+  header.Header .logo {
+    height: 60px;
+  }
+}
+
+@media (max-width: 767px) and (max-width: 575px) {
+  header.Header .logo {
+    height: 40px;
+  }
+}
+
+@media (max-width: 767px) {
+  header.Header .toggle_wrapper .fa-5x {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 767px) and (max-width: 575px) {
+  header.Header .toggle_wrapper .fa-5x {
+    font-size: 2rem;
+  }
+}
+/*# sourceMappingURL=Header.css.map */

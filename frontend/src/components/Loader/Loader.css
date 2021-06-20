@@ -1,0 +1,65 @@
+.Loader {
+  height: 100vh;
+  background: url("./Loader.png") center/cover no-repeat;
+}
+
+.Loader .logo {
+  height: 180px;
+}
+
+@media (max-width: 767px) {
+  .Loader .logo {
+    height: 130px;
+  }
+}
+
+@media (max-width: 767px) and (max-width: 575px) {
+  .Loader .logo {
+    height: 90px;
+  }
+}
+
+.Loader .content_loading_animate span {
+  opacity: 0;
+  -webkit-animation: .5s linear animateLoading infinite;
+          animation: .5s linear animateLoading infinite;
+}
+
+.Loader .content_loading_animate span:nth-child(1) {
+  -webkit-animation-delay: .1s;
+          animation-delay: .1s;
+}
+
+.Loader .content_loading_animate span:nth-child(1) {
+  -webkit-animation-delay: .2s;
+          animation-delay: .2s;
+}
+
+.Loader .content_loading_animate span:nth-child(1) {
+  -webkit-animation-delay: .3s;
+          animation-delay: .3s;
+}
+
+.Loader .content_loading_animate span:nth-child(1) {
+  -webkit-animation-delay: .4s;
+          animation-delay: .4s;
+}
+
+@-webkit-keyframes animateLoading {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes animateLoading {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+/*# sourceMappingURL=Loader.css.map */

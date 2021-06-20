@@ -1,0 +1,73 @@
+section.Section_10 .content_wrapper_body {
+  position: relative;
+}
+
+section.Section_10 .content_wrapper_body::after {
+  content: "";
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 350px;
+  height: 350px;
+  background: #080E23 url("./gudgudi_blue.png") center/auto 60% no-repeat;
+  border-radius: 50%;
+}
+
+@media (max-width: 991px) {
+  section.Section_10 .content_wrapper_body::after {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+@media (max-width: 991px) and (max-width: 767px) {
+  section.Section_10 .content_wrapper_body::after {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 991px) and (max-width: 767px) and (max-width: 575px) {
+  section.Section_10 .content_wrapper_body::after {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+section.Section_10 .content_wrapper_body [class*="col"] {
+  margin-bottom: 45px;
+}
+
+@media (max-width: 767px) {
+  section.Section_10 .content_wrapper_body [class*="col"] {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 767px) and (max-width: 575px) {
+  section.Section_10 .content_wrapper_body [class*="col"] {
+    margin-bottom: 15px;
+  }
+}
+
+section.Section_10 .content_wrapper_body [class*="col"] .col_wrapper {
+  height: 250px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+@media (max-width: 575px) {
+  section.Section_10 .content_wrapper_body [class*="col"] .col_wrapper {
+    height: 150px;
+  }
+}
+/*# sourceMappingURL=Section_10.css.map */

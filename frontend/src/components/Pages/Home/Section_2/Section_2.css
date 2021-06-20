@@ -1,0 +1,34 @@
+section.Section_2 .content_wrapper {
+  position: relative;
+  padding: 50px;
+  z-index: 1;
+  position: relative;
+  padding-right: 400px;
+}
+
+@media (max-width: 991px) {
+  section.Section_2 .content_wrapper {
+    padding-right: 300px;
+  }
+}
+
+@media (max-width: 991px) and (max-width: 575px) {
+  section.Section_2 .content_wrapper {
+    padding-right: 50px;
+  }
+}
+
+section.Section_2 .content_wrapper::before {
+  content: "";
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #191f34 url("./section_2_bg.png") right center/cover no-repeat;
+  background-blend-mode: exclusion;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: -1;
+}
+/*# sourceMappingURL=Section_2.css.map */

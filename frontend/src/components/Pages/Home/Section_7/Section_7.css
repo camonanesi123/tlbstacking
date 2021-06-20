@@ -1,0 +1,37 @@
+section.Section_7 {
+  position: relative;
+}
+
+section.Section_7::before {
+  content: "";
+  width: 100%;
+  height: 33%;
+  position: absolute;
+  top: -7%;
+  right: 0;
+  background: #080e23 url("./wavy_line_bg.png") center/cover no-repeat;
+  background-blend-mode: screen;
+}
+
+section.Section_7 .content_wrapper {
+  z-index: 1;
+  position: relative;
+}
+
+section.Section_7 .content_wrapper .custom_table.custom_table_style {
+  border-collapse: separate;
+  border-spacing: 20px;
+}
+
+section.Section_7 .content_wrapper .custom_table.custom_table_style tr td {
+  background: #393e4f;
+}
+
+section.Section_7 .content_wrapper .custom_table.custom_table_style tr td:first-of-type {
+  border-radius: 25px 0 0 25px;
+}
+
+section.Section_7 .content_wrapper .custom_table.custom_table_style tr td:last-of-type {
+  border-radius: 0 25px 25px 0;
+}
+/*# sourceMappingURL=Section_7.css.map */

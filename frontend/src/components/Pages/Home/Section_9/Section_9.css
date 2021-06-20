@@ -1,0 +1,9 @@
+section.Section_9 .content_wrapper {
+  z-index: 1;
+  position: relative;
+}
+
+section.Section_9 .content_wrapper .custom_table tbody td {
+  padding-top: 20px;
+}
+/*# sourceMappingURL=Section_9.css.map */

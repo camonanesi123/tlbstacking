@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,OAAO,AAAA,UAAU,CAAC;EACd,QAAQ,EAAE,MAAM;CAOnB;;AARD,AAEE,OAFK,AAAA,UAAU,CAEf,WAAW,CAAC;EACV,UAAU,EAAE,MAAM;CAInB;;AAHC,MAAM,EAAE,SAAS,EAAE,KAAK;EAJ5B,AAEE,OAFK,AAAA,UAAU,CAEf,WAAW,CAAC;IAGR,UAAU,EAAE,MAAM;GAErB",
+    "sources": [
+        "Section_4.scss"
+    ],
+    "names": [],
+    "file": "Section_4.css"
+}

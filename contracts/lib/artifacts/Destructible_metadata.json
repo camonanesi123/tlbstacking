@@ -1,0 +1,149 @@
+{
+	"compiler": {
+		"version": "0.6.12+commit.27d51765"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "destroy",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "_recipient",
+						"type": "address"
+					}
+				],
+				"name": "destroyAndSend",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address payable",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"details": "Base contract that can be destroyed by owner. All funds in contract will be sent to the owner.",
+			"kind": "dev",
+			"methods": {
+				"destroy()": {
+					"details": "Transfers the current balance to the owner and terminates the contract."
+				},
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
+			"title": "Destructible",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"lib/Destructible.sol": "Destructible"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"lib/Context.sol": {
+			"keccak256": "0x94876a40404c4c6a8f11b67188b3663fc3f57262f887431e6f5412d12641212a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4e6496ea60bfc84f766bf3b4a3ce29bca25f66989b13cf2661b72973fba35e0d",
+				"dweb:/ipfs/QmdkZQyc6gjy4bLcyAdZJKS7KJWDBqji24xrF8SNMbnH6n"
+			]
+		},
+		"lib/Destructible.sol": {
+			"keccak256": "0x7785c0eb60db9ffc649ef53a59db290560c99cdd1b4580d83c1a8f1a8279ee46",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://0395e0bd52c3e73b563a951e6c8d2f12e91a1842740a12e1229f5f93e5aabb20",
+				"dweb:/ipfs/QmXaxzbeNTWpmWqj6fe5dfZPQxPGcqMK7HaMtKRy3CyrZH"
+			]
+		},
+		"lib/Ownable.sol": {
+			"keccak256": "0x41d9709cc40b8cdfa3e5ea2bd27c7ef3830bdaa777aeb4b05e5579bdf65eaa66",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c349870423ad8ef84ef753debfbf941ad8e89689d6e13608852bda384491bc36",
+				"dweb:/ipfs/QmUAa7Q5mQkByMXTkqbnHD1tEa8xrqcg3NWfN4urMxfttX"
+			]
+		}
+	},
+	"version": 1
+}

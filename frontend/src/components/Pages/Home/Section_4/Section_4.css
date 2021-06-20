@@ -1,0 +1,14 @@
+section.Section_4 {
+  overflow: hidden;
+}
+
+section.Section_4 .content_mt {
+  margin-top: -300px;
+}
+
+@media (max-width: 767px) {
+  section.Section_4 .content_mt {
+    margin-top: -100px;
+  }
+}
+/*# sourceMappingURL=Section_4.css.map */

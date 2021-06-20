@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAEQ,OAFD,AAAA,UAAU,CACb,gBAAgB,CACZ,iBAAiB,CAAA;EAEb,aAAa,EADJ,IAAI;EAEb,QAAQ,EAAE,MAAM;CAInB;;AATT,AAMY,OANL,AAAA,UAAU,CACb,gBAAgB,CACZ,iBAAiB,CAIb,IAAI,CAAA;EACA,aAAa,EAJR,IAAI;CAKZ",
+    "sources": [
+        "Section_8.scss"
+    ],
+    "names": [],
+    "file": "Section_8.css"
+}
