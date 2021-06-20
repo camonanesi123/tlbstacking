@@ -5,10 +5,11 @@ const isProduction = process.env.NODE_ENV !== 'development';
 import * as http from 'http';
 import * as https from 'https';
 import * as fs from 'fs';
-import express from 'express';
+import * as path from 'path';
+import * as express from 'express';
 
 /* import * as session from 'express-session' */
-import cors from 'cors'
+import * as cors from 'cors'
 import * as bodyParser from 'body-parser'
 /* import * as redis from 'redis'
 import * as connectRedisStore from 'connect-redis' */
@@ -63,11 +64,14 @@ class WebApp {
 			next();
 		}); */
 		app.use(cors());
-		app.use(express.static(__dirname + '/../../frontend/build'));
+		
+		const FRONTENDPATH = path.normalize(__dirname + '/../../frontend/build');
+		app.use(express.static(FRONTENDPATH));
 		app.use(bodyParser.json());
 		app.use(routes);
+		
 		app.get('*', (req,res) =>{
-			res.sendFile(__dirname+'/../../frontend/build/index.html');
+			res.sendFile(FRONTENDPATH+'/index.html');
 		});
 		
 		let time = +new Date();
