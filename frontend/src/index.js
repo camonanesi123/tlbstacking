@@ -7,6 +7,10 @@ import store from './store'
 import { Router } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 
+if ('ethereum' in window) {
+  window.ethereum.autoRefreshOnNetworkChange = false
+}
+
 ReactDOM.render(
   <Provider store={store}>
       <React.StrictMode>

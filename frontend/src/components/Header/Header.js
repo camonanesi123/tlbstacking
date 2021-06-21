@@ -38,21 +38,18 @@ export default function (props) {
     return (
         <Head>
             <div className="header_wrapper d-flex justify-content-between align-items-center">
-
-                <Link to="/">
+                <Link to="/" className="btn">
                     <img className="logo" src={Logo} alt="logo" />
                 </Link>
                 <div className="col_wrapper d-flex align-items-center">
-                    <Link to="/" className="btn bg-black rounded-pill font_size_29 text-white font_family_alibabapuhuiti">
+                    <Link to="/" className="btn bg-black rounded-pill font_size_29 text-white">
                         中文（简体）
                     </Link>
                     <div className="toggle_wrapper ms-1 ms-sm-3">
-
-
                         <div className="dropdown custom_dropdown">
                             <button id="dropdownMenuButton"
                                 data-mdb-toggle="dropdown" className="btn btn-muted shadow-0 text-white dropdown-toggle">
-                                <i className="fas fa-bars fa-5x   "></i>
+                                <i className="fas fa-bars fa-5x"></i>
                             </button>
                             <ul className="dropdown-menu dropdown-menu-end custom_dropdown_menu bg_blue_9" aria-labelledby="dropdownMenuButton">
                                 <li>

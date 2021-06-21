@@ -31,17 +31,17 @@ export default function(props) {
 				<ul className="list-unstyled flex-grow-1 m-0 p-0 d-flex align-items-center justify-content-between">
 					<li>
 						<a className="font_size_49 text-white" href="#">
-							<i className="fab fa-facebook    "></i>
+							<i className="fab fa-facebook"></i>
 						</a>
 					</li>
 					<li>
 						<a className="font_size_49 text-white" href="#">
-							<i className="fab fa-twitter    "></i>
+							<i className="fab fa-twitter"></i>
 						</a>
 					</li>
 					<li>
 						<a className="font_size_49 text-white" href="#">
-							<i className="fab fa-linkedin-in    "></i>
+							<i className="fab fa-linkedin-in"></i>
 						</a>
 					</li>
 					<li>

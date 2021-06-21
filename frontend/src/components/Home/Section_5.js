@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { increment, decrement, redoCounterAction } from '../../reducer';
+import { counterSlice/* increment, decrement, redoCounterAction */ } from '../../reducer';
 
 import ImgPanel from '../../img/panel.webp'
 import ImgUSDT from '../../img/usdt.svg'
@@ -117,13 +117,13 @@ function Section_5(props) {
                     </div>
                 </div>
                 <div className="select_form_control d-flex justify-content-center my-5">
-                    <button onClick={e => dispatch(increment())} className="btn d-flex justify-content-center font_size_90 bg_blue text-white px-3 px-md-5 py-2 mx-2 mx-md-3 rounded-pill">
+                    <button onClick={e => dispatch(counterSlice.actions.increment())} className="btn d-flex justify-content-center font_size_90 bg_blue text-white px-3 px-md-5 py-2 mx-2 mx-md-3 rounded-pill">
                         <i className="fas fa-plus    "></i>
                     </button>
-                    <button onClick={e => dispatch(redoCounterAction())} className="btn d-flex justify-content-center font_size_90 bg_blue text-white px-3 px-md-5 py-2 mx-2 mx-md-3 rounded-pill">
+                    <button onClick={e => dispatch(counterSlice.actions.redoCounterAction())} className="btn d-flex justify-content-center font_size_90 bg_blue text-white px-3 px-md-5 py-2 mx-2 mx-md-3 rounded-pill">
                         <i className="fas fa-redo    "></i>
                     </button>
-                    <button onClick={e => dispatch(decrement())} className="btn d-flex justify-content-center font_size_90 bg_blue text-white px-3 px-md-5 py-2 mx-2 mx-md-3 rounded-pill">
+                    <button onClick={e => dispatch(counterSlice.actions.decrement())} className="btn d-flex justify-content-center font_size_90 bg_blue text-white px-3 px-md-5 py-2 mx-2 mx-md-3 rounded-pill">
                         <i className="fas fa-minus    "></i>
                     </button>
                 </div>

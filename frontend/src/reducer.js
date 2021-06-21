@@ -1,5 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export const walletSlice = createSlice({
+    name: 'wallet',
+    initialState: {
+        address: null,
+    },
+    reducers: {
+        login: (state, action) => {
+            console.log(action);
+            state.address = action.payload;
+        },
+        logout: state => {
+            state.address = null;
+        },
+        rejected: state => {
+            state.address = null;
+        }
+    }
+});
+
 export const counterSlice = createSlice({
     name: 'counter',
     initialState: {
@@ -17,10 +36,11 @@ export const counterSlice = createSlice({
         }
         
     }
-})
+});
 
-export const { 
+
+/* export const { 
     increment,
     decrement,
     redoCounterAction
-} = counterSlice.actions
+} = counterSlice.actions */

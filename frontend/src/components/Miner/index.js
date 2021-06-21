@@ -1,20 +1,146 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Chart, LineAdvance} from 'bizcharts';
+
 import SynChart from '../reuse_components/SynChart/SynChart';
 import DrilldownChart from '../reuse_components/DrilldownChart/DrilldownChart';
 import DoughnutChart from '../reuse_components/DoughnutChart/DoughnutChart';
-import './Dashboard.css';
+
+
+import ImgCell from '../../img/btn-cell.webp'
 
 const Section = styled.section`
     .top_bottom_cyan_bg {
-        background: url("./cyan_bg_border.png") center/100% 100% no-repeat;
+        background: url(${ImgCell}) center/100% 100% no-repeat;
     }
 
 `
+const data = [
+	{
+		month: "Jan",
+		city: "Tokyo",
+		temperature: 7
+	},
+	{
+		month: "Jan",
+		city: "London",
+		temperature: 3.9
+	},
+	{
+		month: "Feb",
+		city: "Tokyo",
+		temperature: 13
+	},
+	{
+		month: "Feb",
+		city: "London",
+		temperature: 4.2
+	},
+	{
+		month: "Mar",
+		city: "Tokyo",
+		temperature: 16.5
+	},
+	{
+		month: "Mar",
+		city: "London",
+		temperature: 5.7
+	},
+	{
+		month: "Apr",
+		city: "Tokyo",
+		temperature: 14.5
+	},
+	{
+		month: "Apr",
+		city: "London",
+		temperature: 8.5
+	},
+	{
+		month: "May",
+		city: "Tokyo",
+		temperature: 10
+	},
+	{
+		month: "May",
+		city: "London",
+		temperature: 11.9
+	},
+	{
+		month: "Jun",
+		city: "Tokyo",
+		temperature: 7.5
+	},
+	{
+		month: "Jun",
+		city: "London",
+		temperature: 15.2
+	},
+	{
+		month: "Jul",
+		city: "Tokyo",
+		temperature: 9.2
+	},
+	{
+		month: "Jul",
+		city: "London",
+		temperature: 17
+	},
+	{
+		month: "Aug",
+		city: "Tokyo",
+		temperature: 14.5
+	},
+	{
+		month: "Aug",
+		city: "London",
+		temperature: 16.6
+	},
+	{
+		month: "Sep",
+		city: "Tokyo",
+		temperature: 9.3
+	},
+	{
+		month: "Sep",
+		city: "London",
+		temperature: 14.2
+	},
+	{
+		month: "Oct",
+		city: "Tokyo",
+		temperature: 8.3
+	},
+	{
+		month: "Oct",
+		city: "London",
+		temperature: 10.3
+	},
+	{
+		month: "Nov",
+		city: "Tokyo",
+		temperature: 8.9
+	},
+	{
+		month: "Nov",
+		city: "London",
+		temperature: 5.6
+	},
+	{
+		month: "Dec",
+		city: "Tokyo",
+		temperature: 5.6
+	},
+	{
+		month: "Dec",
+		city: "London",
+		temperature: 9.8
+	}
+];
 
 const Section_1_d = () => {
     return (
-        <section className="section_paddingX">
+        <Section className="section_paddingX">
             <div className="content_head">
                 <h3 className="font_size_37 text-end text-white mb-2 mb-md-4">
                     全网实时算力
@@ -23,12 +149,12 @@ const Section_1_d = () => {
             <div className="content_wrapper">
                 <SynChart></SynChart>
             </div>
-        </section>
+        </Section>
     )
 }
 const Section_2_d = () => {
     return (
-        <section className="section_paddingX">
+        <Section className="section_paddingX">
             <br /><br /><br /> <br />
             <div className="content_wrapper bg_blue_9 px-2 py-3 py-md-5 radius_30">
                 <table className="w-100 font_size_37 text-center">
@@ -56,13 +182,13 @@ const Section_2_d = () => {
                     </tbody>
                 </table>
             </div>
-        </section>
+        </Section>
     )
 }
 
 const Section_3_d = () => {
     return (
-        <section className="section_paddingX">
+        <Section className="section_paddingX">
             <br /><br /><br />
             <div className="content_wrapper bg_blue_9 px-2 px-md-5 py-3 py-md-5 radius_30">
                 <div className="chart_wrapper">
@@ -200,12 +326,12 @@ const Section_3_d = () => {
                 </div>
             </div>
             <br /><br /><br />
-        </section>
+        </Section>
     )
 }
 const Section_4_d = () => {
     return (
-        <section className="section_paddingX">
+        <Section className="section_paddingX">
             <div className="content_wrapper bg_blue_9 px-2 px-md-5 py-3 py-md-5 radius_30">
                 <div className="content_head">
                     <div className="d-flex justify-content-between text-white font_size_37">
@@ -615,13 +741,13 @@ const Section_4_d = () => {
                 </div>
             </div>
             <br /><br /><br />
-        </section>
+        </Section>
     )
 }
 
 const Section_5_d = () => {
     return (
-        <section className="section_paddingX">
+        <Section className="section_paddingX">
             <div className="content_wrapper bg_blue_9 px-2 px-md-5 py-3 py-md-5 radius_30">
                 <div className="chart_wrapper">
                     <h3 className="text-end text_cyan font_size_68">
@@ -807,7 +933,7 @@ const Section_5_d = () => {
                     </table>
                 </div>
             </div>
-        </section>
+        </Section>
     )
 }
 export default (props)=>{
