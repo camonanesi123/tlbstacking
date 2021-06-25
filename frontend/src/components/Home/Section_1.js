@@ -1,15 +1,17 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch} from 'react-redux';
 /* import Web3 from 'web3'; */
-import { walletSlice } from '../../reducer';
+import { contractSlice } from '../../reducer';
+import Metamask from '../../metamask';
 
 import LineChart from '../reuse_components/LineChart/LineChart'
-import {Link} from "react-router-dom";
+
 /* import MetaMaskOnboarding from '@metamask/onboarding' */
 
 
 import ImgLogo from '../../img/logo.webp'
+
 
 const Section = styled.section`
 	padding-top: 30px;
@@ -50,39 +52,29 @@ const Section = styled.section`
 
 
 function Section_1(props) {
-	let wallet = useSelector(state => state.wallet);
+	let contract = useSelector(state => state.contract);
 	const dispatch = useDispatch()
 
-	const connectWallet = () => {
-		if (window.ethereum) { //check if Metamask is installed
-			try {
-				window.ethereum.enable().then(account=>{
-					console.log(account[0]);
-					if (account.length) {
-						dispatch(walletSlice.actions.login(account[0]));
-					} else {
-						window.alert("🦊 No selected address.")
-					}
-				})
-			} catch (error) {
-				window.alert("🦊 Connect to Metamask using the button on the top right.")
-			}
-		} else {
-			window.alert("🦊 You must install Metamask into your browser: https://metamask.io/download.html")
-		}
+	const connectWallet = async () => {
+		const {status, data} = await Metamask.connect(dispatch);
+		if (status==='ok') await Metamask.getUserInfo(dispatch,data);
 	};
+	useEffect(() => {
+		if (Metamask.isConnected) connectWallet()
+	}, [])
+
 	return (
 		<Section className="section_paddingX">
 			<div className="text-center">
 				<div className="wallet-panel">
-					{wallet.address? (
+					{contract.address? (
 						<div className="address btn bg-success text-white font_size_29">
-							{wallet.address.slice(0,4)+'...'+wallet.address.slice(-4)}
+							{contract.address.slice(0,4)+'...'+contract.address.slice(-4) }
 						</div>
 					) : (
-						<Link onClick={connectWallet} className="btn bg-warning text-white font_size_29">
+						<button onClick={connectWallet} className="btn bg-warning text-white font_size_29">
 							连接钱包
-						</Link>
+						</button>
 					)}
 				</div>
 				<h1 className="text-center font_family_bahnschrift font_size_168">
@@ -96,14 +88,14 @@ function Section_1(props) {
 				</h2>
 				<br /><br /> <br />
 				<strong className="text_red font_size_68">
-					$229,773,908.50
+					{contract.totalDeposit || '00000000'}
 				</strong>
 			</div>
 			<div className="h_400">
 			<LineChart></LineChart>
 			</div>
 			<span className="text-end d-block font_size_29 text_cyan">
-				+122.4233 TLBstaking (+4.57%) <span className="text-white">过去24小时</span>
+				+{contract.price} TLBstaking (+4.57%) <span className="text-white">过去24小时</span>
 			</span>
 			<div className="desc">
 				<h3 className=" font_size_58 mb-4 mb-md-5">

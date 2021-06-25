@@ -1,6 +1,7 @@
-import logo from './logo.svg';
+import React,{useEffect, useState} from 'react';
+
 import './App.css';
-import Header from './components/Header/Header';
+import Header from './components/Layout/Header';
 import Section_1 from './components/Home/Section_1';
 import Section_2 from './components/Home/Section_2';
 import Section_3 from './components/Home/Section_3';
@@ -15,12 +16,11 @@ import Section_11 from './components/Home/Section_11';
 import Section_12 from './components/Home/Section_12';
 import Section_13 from './components/Home/Section_13';
 import Section_14 from './components/Home/Section_14';
-import Footer from './components/Footer/Footer';
-import Loader from './components/Loader/Loader';
+import Footer from './components/Layout/Footer';
+import Loader from './components/Layout/Loader';
 import Miner from './components/Miner';
 import { BrowserRouter as Router, Switch, Route, withRouter, Link } from 'react-router-dom';
 
-import { useEffect, useState } from 'react';
 function App() {
   const [loading, setLoading] = useState(true)
   useEffect(() => {

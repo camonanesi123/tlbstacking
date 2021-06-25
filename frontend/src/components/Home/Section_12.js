@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector} from 'react-redux';
 import styled from 'styled-components';
 
 import ImgInsurance from '../../img/insurance.webp'
@@ -25,6 +26,7 @@ const Section = styled.section`
 `
 
 function Section_12(props) {
+	let contract = useSelector(state => state.contract);
     return (
         <Section className="">
             <h4 className="text-center text-white font_size_49">
@@ -37,7 +39,7 @@ function Section_12(props) {
                 </h3>
                 <br /><br />
                 <h3 className="text_red mt-3 mt-md-5 font-weight-normal text-center font_size_139">
-                    889848234
+                    {contract.redeemAmount || '00000000'}
                 </h3>
             </div>
         </Section>

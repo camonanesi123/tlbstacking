@@ -1,5 +1,9 @@
 import React from 'react';
+import { useSelector} from 'react-redux';
 import styled from 'styled-components';
+
+import Metamask from '../../metamask';
+
 const Section = styled.section`
     .custom_table {
         &.custom_table_style {
@@ -20,7 +24,11 @@ const Section = styled.section`
     }
 `
 
+
+
 function Section_13(props) {
+    const contractAddress = Metamask.contract;
+	let contract = useSelector(state => state.contract);
     return (
         <Section className="section_paddingX py-3">
             <br /><br /><br />
@@ -34,19 +42,19 @@ function Section_13(props) {
                     <tbody>
                         <tr>
                             <td>合约地址</td>
-                            <td>TDFtSXGdn****MXun</td>
+                            <td>{contractAddress.slice(0,4)+'...'+contractAddress.slice(-4)}</td>
                         </tr>
                         <tr>
                             <td>推荐人地址</td>
-                            <td>TDFtSXGdn****MXun</td>
+                            <td>{contract.referer.slice(0,4)+'...'+contract.referer.slice(-4)}</td>
                         </tr>
                         <tr>
                             <td>我的邀请地址</td>
-                            <td>TDFtSXGdn****MXun</td>
+                            <td>{contract.address.slice(0,4)+'...'+contract.address.slice(-4)}</td>
                         </tr>
                         <tr>
                             <td>回购金额</td>
-                            <td>568646513</td>
+                            <td>{contract.redeemAmount}</td>
                         </tr>
                     </tbody>
                 </table>

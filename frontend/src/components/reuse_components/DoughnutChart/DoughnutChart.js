@@ -1,3 +1,4 @@
+import React from 'react';
 import DonutChart from 'react-donut-chart';
 //things I would never do:
 export default function DoughnutChart() {
