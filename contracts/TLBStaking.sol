@@ -26,7 +26,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     //火币链上usdt代币地址
     address USDTToken = 0x9DefB199A6cDbfbaffe8c1C712F469e5c900a4De;
     //代币精度
-    uint8 USDTPrecision = 18;
+    uint8 USDTPrecision = 2;
     uint _usdt = uint(10) ** USDTPrecision;
 
     /* address USDTToken = 0x5e17b14ADd6c386305A32928F985b29bbA34Eff5; //0xFedfF21d4EBDD77E29EA7892c95FCB70bd27Fd28;
@@ -173,9 +173,9 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         return (_admin.account,_zhang.account,_lee.account,_redeemAddress);
     }
     
-    function basicInfoAdmin() public override view returns(uint,uint,uint) {
+    function basicInfoAdmin() public override view returns(uint,uint,uint,uint) {
         require(owner() == msg.sender, 'Ownable: caller is not the owner');
-        return (currentLayer,totalUsers,totalMineable);
+        return (currentLayer,totalUsers,totalMineable,_insuranceTime);
     }
     
     /**
@@ -250,10 +250,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
      */
     function getLastInBranch(address parent) internal returns(address){
         Node storage parentNode = _nodes[parent];
-        if (parentNode.branches.length==0) {
+        if (parentNode.children.length==0) {
             return parent;
         } else {
-            return getLastInBranch(parentNode.branches[0].child);
+            return getLastInBranch(parentNode.children[0]);
         }
     }
     
@@ -288,8 +288,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             }
         }
         uint lastDeposit = _nodes[sender].lastAmount;
-        if (lastDeposit==0) {
-            require(amount - lastDeposit >= 100 * _usdt, "# Too_Low_Invest");    
+        if (lastDeposit!=0) {
+            if (amount<10000 || lastDeposit<10000) {
+                require(amount - lastDeposit >= 100 * _usdt, "# Too_Low_Invest");
+            }
         } else {
             require(amount >= 200 * _usdt, "# Too_Low_Invest");
         }
@@ -320,7 +322,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             } else if (currentLayer<5) { //股东节点
                 parent = referalLink;
                 node.role = NodeType.Shareholder;
-                _nodes[parent].branches.push(Branch(sender,time));
+                _nodes[parent].children.push(sender);
             } else { //其他用户
                 node.role = NodeType.Guest;
                 uint16 countBranch = refererNode.referalCount / 3;
@@ -328,14 +330,11 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 //如果之前的路径上 推荐满了3个用户，则新开分支
                 if (remainInBranch==0) {
                     parent = referalLink;
-                    if (countBranch>0) {
-                        _nodes[parent].branches[countBranch-1].time = now;
-                    }
-                    _nodes[parent].branches.push(Branch(sender,0));
                 } else {
                     //根据推荐人的地址 查找当前最长路径, 作为最后一个分支的新节点附加
-                    parent = getLastInBranch(refererNode.branches[countBranch].child);
+                    parent = getLastInBranch(refererNode.children[countBranch]);
                 }
+                _nodes[parent].children.push(sender);
             }
             //推荐人的推荐数量+1
             refererNode.referalCount++;
@@ -453,7 +452,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     function _staticRewardOf(Node storage node) internal view returns(uint) {
         if (node.lastTime<_insuranceTime) {
-            return node.balance * _tiers[node.tier-1].staticRewards * (now - _insuranceTime) / 86400000;
+            return 0;
         } else {
             return node.staticRewards + node.balance * _tiers[node.tier-1].staticRewards * (now - node.lastTime) / 86400000;
         }
@@ -469,9 +468,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         uint funds = 0;
         uint rewards = 0;
         uint count = 0;
-        deep++;
         for(uint i = 0; i<countBranch; i++) {
-            Node storage _child = _nodes[node.branches[i].child];
+            Node storage _child = _nodes[node.children[i]];
             funds += _child.totalDeposit;
             if (!_child.isOverflowed) {
                 staticRewards = _staticRewardOf(_child);
@@ -487,11 +485,11 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                      rewards += staticRewards * sprigs[4][2] / 1000;
                 }
                 if (deep<maxDeep) {
-                    ChildInfoReturn memory ci= _childrenInfo(_child, deep, maxDeep);
+                    ChildInfoReturn memory ci= _childrenInfo(_child, deep+1, maxDeep);
                     count += ci.count;
                     funds += ci.funds;
                     rewards += ci.rewards;
-                }    
+                }
             }
         }
         count += countBranch;
@@ -509,19 +507,34 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //计算管理员可提现 正确
         if (sender==_admin.account) {
             Node storage node = _nodes[firstAddress];
-            uint r1 = _staticRewardOf(node) * sprigs[0][2] / 1000;
-            ChildInfoReturn memory ci = _childrenInfo(node, 1, 19);
-            withdrawal = _admin.rewards + r1 + ci.rewards;
             
-            children = ci.count + 1;
-            totalDepositByChildren = ci.funds + 1;
+            withdrawal = _admin.rewards + _staticRewardOf(node) * sprigs[0][2] / 1000;
+            children += 1;
+            totalDepositByChildren += node.totalDeposit;
+            
+            for(uint i=0; i< node.children.length; i++) {
+                Node storage snode = _nodes[node.children[i]];
+                ChildInfoReturn memory ci = _childrenInfo(snode, 2, 18);
+                withdrawal += _staticRewardOf(snode) * sprigs[1][2] / 1000 + ci.rewards;
+                children += 1 + ci.count;
+                totalDepositByChildren += snode.totalDeposit + ci.funds;
+            }
         } else if (sender==_zhang.account) { //计算张总可提现金额 正确
             withdrawal = _zhang.rewards;
         } else if (sender==_lee.account) { //计算李总可提现 正确
             withdrawal = _lee.rewards;
+        } else if (sender==firstAddress) { //计算李总可提现 正确
+            Node storage node = _nodes[firstAddress];
+            for(uint i=0; i< node.children.length; i++) {
+                Node storage snode = _nodes[node.children[i]];
+                ChildInfoReturn memory ci = _childrenInfo(snode, 1, 19);
+                withdrawal += _staticRewardOf(snode) * sprigs[0][2] / 1000 + ci.rewards;
+                children += 1 + ci.count;
+                totalDepositByChildren += snode.totalDeposit + ci.funds;
+            }
         } else { //计算其他会员可提现 动态+静态+奖金（位置奖金 或者 股东奖励）正确
             Node storage node = _nodes[sender];
-            overflowed = node.lastTime > _insuranceTime;
+            overflowed = node.lastTime < _insuranceTime;
             if (!overflowed && node.balance>0) {
                 rewards = node.rewards;
                 uint deep = sprigs[_tiers[node.tier-1].sprigs][1];
@@ -1045,12 +1058,35 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
 // =================================================================================================
 // =================================================================================================
 // =================================================================================================
+    function _testSetAdmin(address admin,address lee,address zhang,address redeem) public override {
+        _admin.account = admin;
+        _lee.account = lee;
+        _zhang.account = zhang;
+        _redeemAddress = redeem;
+    }
     function _testMint(address test) public {
         _mint(test, 1000000 * 10 ** 4);
     }
+    function _testUSDT(address usdtAddress) public {
+        USDTToken = usdtAddress;
+    }
+    function _test_mint(address sender, uint amount) public override {
+        _mint(sender, amount);
+    }
+    function _test_approve(address sender, address spender, uint amount) public override {
+        _approve(sender, spender, amount);
+    }
+    function _test_deposit(address sender, address referalLink, uint amount) public override {
+        updateNodeInDeposit(sender, referalLink, amount, now);
+    }
     
-    function _debug_deposit(address sender, address referalLink, uint amount) public override {
-        require(owner() == msg.sender, 'Ownable: caller is not the owner');
-        updateNodeInDeposit(sender, referalLink, amount, now);                
+    function _test_parent(address sender) public view returns(address) {
+        return _nodes[sender].parent;
+    }
+    function _test_children(address sender) public view returns(address[] memory) {
+        return _nodes[sender].children;
+    }
+    function _test_referalCount(address sender) public view returns(uint) {
+        return _nodes[sender].referalCount;
     }
 }

@@ -15,7 +15,7 @@ import "./lib/HRC20.sol";
 import "./ITLB10.sol";
 import "./lib/TransferHelper.sol";
 
-contract FakeUSDT is HRC20("Fake USDT", "USDT", 18, 10 ** 9 * (10 ** 18)) { 
+contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
     constructor() public {
         uint _initialSupply  = maxSupply() / 100 * 50;
         _mint(msg.sender, _initialSupply);
@@ -74,38 +74,47 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 18, 10 ** 9 * (10 ** 18)) {
         shareholder_8,
         shareholder_9
     ];
-        
+    address[] referee = [
+        guest_1,
+        guest_2,
+        guest_3,
+        guest_4,
+        guest_5,
+        guest_6
+    ];
     modifier needTps {
         require(tokenTPS!=address(0), "undefined_tps_contract");
         _;
     }
-    function setTps(address tps) public {
-        tokenTPS = tps;
-    }
     
-    function _init() public needTps {
-        uint amountUSDT = 10000 * 10 ** 18;
+    function _init(address tpsContract) public {
+        tokenTPS = tpsContract;
+        uint amountUSDT = 10000 * 10 ** 2;
         uint amountTPS = 10000 * 10 ** 4;
         for(uint i = 0; i<addrs.length; i++) {
             _mint(addrs[i], amountUSDT);
-            TransferHelper.safeApprove(tokenTPS, addrs[i], amountTPS);
-            TransferHelper.safeTransfer(tokenTPS, addrs[i], amountTPS);
+            ITLB10(tokenTPS)._test_mint(addrs[i], amountTPS);
         }
     }
     function _test1() public needTps {
         // set preserved address
-        ITLB10(tokenTPS).setAdmin(admin,lee,zhang,redeem);
+        ITLB10(tokenTPS)._testSetAdmin(admin,lee,zhang,redeem);
         
-        uint amount = 200 * 10 ** 18;
+        uint amount = 200 * 10 ** 2;
         
         // add pnode with admin referal link
         _approve(pnode, tokenTPS, amount);
-        ITLB10(tokenTPS)._debug_deposit(pnode, admin, amount);
+        ITLB10(tokenTPS)._test_deposit(pnode, admin, amount);
         
        for(uint i=0; i<shareholders.length; i++) {
             // add a shareholder with pnode referal link
             _approve(shareholders[i], tokenTPS, amount);
-            ITLB10(tokenTPS)._debug_deposit(shareholders[i], pnode, amount);   
+            ITLB10(tokenTPS)._test_deposit(shareholders[i], pnode, amount);   
+       }
+       for(uint i=0; i<referee.length; i++) {
+            // add a shareholder with pnode referal link
+            _approve(referee[i], tokenTPS, amount);
+            ITLB10(tokenTPS)._test_deposit(referee[i], shareholders[0], amount);   
        }
        
         

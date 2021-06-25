@@ -30,12 +30,6 @@ interface ITLB10{
         uint tier;
     }
     
-    //分支
-    struct Branch {
-        address child;
-        uint time; // After filling 3 referees, set it to block time
-    }
-
     //管理员
     struct Admin {
         address account;
@@ -73,7 +67,7 @@ interface ITLB10{
         // for MLM Tree 直接推荐了多少个人
         uint16 referalCount;
         //分支数，子节点个数
-        Branch[] branches; // first child address (may be not his referee) in every branch
+        address[] children; // first child address (may be not his referee) in every branch
         
         // will save all history to calculate dynamicRewards dynamically  用户出入金记录
         // FundLog[] logs;
@@ -124,7 +118,7 @@ interface ITLB10{
      */
     function setAdmin(address admin,address lee,address zhang,address redeem) external;
     function getAdmin() external view returns(address,address,address,address);
-    function basicInfoAdmin() external view returns(uint,uint,uint);
+    function basicInfoAdmin() external view returns(uint,uint,uint,uint);
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
     function withdrawable(address sender) external view returns(bool, uint, uint, uint, uint, uint);
@@ -149,6 +143,9 @@ interface ITLB10{
     
     
     //////////////////////////////////////////////////////////////////////////////////
-    function _debug_deposit(address sender, address referalLink, uint amount) external;
+    function _testSetAdmin(address admin,address lee,address zhang,address redeem) external;
+    function _test_mint(address sender, uint amount) external;
+    function _test_approve(address sender, address spender, uint amount) external;
+    function _test_deposit(address sender, address referalLink, uint amount) external;
     
 }
