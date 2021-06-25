@@ -17,141 +17,17 @@ pragma experimental ABIEncoderV2;
 
 import "./lib/HRC20.sol";
 import "./lib/SafeMath.sol";
-import "./lib/Math.sol";
 import "./lib/TransferHelper.sol";
 
-import "./ITLB.sol";
+import "./ITLB10.sol";
 
-contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4)), ITLB{ 
+contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4)), ITLB10 { 
     using SafeMath for uint256;
-    event BuyOrderAdded(address guest, uint amount);
-    event BuyOrderCancelled(address guest, uint amount);
-    event SellOrderAdded(address guest, uint amount);
-    event SellOrderCancelled(address guest, uint amount);
-    
-    
     //火币链上usdt代币地址
-    address USDTToken = 0xe5D8BE3049d567c120FBb963D44D90AA15836229;
+    address USDTToken = 0x9DefB199A6cDbfbaffe8c1C712F469e5c900a4De;
     //代币精度
     uint8 USDTPrecision = 18;
     uint _usdt = uint(10) ** USDTPrecision;
-    
-    //会员类型
-    enum NodeType{ PNode, Shareholder, Guest }
-    //矿工种类 灵活挖矿 or 固定挖矿
-    enum MineType{ Flexible, Fixed }
-    
-    //会员等级
-    struct Tier {
-        uint8 index;
-        uint min; //最小存款金额
-        uint8 staticRewards;//静态收益
-        uint8 sprigs;//动态收益矩阵
-        uint limit;//综合收益
-    }
-
-    //存款记录表
-    struct FundLog {
-        uint time;
-        uint balance;
-        uint tier;
-    }
-    
-    //分支
-    struct Branch {
-        address child;
-        uint time; // After filling 3 referees, set it to block time
-    }
-
-    //管理员
-    struct Admin {
-        address account;
-        uint rewards;
-        uint totalRewards;
-        uint lastWithdrawTime;
-    }
-    
-    //节点数据结构
-    struct Node {
-        uint32 position; // location in prism  数组中的位置
-        uint16 layer; // location in prism   棱形中的层数
-        NodeType role;//角色
-        uint8 tier;//会员等级
-        uint totalDeposit;//总存款
-        uint totalWithdrawal; //总提现金额
-        bool isOverflowed; // calculate statically + dynamically(for 1999, 2000, 2001 layer) 是否爆仓，爆仓以后可以继续看到收益增长，但无法提现，必须下一次充值以后提现
-        uint lastAmount;//上一次存款金额
-        
-        uint lastTime;//上次 存款/提现时间
-        // uint lastWithdrawTime; // 上次提现金额 
-        uint staticRewards;
-        uint dynamicRewards;
-        
-        uint limit;//综合收益
-        uint balance;//剩余本金
-        uint rewards; // for shareholder 4% or position rewards, calculate statically and dynamically(999~1001) 股东收益 或者 位置奖金 
-
-        
-        //推荐人
-        address referer;
-        //父节点
-        address parent;
-        
-        // for MLM Tree 直接推荐了多少个人
-        uint16 referalCount;
-        //分支数，子节点个数
-        Branch[] branches; // first child address (may be not his referee) in every branch
-        
-        // will save all history to calculate dynamicRewards dynamically  用户出入金记录
-        // FundLog[] logs;
-        
-    }
-    
-    //矿工
-    struct Miner {
-        MineType mineType;
-        address referer;//推荐人
-        uint tier;//算力
-        uint lastBlock;//上一次激活挖矿时间
-        uint rewards;//可以提现的TLB数量
-    }
-    //矿工信息
-    struct MinerInfo {
-        address account; //地址
-        uint tier;//算力
-    }
-    //矿池统计
-    struct MinePool {
-        uint totalPower; //总算力
-        uint minerCount; //矿工个数
-        uint minedTotal; //已经挖出多少矿
-    }
-    //订单表
-    struct Order {
-        uint time;
-        address account;
-        uint initial;
-        uint balance;
-    }
-    //交易记录表
-    struct OrderTx {
-        uint txid;
-        uint8 txtype;
-        uint quantity;
-        uint time;
-    }
-    struct ChildInfoReturn {
-        uint count;
-        uint funds;
-        uint rewards;
-    }
-    //管理员
-    Admin _admin;
-    //张总
-    Admin _zhang;
-    //李总
-    Admin _lee;
-
 
     /* address USDTToken = 0x5e17b14ADd6c386305A32928F985b29bbA34Eff5; //0xFedfF21d4EBDD77E29EA7892c95FCB70bd27Fd28;
     uint8 USDTPrecision = 6; */
@@ -159,6 +35,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     // heco mainnet 
     // address USDTToken = 0xa71EdC38d189767582C38A3145b5873052c3e47a;
     // uint8 USDTPrecision = 18;
+    
+    //管理员
+    Admin _admin;
+    //张总
+    Admin _zhang;
+    //李总
+    Admin _lee;
+
         
     uint _tpsIncrement = _usdt / 100; //TLB涨幅，每一层
     
@@ -276,18 +160,21 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
 
     //设置管理员，张总，李总 钱包地址。需要设置管理员地址，张总地址，李总地址。注意（张总，李总）作为股东身份参与，请另外使用地址
-    function setAdmin(address admin,address lee,address zhang,address redeem) public onlyOwner {
+    function setAdmin(address admin,address lee,address zhang,address redeem) public override {
+        require(owner() == msg.sender, 'Ownable: caller is not the owner');
         _admin.account = admin;
         _lee.account = lee;
         _zhang.account = zhang;
         _redeemAddress = redeem;
     }
     
-    function getAdmin() public view onlyOwner returns(address,address,address,address) {
+    function getAdmin() public override view returns(address,address,address,address) {
+        require(owner() == msg.sender, 'Ownable: caller is not the owner');
         return (_admin.account,_zhang.account,_lee.account,_redeemAddress);
     }
     
-    function basicInfoAdmin() public view onlyOwner returns(uint,uint,uint) {
+    function basicInfoAdmin() public override view returns(uint,uint,uint) {
+        require(owner() == msg.sender, 'Ownable: caller is not the owner');
         return (currentLayer,totalUsers,totalMineable);
     }
     
@@ -321,13 +208,13 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     /**
      * @dev Return required number of TPS to member. 计算入金时候需要的TLB数量
      */
-    function amountForDeposit(uint amount) public view returns(uint256) {
+    function amountForDeposit(uint amount) public override view returns(uint256) {
         return amount /  10 / price; // 10% TPS of amount
     }
     /**
      * @dev Return required number of TPS to member. 计算出金的时候TLB数量，前1000层 5个，1001层开始2个
      */
-    function amountForWithdraw(address account) public view returns(uint256) {
+    function amountForWithdraw(address account) public override view returns(uint256) {
         if (account==_zhang.account || account==_lee.account || account==_admin.account) return 0;
         return _nodes[account].layer<1001 ? 5 : 2;
     }
@@ -388,8 +275,39 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
      * @dev Add or update a node when a user is deposited into the pool. 当用户存钱的时候，更新树形结构
      */
     function updateNodeInDeposit(address sender,address referalLink, uint amount, uint time) internal {
+        require(sender!=address(0), "# Invalid_sender");
+        uint32 userCount = totalUsers;
+        require(userCount < maxUsers, "# full_users");
+        if (userCount==0) {
+            require(referalLink==_admin.account, "# Need_Admin_refereal_link");
+        } else if (userCount<10){
+            require(referalLink==firstAddress, "# NeedpNode_refereal_linkAddress");
+        } else {
+            if (_nodes[sender].lastAmount!=0) {
+                require(_nodes[sender].referer==referalLink, "# invalid_referal_link");
+            }
+        }
+        uint lastDeposit = _nodes[sender].lastAmount;
+        if (lastDeposit==0) {
+            require(amount - lastDeposit >= 100 * _usdt, "# Too_Low_Invest");    
+        } else {
+            require(amount >= 200 * _usdt, "# Too_Low_Invest");
+        }
+        
+        uint _needTps = amountForDeposit(amount) * uint(10) ** decimals();
+        
+        require(balanceOf(sender) >= _needTps, "# Need_10%_TPS");
+        
+        TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amount);
+        _burn(sender, _needTps);
+        totalBurnt += _needTps;
+        // updateNodeInDeposit(sender, referalLink, amount, now);
+        
+        
         Node storage node = _nodes[sender];
         Node storage refererNode = _nodes[referalLink];
+        
+        
         //新用户第一次入金，改变树形结构
         if (node.lastTime==0) {
             uint32 position = addUserToPrism();
@@ -496,6 +414,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             shareholderNode.rewards += amount * 40 / 1000; // 4%; 股东奖金
         }
         checkInsurance();
+        _processSellOrder();
     }
     
     // update dynamicRewards of all parents (max 20)
@@ -527,7 +446,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
     }
     //计算合约中剩余USDT数目
-    function totalUsdtBalance() internal view returns(uint) {
+    function totalUsdtBalance() public view returns(uint) {
         return IHRC20(USDTToken).balanceOf(address(this));
     }
     
@@ -580,7 +499,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
 
     //计算可提现金额 正确 o
-    function withdrawable(address sender) public view returns(bool, uint, uint, uint, uint, uint) { // overflowed, benefit, rewards, withdrawable, children, totalDepositByChildren
+    function withdrawable(address sender) public override view returns(bool, uint, uint, uint, uint, uint) { // overflowed, benefit, rewards, withdrawable, children, totalDepositByChildren
         bool overflowed = false;
         uint benefit = 0;
         uint rewards = 0;
@@ -637,7 +556,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     
     // must call this function every 36hrs on server backend
-    function checkInsurance() public {
+    function checkInsurance() public override{
         if (now - insuranceCounterTime >= 129600) {
             if ((_insuranceDeposit * 1000 / totalDeposit) < 20) {
                 _insuranceTime = insuranceCounterTime + 129600;
@@ -654,7 +573,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _insuranceMemberCount = 0;
         }
     }
-    function basicInfo(address account) public view returns(uint[14] memory,address) {
+    function basicInfo(address account) public override view returns(uint[14] memory,address) {
         uint _tps = 0;
         uint _deposit = 0;
         uint _withdrawal = 0;
@@ -691,7 +610,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     
     //计算 矿机价格每增加一层 认购价格 矿机认购价格在原基础上 增加0.1% 正确
-    function minerPrice(uint8 tier) public view returns(uint) {
+    function minerPrice(uint8 tier) public override view returns(uint) {
         if (tier>0 && tier<4) {
             return _minerTiers[tier][0] + _minerTiers[tier][0] * currentLayer / 1000; 
         }
@@ -714,7 +633,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     
     //计算 待领取的TLB 奖励 正确
-    function pendingTLB(address account) public view returns(uint) {
+    function pendingTLB(address account) public override view returns(uint) {
         Miner storage miner= _miners[account];
         if (miner.lastBlock!=0) {
             if (miner.mineType==MineType.Flexible) {
@@ -729,7 +648,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
     
     //触发领取奖励动作 正确
-    function withdrawTLBFromPool() public {
+    function withdrawTLBFromPool() public override{
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         Miner storage miner= _miners[sender];
@@ -744,41 +663,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
     
     //入金方法 外部调用 正确
-    function deposit(address referalLink, uint amount) public {
+    function deposit(address referalLink, uint amount) public override{
         address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
-        uint32 userCount = totalUsers;
-        require(userCount < maxUsers, "# full_users");
         
-        if (userCount==0) {
-            require(referalLink==_admin.account, "# Need_Admin_refereal_link");
-        } else if (userCount<10){
-            require(referalLink==firstAddress, "# NeedpNode_refereal_linkAddress");
-        } else {
-            if (_nodes[sender].lastAmount!=0) {
-                require(_nodes[sender].referer==referalLink, "# invalid_referal_link");
-            }
-        }
-        uint lastDeposit = _nodes[sender].lastAmount;
-        if (lastDeposit==0) {
-            require(amount - lastDeposit >= 100 * _usdt, "# Too_Low_Invest");    
-        } else {
-            require(amount >= 200 * _usdt, "# Too_Low_Invest");
-        }
-        
-        uint _needTps = amountForDeposit(amount) * uint(10) ** decimals();
-        
-        require(balanceOf(sender) >= _needTps, "# Need_10%_TPS");
-        
-        TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amount);
-        _burn(sender, _needTps);
-        totalBurnt += _needTps;
         updateNodeInDeposit(sender, referalLink, amount, now);
-        _processSellOrder();
     }
 
     //提现方法 管理员 出金也需要TLB 管理员购买矿机，可以不要钱
-    function withdraw() public {
+    function withdraw() public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         //计算当时间，会员可提金额
@@ -854,7 +746,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
 
     //矿工信息， 返回 算力，挖矿方式，是否激活
-    function minerInfo(address miner) public view returns(uint,MineType,bool) {
+    function minerInfo(address miner) public override view returns(uint,MineType,bool) {
         bool status = false;
         Miner storage _mnr= _miners[miner];
         if (_mnr.lastBlock>0) {
@@ -867,7 +759,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         return (_mnr.tier,_mnr.mineType,status);
     }
     //开始挖矿，每次提现后必须重新触发 （需要添加判断 没有购买矿机的人 不能触发该操作）
-    function startMine() public {
+    function startMine() public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         Miner storage miner= _miners[sender];
@@ -877,7 +769,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
 
     //设置挖矿 方式 （有待讨论）
-    function setMineType(MineType mineType) public {
+    function setMineType(MineType mineType) public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         Miner storage miner= _miners[sender];
@@ -885,7 +777,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         miner.mineType = mineType;
     }
     //购买矿机 
-    function buyMiner(address referalLink, uint amountUsdt, MineType mineType) public returns(uint) {
+    function buyMiner(address referalLink, uint amountUsdt, MineType mineType) public override returns(uint) {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         uint referalRewards = 0;
@@ -928,7 +820,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         minePool.totalPower += tier;
     }
     //查看矿池，总算力，和总人数 正确
-    function minerList() public view returns(uint, MinerInfo[] memory) {
+    function minerList() public override view returns(uint, MinerInfo[] memory) {
         uint count = _minerlist.length;
         MinerInfo[] memory miners = new MinerInfo[](count);
         for(uint i=0; i<count; i++) {
@@ -939,7 +831,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
     
     //购买TLB 方法正确
-    function buy(uint amountUsdt) public {
+    function buy(uint amountUsdt) public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         uint _tpsInit = amountUsdt / price * uint(10) ** decimals();
@@ -994,7 +886,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
 
     //撤销买单，当 卖队列无法满足 买队列时 正确
-    function cancelBuyOrder() public {
+    function cancelBuyOrder() public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         uint count = 0;
@@ -1022,7 +914,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
 
     //卖出 TLB 方法正确
-    function sell(uint amountTps) public {
+    function sell(uint amountTps) public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         
@@ -1078,7 +970,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         _processSellOrder();
     }
     //撤销卖单
-    function cancelSellOrder() public {
+    function cancelSellOrder() public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         uint count = 0;
@@ -1105,7 +997,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         _processSellOrder();
     }
     //查询订单历史记录
-    function orderHistory() public view returns(OrderTx[] memory) {
+    function orderHistory() public override view returns(OrderTx[] memory) {
         uint count = _txBook.length>10 ? 10 : _txBook.length;
         OrderTx[] memory logs = new OrderTx[](count);
         for(uint i=0; i<count; i++) {
@@ -1142,4 +1034,23 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         if (sumTps>0) _transfer(address(this), _redeemAddress, sumTps);
     }
 
+    
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+    function _testMint(address test) public {
+        _mint(test, 1000000 * 10 ** 4);
+    }
+    
+    function _debug_deposit(address sender, address referalLink, uint amount) public override {
+        require(owner() == msg.sender, 'Ownable: caller is not the owner');
+        updateNodeInDeposit(sender, referalLink, amount, now);                
+    }
 }
