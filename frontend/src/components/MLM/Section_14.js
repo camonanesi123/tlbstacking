@@ -13,14 +13,16 @@ import ImgPartner9 from '../../img/partner9.webp'
 import ImgPartner10 from '../../img/partner10.webp'
 
 const Section = styled.section`
-    
+    h3 {
+        margin-bottom: 1em;
+    }
 `
 
 function Section_14(props) {
     return (
-        <Section className="section_paddingX">
+        <Section>
             <div className="content_head">
-                <h3 className="text-white text-center font_size_68">
+                <h3 className="text-center">
                     合作伙伴
                 </h3>
             </div>

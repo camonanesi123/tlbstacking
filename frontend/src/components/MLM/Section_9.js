@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 const Section = styled.section`
+	h3 {
+		margin-top: 50px;
+	}
 	.content_wrapper {
 		z-index: 1;
 		position: relative;
@@ -16,17 +19,11 @@ const Section = styled.section`
 
 function Section_9(props) {
 	return (
-		<Section className="">
-			<br /><br /><br />
+		<Section>
+			<h3 className="text-center">交易记录</h3>
+			<h4 className="text-center">实时数据</h4>
 			<div className="content_wrapper p-0 p-md-5">
-				<h3 className="text-white text-center font_size_68">
-					交易记录
-				</h3>
-				<h4 className="text-white text-center font_size_37">
-					实时数据
-				</h4>
-				<br /><br /><br />
-				<table className="w-100  text-center text-white font_size_29 custom_table custom_table_style">
+				<table className="w-100  text-center custom_table custom_table_style">
 					<thead>
 						<tr >
 							<td className="bg_blue_9 py-2 py-md-3 radius_left_side_pill">

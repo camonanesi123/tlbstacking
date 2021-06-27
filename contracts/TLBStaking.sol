@@ -5,8 +5,8 @@ pragma experimental ABIEncoderV2;
 /**********************************************************************
 
 
-████████╗██╗░░░░░██████╗░░██████╗████████╗░█████╗░██╗░░██╗██╗███╗░░██╗░██████╗░
-╚══██╔══╝██║░░░░░██╔══██╗░██╔════╝╚══██╔══╝██╔══██╗██║░██╔╝██║████╗░██║██╔════╝░
+████████╗██╗░░░░░██████╗░ ░░██████╗████████╗░█████╗░██╗░░██╗██╗███╗░░██╗░██████╗░
+╚══██╔══╝██║░░░░░██╔══██╗░ ██╔════╝╚══██╔══╝██╔══██╗██║░██╔╝██║████╗░██║██╔════╝░
 ░░░██║░░░██║░░░░░██████╦╝░░╚█████╗░░░░██║░░░███████║█████═╝░██║██╔██╗██║██║░░██╗░
 ░░░██║░░░██║░░░░░██╔══██╗░░░╚═══██╗░░░██║░░░██╔══██║██╔═██╗░██║██║╚████║██║░░╚██╗
 ░░░██║░░░███████╗██████╦╝░░██████╔╝░░░██║░░░██║░░██║██║░╚██╗██║██║░╚███║╚██████╔╝
@@ -65,19 +65,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     address[36] _insuranceMembers;
     uint _insuranceMemberCount;
     
-    
-    // 奖励最后入金的36个人:
-    // 最后一个人 奖励 20%
-    // 剩余35人平均分配 80%
-    /*
-    struct Insurance {
-        uint time;
-        uint amount;
-        uint count;
-    }
-    Insurance[] insurLogs;
-    */
-    
     //动态收益列表
     uint8[][] sprigs = [
         [1, 1, 200], // 吃 第1层 静态收益的20%
@@ -105,10 +92,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
 
     //矿工初始价格，和推广收益表
     uint[][] _minerTiers = [
-        [15000 * 10 ** uint(USDTPrecision), 100, 100, 30], //15000U,100T,10%,30%
-        [7500 * 10 ** uint(USDTPrecision), 50, 50, 20], 
-        [3500 * 10 ** uint(USDTPrecision), 25, 25, 10], 
-        [100 * 10 ** uint(USDTPrecision), 5, 10, 5]
+        [15000 * _usdt, 100, 100, 30], //15000U,100T,10%,30%
+        [7500 * _usdt, 50, 50, 20], 
+        [3500 * _usdt, 25, 25, 10], 
+        [100 * _usdt, 5, 10, 5]
     ];
 
     //矿工列表
@@ -131,30 +118,30 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //初始化会员等级
         _tiers.push(Tier({
             index: 1,
-            min: 200,
+            min: 200 * _usdt,
             staticRewards: 16,  // 0.1%
-            sprigs: 2,
+            sprigs: 1,
             limit: 2200        // 0.1% 综合收益倍数
         }));
         _tiers.push(Tier({
             index: 2,
             staticRewards: 14,
-            min: 1001,
-            sprigs: 3,
+            min: 1001 * _usdt,
+            sprigs: 2,
             limit: 2100        // 0.1%
         }));
         _tiers.push(Tier({
             index: 3,
             staticRewards: 12,
-            min: 2001,
-            sprigs: 4,
+            min: 2001 * _usdt,
+            sprigs: 3,
             limit: 2000        // 0.1%
         }));
         _tiers.push(Tier({
             index: 4,
             staticRewards: 10,
-            min: 5001,
-            sprigs: 5,
+            min: 5001 * _usdt,
+            sprigs: 4,
             limit: 1900        // 0.1%
         }));
     }
@@ -183,26 +170,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
      * @dev Returns tier index corresponding to deposit amount. 根据入金数额获取当前会员等级
      */
     function getTier(uint amount) internal view returns(uint) {
-        uint senderTier = 0;
-        for(uint i=0; i<_tiers.length;i++) {
-            uint iTier = _tiers.length - i;
-            Tier storage tier = _tiers[_tiers.length - i - 1];
-            if (amount>tier.min) {
-                senderTier = iTier;
-                break;
-            }
+        for(uint i=_tiers.length; i>0;i--) {
+            if (amount>=_tiers[i-1].min) return i;
         }
-        return senderTier;
-    }
-    
-    /**
-     * internal
-     * @dev indicates the referal link is valid or not. 判断推荐连接是否正确
-     */
-    function isValidReferer(address sender, address referer) internal view returns(bool) {
-        if (_nodes[referer].lastAmount == 0) return false;
-        if (_nodes[sender].lastAmount == 0) return true;
-        return _nodes[sender].referer==referer;
+        return 0;
     }
     
     /**
@@ -241,7 +212,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         totalUsers++;
         return totalUsers;
     }
-    
     
     
     /**
@@ -355,16 +325,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 node.staticRewards = 0;
                 node.dynamicRewards = 0;
             } else {
-                
-                (bool overflowed,,,,,) = withdrawable(sender);
+                (bool overflowed,uint staticRewards,,,) = profits(sender); 
                 if (overflowed) {
                     node.staticRewards = 0;
                     node.dynamicRewards = 0;
                 } else {
-                    node.staticRewards = _staticRewardOf(node);
-                    if (node.staticRewards > 0) {
+                    node.staticRewards = staticRewards;
+                    if (staticRewards > 0) {
                         _updateDynamicRewardsAllParentNode(node);
-                        
                     }    
                 }
             }
@@ -451,28 +419,23 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     
     function _staticRewardOf(Node storage node) internal view returns(uint) {
-        if (node.lastTime<_insuranceTime) {
-            return 0;
-        } else {
-            return node.staticRewards + node.balance * _tiers[node.tier-1].staticRewards * (now - node.lastTime) / 86400000;
-        }
+        if (node.lastTime<_insuranceTime) return 0;
+        uint date = (now - node.lastTime) / 86400;
+        return node.lastTime<_insuranceTime ? 0 : node.staticRewards + node.balance * _tiers[node.tier-1].staticRewards * date / 1000;
     }
-    /**
-     * internal
-     * @dev returns count, total deposit, dynamicRewards
-     */
-    
-    function _childrenInfo(Node storage node, uint deep, uint maxDeep) internal view returns(ChildInfoReturn memory) {
-        uint countBranch = node.referalCount / 3;
+    function _childrenInfo(address account, uint deep, uint maxDeep) internal view returns(ChildInfoReturn memory) {
+        Node storage node = _nodes[account];
+        uint countBranch = (deep!=0 || account==firstAddress) ? node.children.length : node.referalCount / 3;
         uint staticRewards = 0;
         uint funds = 0;
         uint rewards = 0;
         uint count = 0;
         for(uint i = 0; i<countBranch; i++) {
-            Node storage _child = _nodes[node.children[i]];
-            funds += _child.totalDeposit;
-            if (!_child.isOverflowed) {
-                staticRewards = _staticRewardOf(_child);
+            address _child = node.children[i];
+            Node storage _childNode = _nodes[node.children[i]];
+            
+            if (!_childNode.isOverflowed) {
+                staticRewards = _staticRewardOf(_childNode);
                 if (node.tier>=1 && deep==0) {
                      rewards += staticRewards * sprigs[0][2] / 1000;
                 } else if (node.tier>=1 && deep==1) {
@@ -484,96 +447,109 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 } else if (node.tier>=4) {
                      rewards += staticRewards * sprigs[4][2] / 1000;
                 }
-                if (deep<maxDeep) {
+                if (deep<maxDeep-1) {
                     ChildInfoReturn memory ci= _childrenInfo(_child, deep+1, maxDeep);
                     count += ci.count;
                     funds += ci.funds;
                     rewards += ci.rewards;
                 }
+                count++;
+                funds += _childNode.totalDeposit;
             }
         }
-        count += countBranch;
+        
         return ChildInfoReturn(count, funds, rewards);
     }
-
-    //计算可提现金额 正确 o
-    function withdrawable(address sender) public override view returns(bool, uint, uint, uint, uint, uint) { // overflowed, benefit, rewards, withdrawable, children, totalDepositByChildren
+    function _childrenInfoAll(address account, uint deep) internal view returns(uint, uint) {
+        Node storage node = _nodes[account];
+        uint _children = 0;
+        uint _totalDeposit = 0;
+        for(uint i = 0; i<node.children.length; i++) {
+            address _child = node.children[i];
+            Node storage _childNode = _nodes[node.children[i]];
+            if (deep<19) {
+                (uint count, uint funds)= _childrenInfoAll(_child, deep+1);
+                _children += count;
+                _totalDeposit += funds;
+            }
+            _children++;
+            _totalDeposit += _childNode.totalDeposit;
+        }
+        
+        return (_children, _totalDeposit);
+    }
+    function profits(address account) public override view returns(bool, uint, uint, uint, uint) {
         bool overflowed = false;
-        uint benefit = 0;
+        uint staticRewards = 0;
+        uint dynamicRewards = 0;
         uint rewards = 0;
         uint withdrawal = 0;
-        uint children = 0;
-        uint totalDepositByChildren = 0;
         //计算管理员可提现 正确
-        if (sender==_admin.account) {
+        if (account==_admin.account) {
             Node storage node = _nodes[firstAddress];
-            
             withdrawal = _admin.rewards + _staticRewardOf(node) * sprigs[0][2] / 1000;
-            children += 1;
-            totalDepositByChildren += node.totalDeposit;
-            
-            for(uint i=0; i< node.children.length; i++) {
-                Node storage snode = _nodes[node.children[i]];
-                ChildInfoReturn memory ci = _childrenInfo(snode, 2, 18);
-                withdrawal += _staticRewardOf(snode) * sprigs[1][2] / 1000 + ci.rewards;
-                children += 1 + ci.count;
-                totalDepositByChildren += snode.totalDeposit + ci.funds;
-            }
-        } else if (sender==_zhang.account) { //计算张总可提现金额 正确
+            ChildInfoReturn memory ci = _childrenInfo(firstAddress, 1, 19);
+            dynamicRewards = ci.rewards;
+        } else if (account==_zhang.account) { //计算张总可提现金额 正确
             withdrawal = _zhang.rewards;
-        } else if (sender==_lee.account) { //计算李总可提现 正确
+        } else if (account==_lee.account) { //计算李总可提现 正确
             withdrawal = _lee.rewards;
-        } else if (sender==firstAddress) { //计算李总可提现 正确
-            Node storage node = _nodes[firstAddress];
-            for(uint i=0; i< node.children.length; i++) {
-                Node storage snode = _nodes[node.children[i]];
-                ChildInfoReturn memory ci = _childrenInfo(snode, 1, 19);
-                withdrawal += _staticRewardOf(snode) * sprigs[0][2] / 1000 + ci.rewards;
-                children += 1 + ci.count;
-                totalDepositByChildren += snode.totalDeposit + ci.funds;
-            }
         } else { //计算其他会员可提现 动态+静态+奖金（位置奖金 或者 股东奖励）正确
-            Node storage node = _nodes[sender];
+            Node storage node = _nodes[account];
             overflowed = node.lastTime < _insuranceTime;
-            if (!overflowed && node.balance>0) {
-                rewards = node.rewards;
-                uint deep = sprigs[_tiers[node.tier-1].sprigs][1];
-                uint staticRewards = _staticRewardOf(node);
-                ChildInfoReturn memory ci = _childrenInfo(node, 0, deep);
-                children = ci.count;
-                totalDepositByChildren = ci.funds;
-                benefit = staticRewards + ci.rewards;
-                
-                if (node.layer>998 && node.layer<1002) {
-                    for(uint i=0;i<_luckyLogs.length;i++) {
-                        FundLog storage _log1 = _luckyLogs[i];
-                        if (_log1.time>node.lastTime) { //如果上一次提现时间，在奖金统计时间中。 则将奖励 计算给用户
-                            rewards = _log1.balance / 2998;
-                        }
-                    }
-                }
-                overflowed = (staticRewards + ci.rewards + rewards) > node.balance * _tiers[node.tier-1].limit / 1000;
-                if (overflowed) {
-                    if (node.layer<5) {
-                        withdrawal = benefit * 850 / 1000 + rewards;
-                    } else if (node.layer>998) {
-                        withdrawal = (benefit + rewards) * 850 / 1000;
-                    } else {
-                        withdrawal = benefit * 850 / 1000;
+            require(!overflowed, "Overflowed");
+            require(node.tier>0, "expected_valid_tier");
+            rewards = node.rewards;
+            Tier storage tier = _tiers[node.tier-1];
+            ChildInfoReturn memory ci = _childrenInfo(account, 0, sprigs[tier.sprigs][1]);
+            staticRewards = _staticRewardOf(node);
+            dynamicRewards = ci.rewards;
+            if (node.layer>998 && node.layer<1002) {
+                for(uint i=0;i<_luckyLogs.length;i++) {
+                    FundLog storage _log1 = _luckyLogs[i];
+                    if (_log1.time>node.lastTime) { //如果上一次提现时间，在奖金统计时间中。 则将奖励 计算给用户
+                        rewards = _log1.balance / 2998;
                     }
                 }
             }
+            overflowed = (staticRewards + ci.rewards + rewards) > node.balance * tier.limit / 1000;
+            if (!overflowed) {
+                if (node.layer<5) {
+                    withdrawal = (staticRewards + dynamicRewards) * 850 / 1000 + rewards;
+                } else if (node.layer>998) {
+                    withdrawal = (staticRewards + dynamicRewards + rewards) * 850 / 1000;
+                } else {
+                    withdrawal = (staticRewards + dynamicRewards) * 850 / 1000;
+                }
+            }
+            
         }
-        return (overflowed, benefit, rewards, withdrawal, children, totalDepositByChildren);
+        return (overflowed, staticRewards, dynamicRewards, rewards, withdrawal);
+    }
+    function contribution(address account) public override view returns(uint, uint) { // children, totalDeposit
+        uint _children = 0;
+        uint _totalDeposit = 0;
+        //计算管理员可提现 正确
+        if (account==_admin.account) {
+            (uint count,uint funds) = _childrenInfoAll(firstAddress, 1);
+            _children = 1 + count;
+            _totalDeposit = _nodes[firstAddress].totalDeposit + funds;
+        } else if (account!=_zhang.account && account!=_lee.account) { //计算张总可提现金额 正确
+            (_children,_totalDeposit) = _childrenInfoAll(account, 0);
+        }
+        return (_children, _totalDeposit);
     }
     
+    function insuranceAmount() public override view returns(uint) {
+        return totalUsdtBalance() * 50 / 1000;
+    }
     
     // must call this function every 36hrs on server backend
     function checkInsurance() public override{
         if (now - insuranceCounterTime >= 129600) {
             if ((_insuranceDeposit * 1000 / totalDeposit) < 20) {
                 _insuranceTime = insuranceCounterTime + 129600;
-                uint amount = totalUsdtBalance() * 50 / 1000;
+                uint amount = insuranceAmount();
                 uint p20 = amount * 20 / 100;
                 uint p1 = amount * 80 / 3500;
                 for(uint i=0; i<_insuranceMemberCount; i++) {
@@ -586,13 +562,13 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _insuranceMemberCount = 0;
         }
     }
-    function basicInfo(address account) public override view returns(uint[14] memory,address) {
+    function basicInfo(address account) public override view returns(uint[15] memory,address) {
         uint _tps = 0;
         uint _deposit = 0;
         uint _withdrawal = 0;
         uint _limit = 0;
         address referer;
-        
+        uint lastAmount = 0;
         uint _minerCount;
         uint _minerRefTotal;
         if (account!=address(0)) {
@@ -605,6 +581,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 _withdrawal = _admin.totalRewards;
             } else {
                 Node storage node = _nodes[account];
+                lastAmount = node.lastAmount;
                 _withdrawal = node.totalWithdrawal;
                 _deposit = node.totalDeposit;
                 _limit = node.limit;
@@ -615,70 +592,16 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 _minerRefTotal += _miners[_referedMiners[account][i]].tier;
             }
         }
-        uint[14] memory info = [_tps,price,totalDeposit,redeemAmount,_totalSupply,totalBurnt,insuranceCounterTime,minePool.totalPower,
+        uint[15] memory info = [_tps,price,lastAmount,totalDeposit,redeemAmount,_totalSupply,totalBurnt,insuranceCounterTime,minePool.totalPower,
             _deposit,_withdrawal,_limit,minePool.minerCount,
             _minerCount, _minerRefTotal];
         return (info, referer);
     }
     
     
-    //计算 矿机价格每增加一层 认购价格 矿机认购价格在原基础上 增加0.1% 正确
-    function minerPrice(uint8 tier) public override view returns(uint) {
-        if (tier>0 && tier<4) {
-            return _minerTiers[tier][0] + _minerTiers[tier][0] * currentLayer / 1000; 
-        }
-        return 0;
-    }
-    //根据购买金额，返回，算力和推广收益 正确
-    function minerTierInfo(uint amountUsdt) internal view returns(uint8,uint) {
-        for(uint i=0; i<_minerTiers.length; i++) {
-            uint _mp = _minerTiers[i][0];
-            uint _pr = _mp + _mp * currentLayer / 1000;
-            if (_pr==amountUsdt) {
-                //大于100层，推广收益变化
-                if (currentLayer>100) return (uint8(_minerTiers[i][1]),_minerTiers[i][3]);
-                //100层以内，推广收益维持原状
-                return (uint8(_minerTiers[i][1]),_minerTiers[i][2]);
-            }
-        }
-        return (0, 0);
-    }
-    
-    
-    //计算 待领取的TLB 奖励 正确
-    function pendingTLB(address account) public override view returns(uint) {
-        Miner storage miner= _miners[account];
-        if (miner.lastBlock!=0) {
-            if (miner.mineType==MineType.Flexible) {
-                uint diff = block.number - miner.lastBlock;
-                if (diff>9600) diff = 9600;
-                return diff * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
-            } else {
-                return (block.number - miner.lastBlock) * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
-            }
-        }
-        return 0;
-    }
-    
-    //触发领取奖励动作 正确
-    function withdrawTLBFromPool() public override{
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
-        Miner storage miner= _miners[sender];
-        uint withdrawal = pendingTLB(sender);
-        require(withdrawal>0, "# Invalid_sender");
-        require(minePool.minedTotal + withdrawal<= totalMineable, "# overflow_total_mine");
-        //重新设置一下 矿工区块时间
-        miner.lastBlock = miner.mineType==MineType.Flexible ? 0 : block.number;
-        //统计总共挖出来的 TLB数量
-        minePool.minedTotal += withdrawal;
-        _mint(sender, withdrawal);
-    }
-    
     //入金方法 外部调用 正确
     function deposit(address referalLink, uint amount) public override{
         address sender = _msgSender();
-        
         updateNodeInDeposit(sender, referalLink, amount, now);
     }
 
@@ -687,28 +610,29 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         //计算当时间，会员可提金额
-        (bool overflowed, uint benefit, uint rewards, uint withdrawal,,) = withdrawable(sender);
+        (bool overflowed, uint staticRewards, uint dynamicRewards, uint rewards, uint withdrawable) = profits(sender);
         require(!overflowed, "# Overflowed");
         //管理员提现，不扣任何手续费，然后系统记录总账 管理员不能作为用户 参与游戏）
         if (sender==_admin.account) {
             _admin.rewards = 0;
-            _admin.totalRewards += withdrawal;
+            _admin.totalRewards += withdrawable;
             _admin.lastWithdrawTime = now;
         } else if (sender==_zhang.account) { //张总提现，只扣张的奖金部分，然后系统记录总账（注意，张总地址不能作为用户 参与游戏）
             _zhang.rewards = 0;
-            _zhang.totalRewards += withdrawal;
+            _zhang.totalRewards += withdrawable;
             _zhang.lastWithdrawTime = now;
         } else if (sender==_lee.account) { //李总提现，只扣李的奖金部分，然后系统记录总账（注意，李总地址不能作为用户 参与游戏）
             _lee.rewards = 0;
-            _lee.totalRewards += withdrawal;
+            _lee.totalRewards += withdrawable;
             _lee.lastWithdrawTime = now;
         } else { //会员提现
             Node storage node = _nodes[sender];
             if (node.balance>0) {
-                node.totalWithdrawal += withdrawal;
+                node.totalWithdrawal += withdrawable;
                 node.lastTime = now;
                 //计算方式 正确
-                uint half = (node.layer<5 ? benefit : benefit + rewards ) / 2;
+                uint benefit = staticRewards + dynamicRewards;
+                uint half = ((node.layer<5 ? 0 : rewards ) + benefit) / 2;
                 if (node.balance > half) {
                     node.balance -= half;
                     uint8 tier = (uint8)(getTier(node.balance));
@@ -744,10 +668,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             }
         }
         //如果可提金额大于0
-        if (withdrawal>0) {
+        if (withdrawable>0) {
             //计算需要燃烧的TLB数量
             uint _needTps = amountForWithdraw(sender);
-            TransferHelper.safeTransfer(USDTToken, sender, withdrawal);
+            TransferHelper.safeTransfer(USDTToken, sender, withdrawable);
             if (_needTps>0) {
                 //燃烧用户钱包中的TLB
                 _burn(sender, _needTps);
@@ -757,7 +681,59 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         _processSellOrder();
     }
-
+    
+    //计算 矿机价格每增加一层 认购价格 矿机认购价格在原基础上 增加0.1% 正确
+    function minerPrice(uint8 tier) public override view returns(uint) {
+        if (tier>=0 && tier<4) {
+            return _minerTiers[tier][0] + _minerTiers[tier][0] * currentLayer / 1000; 
+        }
+        return 0;
+    }
+    //根据购买金额，返回，算力和推广收益 正确
+    function minerTierInfo(uint amountUsdt) internal view returns(uint8,uint) {
+        for(uint i=0; i<_minerTiers.length; i++) {
+            uint _mp = _minerTiers[i][0];
+            uint _pr = _mp + _mp * currentLayer / 1000;
+            if (_pr==amountUsdt) {
+                //大于100层，推广收益变化
+                if (currentLayer>100) return (uint8(_minerTiers[i][1]),_minerTiers[i][3]);
+                //100层以内，推广收益维持原状
+                return (uint8(_minerTiers[i][1]),_minerTiers[i][2]);
+            }
+        }
+        return (0, 0);
+    }
+    
+    
+    //计算 待领取的TLB 奖励 正确
+    function pendingPool(address account) public override view returns(uint) {
+        Miner storage miner= _miners[account];
+        if (miner.lastBlock!=0) {
+            if (miner.mineType==MineType.Flexible) {
+                uint diff = block.number - miner.lastBlock;
+                if (diff>9600) diff = 9600;
+                return diff * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
+            } else {
+                return (block.number - miner.lastBlock) * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
+            }
+        }
+        return 0;
+    }
+    
+    //触发领取奖励动作 正确
+    function withdrawFromPool() public override{
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        Miner storage miner= _miners[sender];
+        uint withdrawal = pendingPool(sender);
+        require(withdrawal>0, "# Invalid_sender");
+        require(minePool.minedTotal + withdrawal<= totalMineable, "# overflow_total_mine");
+        //重新设置一下 矿工区块时间
+        miner.lastBlock = miner.mineType==MineType.Flexible ? 0 : block.number;
+        //统计总共挖出来的 TLB数量
+        minePool.minedTotal += withdrawal;
+        _mint(sender, withdrawal);
+    }
     //矿工信息， 返回 算力，挖矿方式，是否激活
     function minerInfo(address miner) public override view returns(uint,MineType,bool) {
         bool status = false;
@@ -790,9 +766,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         miner.mineType = mineType;
     }
     //购买矿机 
-    function buyMiner(address referalLink, uint amountUsdt, MineType mineType) public override returns(uint) {
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
+    function _buyMiner(address sender, address referalLink, uint amountUsdt) internal {
         uint referalRewards = 0;
         (uint8 tier, uint referalRewardRate) = minerTierInfo(amountUsdt); //返回 算力，推荐人奖金比率
         require(tier>0, "# Invalid_amount");
@@ -800,15 +774,13 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         
         if (sender!=_admin.account) {
             referalRewards = amountUsdt * referalRewardRate / 1000;
-            TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt - referalRewards + referalRewards * 10 / 100);
-            TransferHelper.safeTransferFrom(USDTToken, sender, referalLink, referalRewards * 90 / 100); //若没有推荐人，这里金额转给谁？    
             
-            redeemAmount += referalRewards * 10 / 100;
-            _admin.rewards += amountUsdt * 20 / 1000; // 2%
-            _zhang.rewards += amountUsdt * 15 / 1000; // 1.5%
-            _lee.rewards += amountUsdt * 15 / 1000; // 1.5%    
-            
+            TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);//  - referalRewards + referalRewards * 10 / 100);
             if (referalLink!=address(0)) {
+                uint directRewards = referalRewards * 90 / 100;
+                TransferHelper.safeApprove(USDTToken, referalLink, directRewards);
+                TransferHelper.safeTransfer(USDTToken, referalLink, directRewards);
+                
                 if (miner.tier!=0) {
                     //以前购买过，必须使用推荐人连接购买
                     require(miner.referer == referalLink, "Invalid_ReferalLink");
@@ -816,11 +788,17 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 //记录推荐人
                 _referedMiners[referalLink].push(sender);
                 miner.referer = referalLink;
+                
             }
+            redeemAmount += referalRewards * 10 / 100;
+            _admin.rewards += amountUsdt * 20 / 1000; // 2%
+            _zhang.rewards += amountUsdt * 15 / 1000; // 1.5%
+            _lee.rewards += amountUsdt * 15 / 1000; // 1.5%    
+            
         }
         //如果没有购买过
         if (miner.tier==0) {
-            miner.mineType = mineType;//挖矿种类
+            miner.mineType = MineType.Flexible;//挖矿种类
             miner.tier = tier;//算力大小
             miner.lastBlock = 0;//还不开始挖矿
             minePool.minerCount++;//矿工数+1
@@ -831,6 +809,11 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         //矿池算力增加
         minePool.totalPower += tier;
+    }
+    function buyMiner(address referalLink, uint amountUsdt) public override {
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        _buyMiner(sender,referalLink,amountUsdt);
     }
     //查看矿池，总算力，和总人数 正确
     function minerList() public override view returns(uint, MinerInfo[] memory) {
@@ -1058,6 +1041,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
 // =================================================================================================
 // =================================================================================================
 // =================================================================================================
+    
     function _testSetAdmin(address admin,address lee,address zhang,address redeem) public override {
         _admin.account = admin;
         _lee.account = lee;
@@ -1088,5 +1072,28 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
     function _test_referalCount(address sender) public view returns(uint) {
         return _nodes[sender].referalCount;
+    }
+    function _test_tier(address sender) public view returns(uint) {
+        return _nodes[sender].tier;
+    }
+    function _test_gettier(uint amount) public view returns(uint) {
+        return getTier(amount);
+    }
+    function _test_deep(address account) public view returns(uint,uint) {
+        Node storage node = _nodes[account];
+        Tier storage tier = _tiers[node.tier-1];
+        uint deep = sprigs[tier.sprigs][1];
+        ChildInfoReturn memory ci = _childrenInfo(account, 0, deep);
+        return (deep,ci.count);
+    }
+    function _test_minerType(address account) public view returns(uint,uint) {
+        Node storage node = _nodes[account];
+        Tier storage tier = _tiers[node.tier-1];
+        uint deep = sprigs[tier.sprigs][1];
+        ChildInfoReturn memory ci = _childrenInfo(account, 0, deep);
+        return (deep,ci.count);
+    }
+    function _test_buyMiner(address sender, address referalLink, uint amountUsdt) public override {
+        _buyMiner(sender,referalLink,amountUsdt);
     }
 }

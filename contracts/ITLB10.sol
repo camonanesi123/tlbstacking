@@ -112,7 +112,6 @@ interface ITLB10{
         uint funds;
         uint rewards;
     }
-    
     /**
      * @dev Returns the amount of tokens in existence.
      */
@@ -121,20 +120,26 @@ interface ITLB10{
     function basicInfoAdmin() external view returns(uint,uint,uint,uint);
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
-    function withdrawable(address sender) external view returns(bool, uint, uint, uint, uint, uint);
+    
+    function basicInfo(address account) external view returns(uint[15] memory,address);
+    function profits(address account) external view returns(bool, uint, uint, uint, uint);
+    function contribution(address account) external view returns(uint, uint);
+    
+    function insuranceAmount() external view returns(uint);
     function checkInsurance() external;
-    function basicInfo(address account) external view returns(uint[14] memory,address);
-    function minerPrice(uint8 tier) external view returns(uint);
-    function pendingTLB(address account) external view returns(uint);
-    function withdrawTLBFromPool() external;
+    
     function deposit(address referalLink, uint amount) external;
     function withdraw() external;
     
-    function minerInfo(address miner) external view returns(uint,MineType,bool);
+    function minerPrice(uint8 tier) external view returns(uint);
+    function buyMiner(address referalLink, uint amountUsdt) external;
+    function pendingPool(address account) external view returns(uint);
+    function withdrawFromPool() external;
+    function minerInfo(address account) external view returns(uint,MineType,bool);
     function startMine() external;
     function setMineType(MineType mineType) external;
-    function buyMiner(address referalLink, uint amountUsdt, MineType mineType) external returns(uint);
     function minerList() external view returns(uint, MinerInfo[] memory);
+    
     function buy(uint amountUsdt) external;
     function cancelBuyOrder() external;
     function sell(uint amountTps) external;
@@ -143,9 +148,11 @@ interface ITLB10{
     
     
     //////////////////////////////////////////////////////////////////////////////////
+    
     function _testSetAdmin(address admin,address lee,address zhang,address redeem) external;
     function _test_mint(address sender, uint amount) external;
     function _test_approve(address sender, address spender, uint amount) external;
     function _test_deposit(address sender, address referalLink, uint amount) external;
+    function _test_buyMiner(address sender, address referalLink, uint amountUsdt) external;
     
 }

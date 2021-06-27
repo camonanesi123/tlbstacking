@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector, useDispatch} from 'react-redux';
 /* import Web3 from 'web3'; */
 import { contractSlice } from '../../reducer';
-import Metamask from '../../metamask';
+import Metamask from '../../connector';
 
 import LineChart from '../reuse_components/LineChart/LineChart'
 
@@ -48,60 +48,52 @@ const Section = styled.section`
 			text-transform: none;
 		}
 	}
+
 `
 
 
 function Section_1(props) {
 	let contract = useSelector(state => state.contract);
-	const dispatch = useDispatch()
-
-	const connectWallet = async () => {
-		const {status, data} = await Metamask.connect(dispatch);
-		if (status==='ok') await Metamask.getUserInfo(dispatch,data);
-	};
-	useEffect(() => {
-		if (Metamask.isConnected) connectWallet()
-	}, [])
+	const dispatch = useDispatch();
+	const connectWallet = () => Metamask.connect(dispatch);
 
 	return (
-		<Section className="section_paddingX">
+		<Section>
 			<div className="text-center">
 				<div className="wallet-panel">
 					{contract.address? (
-						<div className="address btn bg-success text-white font_size_29">
-							{contract.address.slice(0,4)+'...'+contract.address.slice(-4) }
+						<div className="h4 address btn bg-success text-white">
+							{contract.address.slice(0,8)+'***'+contract.address.slice(-4) }
 						</div>
 					) : (
-						<button onClick={connectWallet} className="btn bg-warning text-white font_size_29">
+						<button onClick={connectWallet} className="h4 btn bg-warning text-white">
 							连接钱包
 						</button>
 					)}
 				</div>
-				<h1 className="text-center font_family_bahnschrift font_size_168">
+				<h1 className="text-center">
 					<span className="text_red">TLB</span>
-					<span className="text_cyan">
-						staking
-					</span>
+					<span className="text_cyan">staking</span>
 				</h1>
-				<h2 className="text-white font_size_139" style={{letterSpacing: '15px'}}>
+				<h1 className="text-white" style={{letterSpacing: '15px'}}>
 					全网投币量
-				</h2>
+				</h1>
 				<br /><br /> <br />
-				<strong className="text_red font_size_68">
-					{contract.totalDeposit || '00000000'}
-				</strong>
+				<h2 className="text_red">
+					{contract.totalDeposit ? '$ ' + contract.totalDeposit : '-'}
+				</h2>
 			</div>
 			<div className="h_400">
 			<LineChart></LineChart>
 			</div>
-			<span className="text-end d-block font_size_29 text_cyan">
-				+{contract.price} TLBstaking (+4.57%) <span className="text-white">过去24小时</span>
+			<span className="text-end d-block text_cyan">
+				+{contract.price} TLBstaking (+4.57%) <span>过去24小时</span>
 			</span>
 			<div className="desc">
-				<h3 className=" font_size_58 mb-4 mb-md-5">
+				<h3 className="mb-4 mb-md-5">
 					进入一个连接服务的新领域
 				</h3>
-				<div className="font_size_37">
+				<div>
 					<p>TLBstaking应用程序和服务使用IBC连接</p>
 					<p>为企业级应用构建全球公链</p>
 					<p>这个创新让你可以在主权国家之间自由交换资产和数据</p>

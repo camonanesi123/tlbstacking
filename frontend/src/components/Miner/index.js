@@ -1,5 +1,7 @@
 import React,{useEffect} from 'react';
 import { useSelector, useDispatch} from 'react-redux';
+import { useHistory } from "react-router-dom";
+import { contractSlice } from '../../reducer';
 
 import styled from 'styled-components';
 import { Chart, LineAdvance} from 'bizcharts';
@@ -9,16 +11,25 @@ import DrilldownChart from '../reuse_components/DrilldownChart/DrilldownChart';
 import DoughnutChart from '../reuse_components/DoughnutChart/DoughnutChart';
 
 
-import Metamask from '../../metamask';
+import Metamask from '../../connector';
 import ImgCell from '../../img/btn-cell.webp'
 import ImgUSDT from '../../img/usdt.svg'
 import ImgTLB from '../../img/logo.webp'
 
 const Section = styled.section`
+	div.address {
+		&.btn  {
+			text-transform: none;
+		}
+	}
 	.top_bottom_cyan_bg {
 		background: url(${ImgCell}) center/100% 100% no-repeat;
 	}
 
+	.wallet-panel {
+		margin-bottom: 100px;
+		text-align: right;
+	}
 `
 const data = [
 	{
@@ -144,16 +155,24 @@ const data = [
 ];
 
 const Section_1_d = () => {
+	let contract = useSelector(state => state.contract);
 	const dispatch = useDispatch()
-	const connectWallet = async () => {
-		const {status, data} = await Metamask.connect(dispatch);
-		if (status==='ok') await Metamask.getUserInfo(dispatch,data);
+	const connectWallet = () => {
+		Metamask.connect(dispatch);
 	};
-	useEffect(() => {
-		if (Metamask.isConnected) connectWallet()
-	}, [])
 	return (
 		<Section className="section_paddingX">
+			<div className="wallet-panel">
+				{contract.address? (
+					<div className="h4 address btn bg-success text-white">
+						{contract.address.slice(0,8)+'***'+contract.address.slice(-4) }
+					</div>
+				) : (
+					<button onClick={connectWallet} className="h4 btn bg-warning text-white">
+						连接钱包
+					</button>
+				)}
+			</div>
 			<div className="content_head">
 				<h3 className="font_size_37 text-end text-white mb-2 mb-md-4">
 					全网实时算力
@@ -189,7 +208,7 @@ const Section_2_d = () => {
 							<td>活跃矿工</td>
 						</tr>
 						<tr className="text_cyan">
-							<td>36144</td>
+							<td>{contract.blockHeight}</td>
 							<td>02：35</td>
 							<td>{contract.minerCount || 0}</td>
 						</tr>
@@ -950,6 +969,16 @@ const Section_5_d = () => {
 	)
 }
 export default (props)=>{
+	let contract = useSelector(state => state.contract);
+	let history = useHistory();
+	const dispatch = useDispatch()
+	useEffect(() => {
+		const url = window.location.pathname;
+		const referer = url.slice(url.lastIndexOf('/')+1);
+		if (contract.referer!==referer) {
+			dispatch(contractSlice.actions.updateInfo({referer}));
+		}
+	});
 	return (
 		<>
 			<Section_1_d></Section_1_d>

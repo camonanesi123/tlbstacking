@@ -56,7 +56,6 @@ const Loader = styled.div`
 	}
 `
 
-
 export default function(props) {
 	return (
 		<Loader>
@@ -64,10 +63,10 @@ export default function(props) {
 
 			<img className="logo me-2" src={Logo} alt="" />
 			<div className="loader_content ms-2 ms-md-5">
-				<h2 className="text_cyan font_size_90">
+				<h2 className="text_cyan">
 					TLBstaking
 				</h2>
-				<h3 className="text-white font_size_49 content_loading_animate">
+				<h3 className="text-white content_loading_animate">
 					塔勒布加载中<span>.</span><span>.</span><span>.</span><span>.</span>
 				</h3>
 			</div>

@@ -11,7 +11,7 @@ const Section = styled.section`
 		width: 100%;
 		height: 33%;
 		position: absolute;
-		top: -7%;
+		top: -65px;
 		right: 0;
 		background: #080e23 url(${ImgWave}) center/cover no-repeat;
 		background-blend-mode: screen;
@@ -45,12 +45,10 @@ const Section = styled.section`
 function Section_7(props) {
 	let contract = useSelector(state => state.contract);
 	return (
-		<Section className="section_paddingX py-3">
+		<Section>
 			<div className="content_wrapper p-0 p-md-5">
-				<h3 className="font_size_90">
-					数据统计
-				</h3>
-				<table className="w-100 text-center text-white font_size_37 custom_table custom_table_style">
+				<h3>数据统计</h3>
+				<table className="w-100 text-center custom_table custom_table_style">
 					<tbody>
 						<tr>
 							<td>用户ID</td>
@@ -58,31 +56,31 @@ function Section_7(props) {
 						</tr>
 						<tr>
 							<td>钱包地址</td>
-							<td>{contract.address ? contract.address.slice(0,4)+'...'+contract.address.slice(-4) : '-' }</td>
+							<td>{contract.address ? contract.address.slice(0,8)+'***'+contract.address.slice(-4) : '-' }</td>
 						</tr>
 						<tr>
 							<td>USDT总收益</td>
-							<td>{contract.totalWithdrwal ? contract.totalWithdrwal : '-' } USDT</td>
+							<td>{contract._withdrawal || 0} USDT</td>
 						</tr>
 						<tr>
 							<td>综合收益</td>
-							<td>{contract.maxProfits ? contract.maxProfits : '-' } USDT</td>
+							<td>{contract._limit || 0} USDT</td>
 						</tr>
 						<tr>
 							<td>总持币地址</td>
-							<td>{contract.children ? contract.children : '-' }</td>
+							<td>{contract._children ? contract._children : '-' }</td>
 						</tr>
 						<tr>
 							<td>总业绩</td>
-							<td>{contract.totalDeposit ? contract.totalDeposit : '-' }</td>
+							<td>{contract._contribution ? contract._contribution : '-' }</td>
 						</tr>
 						<tr>
 							<td>累计存款</td>
-							<td>{contract.totalDeposit ? contract.totalDeposit : '-' }</td>
+							<td>{contract._deposit ? contract._deposit : '-' }</td>
 						</tr>
 						<tr>
 							<td>可提金额</td>
-							<td>{contract.withdrawal ? contract.withdrawal : '-' }</td>
+							<td>{contract._withdrawable ? contract._withdrawable : '-' }</td>
 						</tr>
 					</tbody>
 				</table>

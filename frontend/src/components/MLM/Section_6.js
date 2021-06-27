@@ -5,9 +5,11 @@ import ImgSolar from '../../img/solar.webp'
 const Section = styled.section`
     position: relative;
     width: 100%;
+    margin-top: 100px;
     overflow: hidden;
     z-index: 1;
     &::after{
+        z-index: -1;
         content:"";
         position: absolute;
         top: 0;
@@ -40,9 +42,7 @@ const Section = styled.section`
 
 function Section_6(props) {
     return (
-        <Section className="section_paddingX py-3">
-            <br /><br /><br />
-            <br /><br /><br />
+        <Section>
             <div className="content_wrapper">
                 <h3 className="text-white font_size_68">
                     累计业绩排行榜

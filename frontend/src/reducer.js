@@ -10,11 +10,13 @@ export const contractSlice = createSlice({
         usdt: 0,
         
         price: 0,
+        lastAmount: 0,
         totalDeposit: 0,
         redeemAmount: 0,
         totalSupply: 0,
         totalBurnt: 0,
         insuranceCounterTime: 0, 
+        insuranceAmount: 0, 
         totalPower: 0, 
         minerCount: 0, 
         
@@ -27,6 +29,21 @@ export const contractSlice = createSlice({
         _mineTier: 0,
         _mineStatus: false,
         _mineType: 0,
+
+        _overflowed: false,
+        _staticRewards: 0,
+        _dynamicRewards: 0,
+        _rewards: 0,
+        _withdrawable: 0,
+        
+        _children: 0,
+        _contribution: 0,
+
+        blockHeight: 0,
+        allowance: 0,
+        
+
+        
     }, 
     reducers: {
         login: (state, action) => {
@@ -50,29 +67,3 @@ export const contractSlice = createSlice({
         }
     }
 });
-
-export const counterSlice = createSlice({
-    name: 'counter',
-    initialState: {
-        value: 200,
-    },
-    reducers: {
-        increment: state => {
-            state.value += 100
-        },
-        decrement: state => {
-            state.value -= 100
-        },
-        redoCounterAction: state=> {
-            state.value = 200
-        }
-        
-    }
-});
-
-
-/* export const { 
-    increment,
-    decrement,
-    redoCounterAction
-} = counterSlice.actions */

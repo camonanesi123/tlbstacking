@@ -1,5 +1,6 @@
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch} from 'react-redux';
 
 import {
     BrowserRouter as Router,
@@ -35,6 +36,7 @@ const Head = styled.header`
 
 
 export default function (props) {
+	const contract = useSelector(state => state.contract);
     return (
         <Head>
             <div className="header_wrapper d-flex justify-content-between align-items-center">
@@ -45,26 +47,28 @@ export default function (props) {
                     <Link to="/" className="btn bg-black rounded-pill font_size_29 text-white">
                         中文（简体）
                     </Link>
-                    <div className="toggle_wrapper ms-1 ms-sm-3">
-                        <div className="dropdown custom_dropdown">
-                            <button id="dropdownMenuButton"
-                                data-mdb-toggle="dropdown" className="btn btn-muted shadow-0 text-white dropdown-toggle">
-                                <i className="fas fa-bars fa-5x"></i>
-                            </button>
-                            <ul className="dropdown-menu dropdown-menu-end custom_dropdown_menu bg_blue_9" aria-labelledby="dropdownMenuButton">
-                                <li>
-                                    <Link to="/" className="dropdown-item text-white">
-                                        主页
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/miner" className="dropdown-item text-white">
-                                        矿机
-                                    </Link>
-                                </li>
-                            </ul>
+                    {contract.referer ? (
+                        <div className="toggle_wrapper ms-1 ms-sm-3">
+                            <div className="dropdown custom_dropdown">
+                                <button id="dropdownMenuButton"
+                                    data-mdb-toggle="dropdown" className="btn btn-muted shadow-0 text-white dropdown-toggle">
+                                    <i className="fas fa-bars fa-5x"></i>
+                                </button>
+                                <ul className="dropdown-menu dropdown-menu-end custom_dropdown_menu bg_blue_9" aria-labelledby="dropdownMenuButton">
+                                    <li>
+                                        <Link to={"/mlm/"+contract.referer} className="dropdown-item text-white">
+                                            主页
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to={"/miner/"+contract.referer} className="dropdown-item text-white">
+                                            矿机
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                    ) : null}
                 </div>
             </div>
         </Head>
