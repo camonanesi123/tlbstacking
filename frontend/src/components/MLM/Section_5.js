@@ -7,8 +7,10 @@ import ImgPanel from '../../img/panel.webp'
 import ImgUSDT from '../../img/usdt.svg'
 import ImgTier from '../../img/tier.webp'
 
+import {NF} from '../../util';
 import Metamask from '../../connector';
 import Loading from '../Layout/Loading';
+
 
 const Section = styled.section`
 	margin-top: 100px;
@@ -119,8 +121,10 @@ const DLG_DEPOSIT = 1;
 const DLG_WITHDRAW = 2;
 
 function DepositDialog(props) {
+	const dispatch = useDispatch();
 	const [status, setStatus] = useState({
 		allowance: null,
+		tlb: null,
 		err: null,
 		loading: true,
 		txid: null,
@@ -128,8 +132,14 @@ function DepositDialog(props) {
 	});
 	const contract = useSelector(state => state.contract);
 	useEffect(() => {
-		if (status.allowance===null) {
-			Metamask.allowance().then(res=>setStatus({...status, loading:false, allowance:res}));
+		if (!contract.address) {
+			Metamask.connect(dispatch);
+		} else {
+			if (status.allowance===null) {
+				Metamask.allowance().then(res=>setStatus({...status, loading:false, allowance:res}));
+			} else if (status.tlb===null) {
+				Metamask.amountForDeposit(Number(props.amount)).then(res=>setStatus({...status, loading:false, tlb:res}));
+			}
 		}
 	});
 	const handleApprove = () => {
@@ -175,11 +185,13 @@ function DepositDialog(props) {
 			{status.loading?<Loading/>:null}
 			<div className="dialog">
 				<h3 className="mb-4">存款</h3>
-				<h4 className="mb-4">USDT {props.amount}</h4>
+				<h4 className="mb-4">存款额 USDT {NF(props.amount)}</h4>
+				<h4 className="mb-4">TLB消费 {status.tlb ? NF(status.tlb,4) : '检查中...'} {(status.tlb===null || contract._tlb>=status.tlb) ? null : <span className="text-danger">余额不够</span>}</h4>
+				<h4 className="mb-4">TLB余额 {NF(contract._tlb,4)}</h4>
 				{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 				{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 				<div className="text-center mt-3">
-					{status.completed ? null : (
+					{(status.completed || contract._tlb===null || contract._tlb<status.tlb) ? null : (
 						status.allowance < props.amount ? (
 							<button onClick={()=>handleApprove()} className="h4 btn btn-outline-info text-white">合约授权</button>
 						) : (
@@ -194,18 +206,19 @@ function DepositDialog(props) {
 }
 function WithdrawDialog(props) {
 	const [status, setStatus] = useState({
+		tlb:null,
 		withdrawable: null,
 		err: null,
-		loading: false,
+		loading: true,
 		txid: null,
 		completed: false
 	});
 	const contract = useSelector(state => state.contract);
-	/* useEffect(() => {
-		if (status.withdrawable===null) {
-			Metamask.withdrawable().then(res=>setStatus({...status, loading:false, withdrawable:res}));
+	useEffect(() => {
+		if (status.tlb===null) {
+			Metamask.amountForWithdraw(contract.address).then(res=>setStatus({...status, loading:false, tlb:res}));
 		}
-	}); */
+	});
 	const handleSubmit = () => {
 		setStatus({...status, loading:true, err:null, txid: null});
 		Metamask.withdraw().then(res=>{
@@ -232,11 +245,13 @@ function WithdrawDialog(props) {
 			{status.loading?<Loading/>:null}
 			<div className="dialog">
 				<h3 className="mb-4">提币</h3>
-				<h4 className="mb-4">提现金额 {contract._withdrawable} USDT</h4>
+				<h4 className="mb-4">提现金额 {NF(contract._withdrawable)} USDT</h4>
+				<h4 className="mb-4">TLB消费 {status.tlb===null ? '检查中...' : NF(status.tlb,4)} { (status.tlb===null || contract._tlb>=status.tlb) ? null : <span className="text-danger">余额不够</span>}</h4>
+				<h4 className="mb-4">TLB余额 {NF(contract._tlb,4)}</h4>
 				{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 				{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 				<div className="text-center mt-3">
-					{status.completed || contract._withdrawable===0 ? null : <button onClick={()=>handleSubmit()} className="h4 btn btn-success text-white">提交</button>}
+					{status.completed || contract._withdrawable===0 || contract._tlb<status.tlb ? null : <button onClick={()=>handleSubmit()} className="h4 btn btn-success text-white">提交</button>}
 					<button onClick={()=>props.handleClose()} className="h4 mx-3 btn text-white">取消</button>
 				</div>
 			</div>
@@ -254,7 +269,7 @@ function Section_5(props) {
 		right: 2000,
 		center: 5000
 	});
-	const dispatch = useDispatch()
+	/* const dispatch = useDispatch() */
 	function valueChanger(e) {
 		setAmount(e.target.value);
 	}

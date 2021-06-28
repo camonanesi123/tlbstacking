@@ -4,7 +4,6 @@ pragma experimental ABIEncoderV2;
 
 /**********************************************************************
 
-
 ████████╗██╗░░░░░██████╗░ ░░██████╗████████╗░█████╗░██╗░░██╗██╗███╗░░██╗░██████╗░
 ╚══██╔══╝██║░░░░░██╔══██╗░ ██╔════╝╚══██╔══╝██╔══██╗██║░██╔╝██║████╗░██║██╔════╝░
 ░░░██║░░░██║░░░░░██████╦╝░░╚█████╗░░░░██║░░░███████║█████═╝░██║██╔██╗██║██║░░██╗░
@@ -155,7 +154,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         _redeemAddress = redeem;
     }
     
-    function getAdmin() public override view returns(address,address,address,address) {
+    function admin() public override view returns(address,address,address,address) {
         require(owner() == msg.sender, 'Ownable: caller is not the owner');
         return (_admin.account,_zhang.account,_lee.account,_redeemAddress);
     }
@@ -165,29 +164,29 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         return (currentLayer,totalUsers,totalMineable,_insuranceTime);
     }
     
-    /**
-     * internal
-     * @dev Returns tier index corresponding to deposit amount. 根据入金数额获取当前会员等级
-     */
-    function getTier(uint amount) internal view returns(uint) {
-        for(uint i=_tiers.length; i>0;i--) {
-            if (amount>=_tiers[i-1].min) return i;
-        }
-        return 0;
-    }
-    
+    /** 
+    =================================================================
+
+    ███╗░░░███╗██╗░░░░░███╗░░░███╗  ████████╗██████╗░███████╗███████╗
+    ████╗░████║██║░░░░░████╗░████║  ╚══██╔══╝██╔══██╗██╔════╝██╔════╝
+    ██╔████╔██║██║░░░░░██╔████╔██║  ░░░██║░░░██████╔╝█████╗░░█████╗░░
+    ██║╚██╔╝██║██║░░░░░██║╚██╔╝██║  ░░░██║░░░██╔══██╗██╔══╝░░██╔══╝░░
+    ██║░╚═╝░██║███████╗██║░╚═╝░██║  ░░░██║░░░██║░░██║███████╗███████╗
+    ╚═╝░░░░░╚═╝╚══════╝╚═╝░░░░░╚═╝  ░░░╚═╝░░░╚═╝░░╚═╝╚══════╝╚══════╝
+    =================================================================
+    */
     /**
      * @dev Return required number of TPS to member. 计算入金时候需要的TLB数量
      */
     function amountForDeposit(uint amount) public override view returns(uint256) {
-        return amount /  10 / price; // 10% TPS of amount
+        return amount * uint(10) ** decimals() /  10 / price; // 10% TPS of amount
     }
     /**
      * @dev Return required number of TPS to member. 计算出金的时候TLB数量，前1000层 5个，1001层开始2个
      */
     function amountForWithdraw(address account) public override view returns(uint256) {
         if (account==_zhang.account || account==_lee.account || account==_admin.account) return 0;
-        return _nodes[account].layer<1001 ? 5 : 2;
+        return (_nodes[account].layer<1001 ? 5 : 2) * uint(10) ** decimals();
     }
     /**
      * internal
@@ -213,6 +212,16 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         return totalUsers;
     }
     
+    /**
+     * internal
+     * @dev Returns tier index corresponding to deposit amount. 根据入金数额获取当前会员等级
+     */
+    function getTier(uint amount) internal view returns(uint) {
+        for(uint i=_tiers.length; i>0;i--) {
+            if (amount>=_tiers[i-1].min) return i;
+        }
+        return 0;
+    }
     
     /**
      * internal
@@ -266,7 +275,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             require(amount >= 200 * _usdt, "# Too_Low_Invest");
         }
         
-        uint _needTps = amountForDeposit(amount) * uint(10) ** decimals();
+        uint _needTps = amountForDeposit(amount);
         
         require(balanceOf(sender) >= _needTps, "# Need_10%_TPS");
         
@@ -308,6 +317,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             }
             //推荐人的推荐数量+1
             refererNode.referalCount++;
+            node.userid = 100880011 + userCount;
             node.referer = referalLink;
             node.position = position;
             node.layer = currentLayer;
@@ -321,7 +331,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 _prism[position] = sender;
             }
         } else { //老用户入金，不改变结构，直接改变本金
-            if (node.isOverflowed) {
+            if (node.isOverflowed || insuranceCounterTime>node.lastTime) {
                 node.staticRewards = 0;
                 node.dynamicRewards = 0;
             } else {
@@ -352,6 +362,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //更新会员等级
         node.tier = tier;
         //更新爆仓状态 (这里可能需要修改，爆仓状态接触后，需要把会员的动态+静态 部分 设计为0， 股东奖励部分 不清零)
+
         if (node.isOverflowed) node.isOverflowed=false;
         redeemAmount += amount * 18 / 1000; // 1.5% 回购资金
         _controlAmount += amount * 32 / 1000; // 1.5% 护盘资金
@@ -412,11 +423,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             }
         }
     }
-    //计算合约中剩余USDT数目
-    function totalUsdtBalance() public view returns(uint) {
-        return IHRC20(USDTToken).balanceOf(address(this));
-    }
-    
     
     function _staticRewardOf(Node storage node) internal view returns(uint) {
         if (node.lastTime<_insuranceTime) return 0;
@@ -478,6 +484,56 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         
         return (_children, _totalDeposit);
     }
+    
+    //计算合约中剩余USDT数目
+    function _totalUsdtBalance() internal view returns(uint) {
+        return IHRC20(USDTToken).balanceOf(address(this));
+    }
+    //计算合约中剩余USDT数目
+    function _insuranceAmount() internal view returns(uint) {
+        return _totalUsdtBalance() * 50 / 1000;
+    }
+    
+    function contractInfo() public override view returns(uint[9] memory) {
+        return [price,totalDeposit,redeemAmount,_totalSupply,totalBurnt,insuranceCounterTime,minePool.totalPower,minePool.minerCount,_insuranceAmount()];
+    }
+    function accountInfo(address account) public override view returns(uint[10] memory) {
+        require(account!=address(0), "invalid_account");
+        uint _userid = 0;
+        uint _deposit = 0;
+        uint _withdrawal = 0;
+        uint _limit = 0;
+        uint _lastAmount = 0;
+        uint _minerRefTotal = 0;
+        uint _children = 0;
+        uint _totalDeposit = 0;
+        uint _tps = balanceOf(account);
+        if (account==_admin.account) {
+            _withdrawal = _admin.totalRewards;
+            (uint count,uint funds) = _childrenInfoAll(firstAddress, 1);
+            _children = 1 + count;
+            _totalDeposit = _nodes[firstAddress].totalDeposit + funds;
+        } else if (account==_zhang.account) {
+            _withdrawal = _admin.totalRewards;
+        } else if (account==_lee.account) {
+            _withdrawal = _admin.totalRewards;
+        } else {
+            Node storage node = _nodes[account];
+            _userid = node.userid;
+            _lastAmount = node.lastAmount;
+            _withdrawal = node.totalWithdrawal;
+            _deposit = node.totalDeposit;
+            _limit = node.limit;
+            (_children,_totalDeposit) = _childrenInfoAll(account, 0);
+        }
+        address[] storage referees = _referedMiners[account];
+        uint _minerCount = referees.length;
+        for (uint i=0; i<referees.length; i++) {
+            _minerRefTotal += _miners[referees[i]].tier;
+        }
+        
+        return [_userid,_tps,_lastAmount,_deposit,_withdrawal,_limit,_minerCount, _minerRefTotal,_children,_totalDeposit];
+    }
     function profits(address account) public override view returns(bool, uint, uint, uint, uint) {
         bool overflowed = false;
         uint staticRewards = 0;
@@ -526,6 +582,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         return (overflowed, staticRewards, dynamicRewards, rewards, withdrawal);
     }
+    
+    /*
     function contribution(address account) public override view returns(uint, uint) { // children, totalDeposit
         uint _children = 0;
         uint _totalDeposit = 0;
@@ -539,17 +597,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         return (_children, _totalDeposit);
     }
-    
-    function insuranceAmount() public override view returns(uint) {
-        return totalUsdtBalance() * 50 / 1000;
-    }
+    */
     
     // must call this function every 36hrs on server backend
     function checkInsurance() public override{
         if (now - insuranceCounterTime >= 129600) {
             if ((_insuranceDeposit * 1000 / totalDeposit) < 20) {
                 _insuranceTime = insuranceCounterTime + 129600;
-                uint amount = insuranceAmount();
+                uint amount = _insuranceAmount();
                 uint p20 = amount * 20 / 100;
                 uint p1 = amount * 80 / 3500;
                 for(uint i=0; i<_insuranceMemberCount; i++) {
@@ -561,41 +616,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _insuranceDeposit = 0;    
             _insuranceMemberCount = 0;
         }
-    }
-    function basicInfo(address account) public override view returns(uint[15] memory,address) {
-        uint _tps = 0;
-        uint _deposit = 0;
-        uint _withdrawal = 0;
-        uint _limit = 0;
-        address referer;
-        uint lastAmount = 0;
-        uint _minerCount;
-        uint _minerRefTotal;
-        if (account!=address(0)) {
-            _tps = balanceOf(account);
-            if (account==_admin.account) {
-                _withdrawal = _admin.totalRewards;
-            } else if (account==_zhang.account) {
-                _withdrawal = _admin.totalRewards;
-            } else if (account==_lee.account) {
-                _withdrawal = _admin.totalRewards;
-            } else {
-                Node storage node = _nodes[account];
-                lastAmount = node.lastAmount;
-                _withdrawal = node.totalWithdrawal;
-                _deposit = node.totalDeposit;
-                _limit = node.limit;
-                referer = node.referer;
-            }
-            _minerCount = _referedMiners[account].length;
-            for (uint i=0; i<_referedMiners[account].length; i++) {
-                _minerRefTotal += _miners[_referedMiners[account][i]].tier;
-            }
-        }
-        uint[15] memory info = [_tps,price,lastAmount,totalDeposit,redeemAmount,_totalSupply,totalBurnt,insuranceCounterTime,minePool.totalPower,
-            _deposit,_withdrawal,_limit,minePool.minerCount,
-            _minerCount, _minerRefTotal];
-        return (info, referer);
     }
     
     
@@ -682,154 +702,18 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         _processSellOrder();
     }
     
-    //计算 矿机价格每增加一层 认购价格 矿机认购价格在原基础上 增加0.1% 正确
-    function minerPrice(uint8 tier) public override view returns(uint) {
-        if (tier>=0 && tier<4) {
-            return _minerTiers[tier][0] + _minerTiers[tier][0] * currentLayer / 1000; 
-        }
-        return 0;
-    }
-    //根据购买金额，返回，算力和推广收益 正确
-    function minerTierInfo(uint amountUsdt) internal view returns(uint8,uint) {
-        for(uint i=0; i<_minerTiers.length; i++) {
-            uint _mp = _minerTiers[i][0];
-            uint _pr = _mp + _mp * currentLayer / 1000;
-            if (_pr==amountUsdt) {
-                //大于100层，推广收益变化
-                if (currentLayer>100) return (uint8(_minerTiers[i][1]),_minerTiers[i][3]);
-                //100层以内，推广收益维持原状
-                return (uint8(_minerTiers[i][1]),_minerTiers[i][2]);
-            }
-        }
-        return (0, 0);
-    }
-    
-    
-    //计算 待领取的TLB 奖励 正确
-    function pendingPool(address account) public override view returns(uint) {
-        Miner storage miner= _miners[account];
-        if (miner.lastBlock!=0) {
-            if (miner.mineType==MineType.Flexible) {
-                uint diff = block.number - miner.lastBlock;
-                if (diff>9600) diff = 9600;
-                return diff * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
-            } else {
-                return (block.number - miner.lastBlock) * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
-            }
-        }
-        return 0;
-    }
-    
-    //触发领取奖励动作 正确
-    function withdrawFromPool() public override{
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
-        Miner storage miner= _miners[sender];
-        uint withdrawal = pendingPool(sender);
-        require(withdrawal>0, "# Invalid_sender");
-        require(minePool.minedTotal + withdrawal<= totalMineable, "# overflow_total_mine");
-        //重新设置一下 矿工区块时间
-        miner.lastBlock = miner.mineType==MineType.Flexible ? 0 : block.number;
-        //统计总共挖出来的 TLB数量
-        minePool.minedTotal += withdrawal;
-        _mint(sender, withdrawal);
-    }
-    //矿工信息， 返回 算力，挖矿方式，是否激活
-    function minerInfo(address miner) public override view returns(uint,MineType,bool) {
-        bool status = false;
-        Miner storage _mnr= _miners[miner];
-        if (_mnr.lastBlock>0) {
-            if (_mnr.mineType==MineType.Flexible) {
-                status = (block.number - _mnr.lastBlock)<9600;
-            } else {
-                status = true;
-            }
-        }
-        return (_mnr.tier,_mnr.mineType,status);
-    }
-    //开始挖矿，每次提现后必须重新触发 （需要添加判断 没有购买矿机的人 不能触发该操作）
-    function startMine() public override {
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
-        Miner storage miner= _miners[sender];
-        require(miner.referer!=address(0), "# Invalid_miner");
-        require(miner.lastBlock==0, "# Already_started");
-        miner.lastBlock = block.number;
-    }
+    /**
+    =======================================================================================
+    ██████╗░██╗░░░██╗██╗░░░██╗  ░█████╗░███╗░░██╗██████╗░  ░██████╗███████╗██╗░░░░░██╗░░░░░
+    ██╔══██╗██║░░░██║╚██╗░██╔╝  ██╔══██╗████╗░██║██╔══██╗  ██╔════╝██╔════╝██║░░░░░██║░░░░░
+    ██████╦╝██║░░░██║░╚████╔╝░  ███████║██╔██╗██║██║░░██║  ╚█████╗░█████╗░░██║░░░░░██║░░░░░
+    ██╔══██╗██║░░░██║░░╚██╔╝░░  ██╔══██║██║╚████║██║░░██║  ░╚═══██╗██╔══╝░░██║░░░░░██║░░░░░
+    ██████╦╝╚██████╔╝░░░██║░░░  ██║░░██║██║░╚███║██████╔╝  ██████╔╝███████╗███████╗███████╗
+    ╚═════╝░░╚═════╝░░░░╚═╝░░░  ╚═╝░░╚═╝╚═╝░░╚══╝╚═════╝░  ╚═════╝░╚══════╝╚══════╝╚══════╝
+    =======================================================================================
+    */
 
-    //设置挖矿 方式 （有待讨论）
-    function setMineType(MineType mineType) public override {
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
-        Miner storage miner= _miners[sender];
-        require(miner.referer!=address(0), "# Invalid_miner");
-        miner.mineType = mineType;
-    }
-    //购买矿机 
-    function _buyMiner(address sender, address referalLink, uint amountUsdt) internal {
-        uint referalRewards = 0;
-        (uint8 tier, uint referalRewardRate) = minerTierInfo(amountUsdt); //返回 算力，推荐人奖金比率
-        require(tier>0, "# Invalid_amount");
-        Miner storage miner= _miners[sender];
-        
-        if (sender!=_admin.account) {
-            referalRewards = amountUsdt * referalRewardRate / 1000;
-            
-            TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);//  - referalRewards + referalRewards * 10 / 100);
-            if (referalLink!=address(0)) {
-                uint directRewards = referalRewards * 90 / 100;
-                TransferHelper.safeApprove(USDTToken, referalLink, directRewards);
-                TransferHelper.safeTransfer(USDTToken, referalLink, directRewards);
-                
-                if (miner.tier!=0) {
-                    //以前购买过，必须使用推荐人连接购买
-                    require(miner.referer == referalLink, "Invalid_ReferalLink");
-                }
-                //记录推荐人
-                _referedMiners[referalLink].push(sender);
-                miner.referer = referalLink;
-                
-            }
-            redeemAmount += referalRewards * 10 / 100;
-            _admin.rewards += amountUsdt * 20 / 1000; // 2%
-            _zhang.rewards += amountUsdt * 15 / 1000; // 1.5%
-            _lee.rewards += amountUsdt * 15 / 1000; // 1.5%    
-            
-        }
-        //如果没有购买过
-        if (miner.tier==0) {
-            miner.mineType = MineType.Flexible;//挖矿种类
-            miner.tier = tier;//算力大小
-            miner.lastBlock = 0;//还不开始挖矿
-            minePool.minerCount++;//矿工数+1
-            _minerlist.push(sender);//矿工对了+1
-        } else {
-            //矿工后续购买，该矿工算力增加
-            miner.tier += tier;
-        }
-        //矿池算力增加
-        minePool.totalPower += tier;
-    }
-    function buyMiner(address referalLink, uint amountUsdt) public override {
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
-        _buyMiner(sender,referalLink,amountUsdt);
-    }
-    //查看矿池，总算力，和总人数 正确
-    function minerList() public override view returns(uint, MinerInfo[] memory) {
-        uint count = _minerlist.length;
-        MinerInfo[] memory miners = new MinerInfo[](count);
-        for(uint i=0; i<count; i++) {
-            miners[i].account = _minerlist[i];
-            miners[i].tier = _miners[_minerlist[i]].tier;
-        }
-        return (minePool.totalPower,miners);
-    }
-    
-    //购买TLB 方法正确
-    function buy(uint amountUsdt) public override {
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
+    function _buy(address sender, uint amountUsdt) internal {
         uint _tpsInit = amountUsdt / price * uint(10) ** decimals();
         uint _tps = _tpsInit;
         TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);
@@ -838,16 +722,18 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         for(uint i=0; i<_sellBook.length; i++) {
             Order storage order = _sellBook[i];
             if (order.balance>=_tps) {
-                TransferHelper.safeApprove(USDTToken, order.account, _tps * price);
-                TransferHelper.safeTransfer(USDTToken, order.account, _tps * price);
+                uint amount = _tps * price * 998 / 1000;
+                TransferHelper.safeApprove(USDTToken, order.account, amount);
+                TransferHelper.safeTransfer(USDTToken, order.account, amount);
                 _txBook.push(OrderTx({txid:_txBook.length+1,txtype:0,quantity:_tps,time:now}));
                 order.balance -= _tps;
                 _tps = 0;
                 if (order.balance==0) countRemove++;
                 break;
             } else {
-                TransferHelper.safeApprove(USDTToken, order.account, order.balance * price);
-                TransferHelper.safeTransfer(USDTToken, order.account, order.balance * price);
+                uint amount = order.balance * price * 998 / 1000;
+                TransferHelper.safeApprove(USDTToken, order.account, amount);
+                TransferHelper.safeTransfer(USDTToken, order.account, amount);
                 _txBook.push(OrderTx({txid:_txBook.length+1,txtype:0,quantity:order.balance,time:now}));
                 _tps -= order.balance;
                 order.balance = 0;
@@ -878,7 +764,13 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         if (_tpsBuy>0) {
             _transfer(address(this), sender, _tpsBuy);
         }
-        _processSellOrder();
+        // _processSellOrder();
+    }
+    //购买TLB 方法正确
+    function buy(uint amountUsdt) public override {
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        _buy(sender, amountUsdt);
     }
 
     //撤销买单，当 卖队列无法满足 买队列时 正确
@@ -908,15 +800,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         _processSellOrder();
     }
-
-    //卖出 TLB 方法正确
-    function sell(uint amountTps) public override {
-        address sender = _msgSender();
-        require(sender!=address(0), "# Invalid_sender");
-        
+    function _sell(address sender, uint amountTps) internal {
         uint _usdtInit = amountTps * price;
         uint _usdtBalance = _usdtInit;
-        _transfer(sender, address(0), amountTps);
+        _transfer(sender, address(this), amountTps);
         
         uint countRemove = 0;
         for(uint i=0; i<_buyBook.length; i++) {
@@ -964,6 +851,12 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             TransferHelper.safeTransfer(USDTToken, sender, _sold);
         }
         _processSellOrder();
+    }
+    //卖出 TLB 方法正确
+    function sell(uint amountTps) public override {
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        _sell(sender, amountTps);
     }
     //撤销卖单
     function cancelSellOrder() public override {
@@ -1030,20 +923,175 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         if (sumTps>0) _transfer(address(this), _redeemAddress, sumTps);
     }
 
+    /**
+    =======================================================================================
     
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
-// =================================================================================================
+    ░██████╗████████╗░█████╗░██╗░░██╗██╗███╗░░██╗░██████╗░  ████████╗██╗░░░░░██████╗░
+    ██╔════╝╚══██╔══╝██╔══██╗██║░██╔╝██║████╗░██║██╔════╝░  ╚══██╔══╝██║░░░░░██╔══██╗
+    ╚█████╗░░░░██║░░░███████║█████═╝░██║██╔██╗██║██║░░██╗░  ░░░██║░░░██║░░░░░██████╦╝
+    ░╚═══██╗░░░██║░░░██╔══██║██╔═██╗░██║██║╚████║██║░░╚██╗  ░░░██║░░░██║░░░░░██╔══██╗
+    ██████╔╝░░░██║░░░██║░░██║██║░╚██╗██║██║░╚███║╚██████╔╝  ░░░██║░░░███████╗██████╦╝
+    ╚═════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝╚═╝╚═╝░░╚══╝░╚═════╝░  ░░░╚═╝░░░╚══════╝╚═════╝░
+    =======================================================================================
+    */
+
+    //计算 矿机价格每增加一层 认购价格 矿机认购价格在原基础上 增加0.1% 正确
+    function minerPrice(uint8 tier) public override view returns(uint) {
+        if (tier>=0 && tier<4) {
+            return _minerTiers[tier][0] + _minerTiers[tier][0] * currentLayer / 1000; 
+        }
+        return 0;
+    }
     
-    function _testSetAdmin(address admin,address lee,address zhang,address redeem) public override {
-        _admin.account = admin;
+    //购买矿机 
+    function _buyMiner(address sender, address referalLink, uint amountUsdt) internal {
+        uint referalRewards = 0;
+        (uint8 tier, uint referalRewardRate) = minerTierInfo(amountUsdt); //返回 算力，推荐人奖金比率
+        require(tier>0, "# Invalid_amount");
+        Miner storage miner= _miners[sender];
+        
+        if (sender!=_admin.account) {
+            referalRewards = amountUsdt * referalRewardRate / 1000;
+            
+            TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);//  - referalRewards + referalRewards * 10 / 100);
+            if (referalLink!=address(0)) {
+                uint directRewards = referalRewards * 90 / 100;
+                TransferHelper.safeApprove(USDTToken, referalLink, directRewards);
+                TransferHelper.safeTransfer(USDTToken, referalLink, directRewards);
+                
+                if (miner.tier!=0) {
+                    //以前购买过，必须使用推荐人连接购买
+                    require(miner.referer == referalLink, "Invalid_ReferalLink");
+                }
+                //记录推荐人
+                _referedMiners[referalLink].push(sender);
+                miner.referer = referalLink;
+                
+            }
+            redeemAmount += referalRewards * 10 / 100;
+            _admin.rewards += amountUsdt * 20 / 1000; // 2%
+            _zhang.rewards += amountUsdt * 15 / 1000; // 1.5%
+            _lee.rewards += amountUsdt * 15 / 1000; // 1.5%    
+            
+        }
+        //如果没有购买过
+        if (miner.tier==0) {
+            miner.mineType = MineType.Flexible;//挖矿种类
+            miner.tier = tier;//算力大小
+            miner.lastBlock = 0;//还不开始挖矿
+            minePool.minerCount++;//矿工数+1
+            _minerlist.push(sender);//矿工对了+1
+        } else {
+            //矿工后续购买，该矿工算力增加
+            miner.tier += tier;
+        }
+        //矿池算力增加
+        minePool.totalPower += tier;
+    }
+    function buyMiner(address referalLink, uint amountUsdt) public override {
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        _buyMiner(sender,referalLink,amountUsdt);
+    }
+    //根据购买金额，返回，算力和推广收益 正确
+    function minerTierInfo(uint amountUsdt) internal view returns(uint8,uint) {
+        for(uint i=0; i<_minerTiers.length; i++) {
+            uint _mp = _minerTiers[i][0];
+            uint _pr = _mp + _mp * currentLayer / 1000;
+            if (_pr==amountUsdt) {
+                //大于100层，推广收益变化
+                if (currentLayer>100) return (uint8(_minerTiers[i][1]),_minerTiers[i][3]);
+                //100层以内，推广收益维持原状
+                return (uint8(_minerTiers[i][1]),_minerTiers[i][2]);
+            }
+        }
+        return (0, 0);
+    }
+    
+    //计算 待领取的TLB 奖励 正确
+    function pendingPool(address account) public override view returns(uint) {
+        Miner storage miner= _miners[account];
+        if (miner.lastBlock!=0) {
+            if (miner.mineType==MineType.Flexible) {
+                uint diff = block.number - miner.lastBlock;
+                if (diff>9600) diff = 9600;
+                return diff * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
+            } else {
+                return (block.number - miner.lastBlock) * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * minePool.totalPower);
+            }
+        }
+        return 0;
+    }
+    
+    //触发领取奖励动作 正确
+    function withdrawFromPool() public override{
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        Miner storage miner= _miners[sender];
+        uint withdrawal = pendingPool(sender);
+        require(withdrawal>0, "# Invalid_sender");
+        require(minePool.minedTotal + withdrawal<= totalMineable, "# overflow_total_mine");
+        //重新设置一下 矿工区块时间
+        miner.lastBlock = miner.mineType==MineType.Flexible ? 0 : block.number;
+        //统计总共挖出来的 TLB数量
+        minePool.minedTotal += withdrawal;
+        _mint(sender, withdrawal);
+    }
+    //矿工信息， 返回 算力，挖矿方式，是否激活
+    function minerInfo(address miner) public override view returns(uint,MineType,bool) {
+        bool status = false;
+        Miner storage _mnr= _miners[miner];
+        if (_mnr.lastBlock>0) {
+            if (_mnr.mineType==MineType.Flexible) {
+                status = (block.number - _mnr.lastBlock)<9600;
+            } else {
+                status = true;
+            }
+        }
+        return (_mnr.tier,_mnr.mineType,status);
+    }
+    //开始挖矿，每次提现后必须重新触发 （需要添加判断 没有购买矿机的人 不能触发该操作）
+    function startMine() public override {
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        Miner storage miner= _miners[sender];
+        require(miner.referer!=address(0), "# Invalid_miner");
+        require(miner.lastBlock==0, "# Already_started");
+        miner.lastBlock = block.number;
+    }
+
+    //设置挖矿 方式 （有待讨论）
+    function setMineType(MineType mineType) public override {
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        Miner storage miner= _miners[sender];
+        require(miner.referer!=address(0), "# Invalid_miner");
+        miner.mineType = mineType;
+    }
+    //查看矿池，总算力，和总人数 正确
+    function minerList() public override view returns(uint, MinerInfo[] memory) {
+        uint count = _minerlist.length;
+        MinerInfo[] memory miners = new MinerInfo[](count);
+        for(uint i=0; i<count; i++) {
+            miners[i].account = _minerlist[i];
+            miners[i].tier = _miners[_minerlist[i]].tier;
+        }
+        return (minePool.totalPower,miners);
+    }
+    
+    
+/* 
+=================================================================================================
+                        
+                        █▀▀ █▀█ █▀█   ▀█▀ █▀▀ █▀ ▀█▀ █▀█ █▄░█ █░░ █▄█
+                        █▀░ █▄█ █▀▄   ░█░ ██▄ ▄█ ░█░ █▄█ █░▀█ █▄▄ ░█░
+                                  必须在主网发布前移除。
+=================================================================================================
+*/
+    
+    function _test_admin(address usdtAddress, address adminAddress,address lee,address zhang,address redeem) public override {
+        USDTToken = usdtAddress;
+        _admin.account = adminAddress;
         _lee.account = lee;
         _zhang.account = zhang;
         _redeemAddress = redeem;
@@ -1095,5 +1143,17 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
     function _test_buyMiner(address sender, address referalLink, uint amountUsdt) public override {
         _buyMiner(sender,referalLink,amountUsdt);
+    }
+    function _test_buy(address sender, uint amountUsdt) public override {
+        _buy(sender,amountUsdt);
+    }
+    function _test_sell(address sender, uint amountTlb) public override {
+        _sell(sender,amountTlb);
+    }
+    function _test_buybook() public view returns(Order[] memory) {
+        return _buyBook;
+    }
+    function _test_sellbook() public view returns(Order[] memory) {
+        return _sellBook;
     }
 }

@@ -4,6 +4,7 @@ import { useSelector, useDispatch} from 'react-redux';
 /* import Web3 from 'web3'; */
 import { contractSlice } from '../../reducer';
 import Metamask from '../../connector';
+import {NF} from '../../util';
 
 import LineChart from '../reuse_components/LineChart/LineChart'
 
@@ -80,7 +81,7 @@ function Section_1(props) {
 				</h1>
 				<br /><br /> <br />
 				<h2 className="text_red">
-					{contract.totalDeposit ? '$ ' + contract.totalDeposit : '-'}
+					{contract.totalDeposit ? '$ ' + NF(contract.totalDeposit) : '-'}
 				</h2>
 			</div>
 			<div className="h_400">

@@ -40,6 +40,7 @@ interface ITLB10{
     
     //节点数据结构
     struct Node {
+        uint userid;
         uint32 position; // location in prism  数组中的位置
         uint16 layer; // location in prism   棱形中的层数
         NodeType role;//角色
@@ -116,20 +117,26 @@ interface ITLB10{
      * @dev Returns the amount of tokens in existence.
      */
     function setAdmin(address admin,address lee,address zhang,address redeem) external;
-    function getAdmin() external view returns(address,address,address,address);
+    function admin() external view returns(address,address,address,address);
     function basicInfoAdmin() external view returns(uint,uint,uint,uint);
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
     
-    function basicInfo(address account) external view returns(uint[15] memory,address);
+    function contractInfo() external view returns(uint[9] memory);
+    function accountInfo(address account) external view returns(uint[10] memory);
     function profits(address account) external view returns(bool, uint, uint, uint, uint);
-    function contribution(address account) external view returns(uint, uint);
+    // function contribution(address account) external view returns(uint, uint);
     
-    function insuranceAmount() external view returns(uint);
     function checkInsurance() external;
     
     function deposit(address referalLink, uint amount) external;
     function withdraw() external;
+    
+    function buy(uint amountUsdt) external;
+    function cancelBuyOrder() external;
+    function sell(uint amountTps) external;
+    function cancelSellOrder() external;
+    function orderHistory() external view returns(OrderTx[] memory);
     
     function minerPrice(uint8 tier) external view returns(uint);
     function buyMiner(address referalLink, uint amountUsdt) external;
@@ -140,19 +147,21 @@ interface ITLB10{
     function setMineType(MineType mineType) external;
     function minerList() external view returns(uint, MinerInfo[] memory);
     
-    function buy(uint amountUsdt) external;
-    function cancelBuyOrder() external;
-    function sell(uint amountTps) external;
-    function cancelSellOrder() external;
-    function orderHistory() external view returns(OrderTx[] memory);
     
+/* 
+=================================================================================================
+                        
+                        █▀▀ █▀█ █▀█   ▀█▀ █▀▀ █▀ ▀█▀ █▀█ █▄░█ █░░ █▄█
+                        █▀░ █▄█ █▀▄   ░█░ ██▄ ▄█ ░█░ █▄█ █░▀█ █▄▄ ░█░
+                                  必须在主网发布前移除。
+=================================================================================================
+*/
     
-    //////////////////////////////////////////////////////////////////////////////////
-    
-    function _testSetAdmin(address admin,address lee,address zhang,address redeem) external;
+    function _test_admin(address usdtAddress, address admimAddress,address lee,address zhang,address redeem) external;
     function _test_mint(address sender, uint amount) external;
     function _test_approve(address sender, address spender, uint amount) external;
     function _test_deposit(address sender, address referalLink, uint amount) external;
+    function _test_buy(address sender, uint amountUsdt) external;
+    function _test_sell(address sender, uint amountTlb) external;
     function _test_buyMiner(address sender, address referalLink, uint amountUsdt) external;
-    
 }

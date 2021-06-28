@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector} from 'react-redux';
 import styled from 'styled-components';
 
+import {NF} from '../../util';
 import Metamask from '../../connector';
 
 const Section = styled.section`
@@ -51,7 +52,7 @@ function Section_13(props) {
                         </tr>
                         <tr>
                             <td>回购金额</td>
-                            <td>{contract.redeemAmount}</td>
+                            <td>{NF(contract.redeemAmount)}</td>
                         </tr>
                     </tbody>
                 </table>

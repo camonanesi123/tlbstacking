@@ -6,11 +6,7 @@ export const contractSlice = createSlice({
         address: '',
         referer: '',
         
-        tps: 0,
-        usdt: 0,
-        
         price: 0,
-        lastAmount: 0,
         totalDeposit: 0,
         redeemAmount: 0,
         totalSupply: 0,
@@ -20,6 +16,11 @@ export const contractSlice = createSlice({
         totalPower: 0, 
         minerCount: 0, 
         
+        _userid: 0,
+        _tlb: 0,
+        _usdt: 0,
+        
+        _lastAmount: 0,
         _deposit: 0,
         _withdrawal: 0,
         _limit: 0,  

@@ -18,7 +18,14 @@ export default class Metamask {
 	static explorer = blockExplorer;
 	static contract = contractTlb;
 	static address;
-	static handleBlockTimer;
+	static timeHandler;
+	static start(dispatch) {
+		return new Promise(resolve=>{
+			if (this.timeHandler) clearTimeout(this.timeHandler);
+			this.getInfo(dispatch,this.address).then(()=>resolve(true));
+			this.timeHandler = setTimeout(()=>this.start(dispatch),blockTime);
+		})
+	}
 	static connect(dispatch) {
 		return new Promise(resolve=>{
 			const {ethereum} = window;
@@ -32,7 +39,7 @@ export default class Metamask {
 							if (chainId===currrentChainId) {
 								this.address = address;
 								dispatch(contractSlice.actions.login(address));
-								this.getBasicInfo(dispatch,address);
+								this.getInfo(dispatch,address);
 								resolve({status:'ok', data:address});
 							} else {
 								resolve({status:'err', data: `🦊 Invalid chainid. expected [${chainId}]`});
@@ -45,7 +52,7 @@ export default class Metamask {
 						if (accounts.length) {
 							this.address = accounts[0];
 							dispatch(contractSlice.actions.login(this.address));
-							this.getBasicInfo(dispatch,this.address);
+							this.getInfo(dispatch,this.address);
 							resolve({status:'ok', data:this.address});
 						} else {
 							dispatch(contractSlice.actions.logout());
@@ -53,17 +60,13 @@ export default class Metamask {
 					});
 					ethereum.on('chainChanged', (currentChainId) => {
 						if (chainId===currentChainId) {
-							this.getBasicInfo(dispatch,this.address);
+							this.getInfo(dispatch,this.address);
 							resolve({status:'ok', data:this.address});
 						} else {
 							dispatch(contractSlice.actions.logout());
 							resolve({status:'err', data: `🦊 Invalid chainid. expected [${chainId}]`});
 						}
 					});
-					if (this.handleBlockTimer) {
-						clearInterval(this.handleBlockTimer);
-					}
-					setInterval(()=>this.getBasicInfo(dispatch,this.address),blockTime);
 				} catch (error) {
 					resolve({status:'err', data: "🦊 Connect to Metamask using the button on the top right."});
 				}
@@ -139,7 +142,6 @@ export default class Metamask {
 					}
 					let delay = blockTime - (+new Date() - time);
 					if (delay<1000)  delay = 1000;
-					console.log(delay);
 					await new Promise(resolve=>setTimeout(resolve,delay));
 				}
 			}
@@ -147,7 +149,7 @@ export default class Metamask {
 			return null;
 		}
 	}
-	static async getBasicInfo(dispatch,address) {
+	static async getInfo(dispatch,address) {
 		if (window.web3) {
 			const result = {};
 			const web3 = new Web3(process.env.REACT_APP_NETWORK_URL);
@@ -155,61 +157,57 @@ export default class Metamask {
 			if (res) {
 				result.blockHeight = Number(res);
 			}
+			/* res = await this.call(contractTlb, 'insuranceAmount');
+			if (res) {
+				result.insuranceAmount = Math.round(Number(res) / 10 ** precisionUsdt) * 0.05;
+			} */
 			
+			let p1 = 10**precisionTlb;
+			let p2 = 10**precisionUsdt;
+			res = await this.call(contractTlb, 'contractInfo');
+			if (res) {
+				let i = 0;
+				result.price = 			Number(res[i++]) / p2;
+				result.totalDeposit = 	Number(res[i++]) / p2;
+				result.redeemAmount = 	Number(res[i++]) / p2;
+				result.totalSupply = 	Number(res[i++]) / p1;
+				result.totalBurnt = 	Number(res[i++]) / p1;
+				result.insuranceCounterTime = Number(res[i++]);
+				result.totalPower = 	Number(res[i++]);
+				result.minerCount = 	Number(res[i++]);
+				result.insuranceAmount= Number(res[i++]) / p2;
+			}
 			if (address) {
 				res = await this.call(contractUsdt, 'balanceOf', address);
 				if (res) {
-					result.usdt = Math.round(Number(res) / 10 ** precisionUsdt);
+					result._usdt = Math.round(Number(res) / p2);
 				}
-				res = await this.call(contractTlb, 'insuranceAmount');
-				if (res) {
-					result.insuranceAmount = Math.round(Number(res) / 10 ** precisionUsdt) * 0.05;
-				}
-				
-				let p1 = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(precisionTlb));
-				let p2 = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(precisionUsdt));
-
-				res = await this.call(contractTlb, 'basicInfo', address);
+				res = await this.call(contractTlb, 'accountInfo', address);
 				if (res) {
 					let i = 0;
-					result.tps = 			Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p1));
-					result.price = 			Number(JSBI.divide(JSBI.multiply(JSBI.BigInt(res[0][i++]),JSBI.BigInt(100)), p2))/100;
-					result.lastAmount = 	Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p2));
-					result.totalDeposit = 	Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p2));
-					result.redeemAmount = 	Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p2));
-					result.totalSupply = 	Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p1));
-					result.totalBurnt = 	Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p1));
-					result.insuranceCounterTime = Number(res[0][i++]);
-					
-					result._tps = 			Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p1));
-					result._deposit = 		Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p2));
-					result._withdrawal = 	Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p2));
-					result._limit = 		Number(JSBI.divide(JSBI.BigInt(res[0][i++]), p2));
-	
-					result._minerCount = 	Number(res[0][i++]);
-					result.totalPower = 	Number(res[0][i++]);
-					result._minerCount = 	Number(res[0][i++]);
-					result._minerRefTotal = Number(res[0][i++]);
+					result._userid = 		Number(res[i++]);
+					result._tlb = 			Number(res[i++]) / p1;
+					result._lastAmount = 	Number(res[i++]) / p2;
+					result._deposit = 		Number(res[i++]) / p2;
+					result._withdrawal = 	Number(res[i++]) / p2;
+					result._limit = 		Number(res[i++]) / p2;
+					result._minerCount = 	Number(res[i++]);
+					result._minerRefTotal = Number(res[i++]);
+					result._children = 		Number(res[i++]);
+					result._contribution = 	Number(res[i++]) / p2;
 				}
 				res = await this.call(contractTlb, 'profits', address);
-				console.log('profits',res);
 				if (res) {
 					let i = 0;
 					result._overflowed = 	res[i++];
-					result._staticRewards = Number(res[i++]) / 10 ** precisionUsdt;
-					result._dynamicRewards =Number(res[i++]) / 10 ** precisionUsdt;
-					result._rewards = 		Number(res[i++]) / 10 ** precisionUsdt;
-					result._withdrawable = 	Number(res[i++]) / 10 ** precisionUsdt;
-				}
-				res = await this.call(contractTlb, 'contribution', address);
-				console.log('contribution',res);
-				if (res) {
-					let i = 0;
-					result._children = 		Number(res[i++]);
-					result._contribution = 	Number(res[i++]) / 10 ** precisionUsdt;
+					result._staticRewards = Number(res[i++]) / p2;
+					result._dynamicRewards= Number(res[i++]) / p2;
+					result._rewards = 		Number(res[i++]) / p2;
+					result._withdrawable = 	Number(res[i++]) / p2;
 				}
 			}
 			if (Object.keys(result).length) {
+				console.log('info',result);
 				dispatch(contractSlice.actions.updateInfo(result));	
 			}
 		}
@@ -221,6 +219,22 @@ export default class Metamask {
 		if (res) {
 			console.log('allowance',res);
 			return Number(res) / 10 ** precisionUsdt;
+		}
+		return null;
+	}
+	static async amountForDeposit(amount) {
+		let res = await this.call(contractTlb, 'amountForDeposit', amount * 10 ** precisionUsdt)
+		if (res) {
+			console.log('amountForDeposit',res);
+			return Number(res) / 10 ** precisionTlb;
+		}
+		return null;
+	}
+	static async amountForWithdraw(address) {
+		let res = await this.call(contractTlb, 'amountForWithdraw', address)
+		if (res) {
+			console.log('amountForWithdraw',res);
+			return Number(res) / 10 ** precisionTlb;
 		}
 		return null;
 	}

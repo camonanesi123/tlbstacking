@@ -8,6 +8,7 @@ import Loader from './components/Layout/Loader';
 import Miner from './components/Miner';
 import MLM from './components/MLM';
 import Home from './components/Home';
+import Metamask from './connector';
 import { BrowserRouter as Router, Switch, Route, withRouter, Link } from 'react-router-dom';
 
 import ImgBg from './img/bg_app.png'
@@ -19,14 +20,13 @@ const Style = styled.div`
 `;
 
 function App() {
-	const contract = useSelector(state => state.contract);
+	const dispatch = useDispatch()
+	/* const contract = useSelector(state => state.contract); */
 	const [loading, setLoading] = useState(true)
 	useEffect(() => {
-		window.addEventListener('load', function () {
-			this.setTimeout(() => {
-				setLoading(false)
-			}, 500)
-		})
+		Metamask.start(dispatch).then(res=>{
+			if (res) setLoading(false);
+		});
 	});
 	return (
 		<Router>

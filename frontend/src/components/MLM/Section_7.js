@@ -2,6 +2,7 @@ import React,{useEffect} from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch} from 'react-redux';
 
+import {NF} from '../../util';
 import ImgWave from '../../img/wave.webp'
 
 const Section = styled.section`
@@ -49,10 +50,11 @@ function Section_7(props) {
 			<div className="content_wrapper p-0 p-md-5">
 				<h3>数据统计</h3>
 				<table className="w-100 text-center custom_table custom_table_style">
+					
 					<tbody>
 						<tr>
-							<td>用户ID</td>
-							<td>{contract.userid ? contract.userid : '-' }</td>
+							<td style={{maxWidth:100}}>用户ID</td>
+							<td style={{minWidth:100}}>{contract._userid ? contract._userid : '-' }</td>
 						</tr>
 						<tr>
 							<td>钱包地址</td>
@@ -60,27 +62,27 @@ function Section_7(props) {
 						</tr>
 						<tr>
 							<td>USDT总收益</td>
-							<td>{contract._withdrawal || 0} USDT</td>
+							<td>{contract._withdrawal ? NF(contract._withdrawal) + 'USDT' : '-'}</td>
 						</tr>
 						<tr>
 							<td>综合收益</td>
-							<td>{contract._limit || 0} USDT</td>
+							<td>{contract._limit ? NF(contract._limit) + 'USDT' : '-'}</td>
 						</tr>
 						<tr>
 							<td>总持币地址</td>
-							<td>{contract._children ? contract._children : '-' }</td>
+							<td>{contract._children || '-'}</td>
 						</tr>
 						<tr>
 							<td>总业绩</td>
-							<td>{contract._contribution ? contract._contribution : '-' }</td>
+							<td>{contract._contribution ? NF(contract._contribution) : '-'}</td>
 						</tr>
 						<tr>
 							<td>累计存款</td>
-							<td>{contract._deposit ? contract._deposit : '-' }</td>
+							<td>{contract._deposit ? NF(contract._deposit) : '-'}</td>
 						</tr>
 						<tr>
 							<td>可提金额</td>
-							<td>{contract._withdrawable ? contract._withdrawable : '-' }</td>
+							<td>{contract._withdrawable ? NF(contract._withdrawable) : '-'}</td>
 						</tr>
 					</tbody>
 				</table>

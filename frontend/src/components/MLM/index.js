@@ -17,12 +17,11 @@ import Section_11 from './Section_11';
 import Section_13 from './Section_13';
 import Section_14 from './Section_14';
 
-import Metamask from '../../connector';
 import { useHistory } from "react-router-dom";
 
 const MLMPage = () => {
 	let contract = useSelector(state => state.contract);
-	let history = useHistory();
+	/* let history = useHistory(); */
 	const dispatch = useDispatch()
 	useEffect(() => {
 		const url = window.location.pathname;

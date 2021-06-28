@@ -330,7 +330,7 @@ const Section_3_d = () => {
 									TLB
 								</h4>
 								<span className="text_cyan">
-									{contract.tps || 0}
+									{contract._tlb || 0}
 								</span>
 							</div>
 						</div>
@@ -344,7 +344,7 @@ const Section_3_d = () => {
 									USDT
 								</h4>
 								<span className="text_cyan">
-									{contract.usdt || 0}
+									{contract._usdt || 0}
 								</span>
 							</div>
 						</div>

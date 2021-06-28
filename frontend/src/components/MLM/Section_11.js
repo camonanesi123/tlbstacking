@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { useSelector} from 'react-redux';
 import styled from 'styled-components';
 
+import {NF} from '../../util';
 import ImgCounter from '../../img/counter.webp'
 
 import ImgInsurance from '../../img/insurance.webp'
@@ -43,7 +44,7 @@ const calculateTimeLeft = (time) => {
 		let timeleft =  Math.floor((time + 129600) - (new Date().getTime()/1000));
 		return {
             insuranceHours: Math.floor(timeleft / 3600),
-            insuranceMinites: Math.floor((timeleft % 3600) / 3600),
+            insuranceMinites: Math.floor((timeleft % 3600) / 60),
             insuranceSeconds: timeleft % 60
         };
 	}
@@ -105,7 +106,7 @@ function Section_11(props) {
                     保险池金额
                 </h2>
                 <h2 className="pool-amount">
-                    {contract.insuranceAmount ? '$' + contract.insuranceAmount : '-'}
+                    $ {NF(contract.insuranceAmount)}
                 </h2>
             </div>
 

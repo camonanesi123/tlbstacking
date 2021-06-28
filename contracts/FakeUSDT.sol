@@ -16,12 +16,7 @@ import "./ITLB10.sol";
 import "./lib/TransferHelper.sol";
 
 contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
-    constructor() public {
-        uint _initialSupply  = maxSupply() / 100 * 50;
-        _mint(msg.sender, _initialSupply);
-    }
     
-    address tokenTPS;
     
     
     /* 
@@ -41,343 +36,511 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
     address sh7 = 0x1aE0EA34a72D944a8C7603FfB3eC30a6669E454C;
     address sh8 = 0x0A098Eda01Ce92ff4A4CCb7A4fFFb5A43EBC70DC;
     address sh9 = 0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c;
-    address g_1 =       0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C;
-    address g_2 =       0x4B0897b0513fdC7C541B6d9D7E929C4e5364D2dB;
-    address g_3 =       0x583031D1113aD414F02576BD6afaBfb302140225;
-    address g_4 =       0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
-    address g_5 =       0x41e4385C57E31D5f876D4227878d9C4Ed74C3352;
-    address g_6 =       0x53cdd18209B3d96F8D7806d7671aF4011993A2e5;
+    g_1,
+    address g_2;
+    address g_3;
+    address g_4;
+    address g_5;
+    address g_6;
     
     
     */
+    address tokenTPS;
     
     address admin =     0xC048d30D209bbcD0319037d3ea6764774D3875E5;
-    address lee =       0x094A83F46Dd0Ab5bF11EBb1088560a5B16Cb9A8D;
-    address zhang =     0x1Fc9a67CeB0DC0ae508941DEC5bf7F3a5B0c544a;
-    address redeem =    0x042E933965A4236A0D84c894274e5869d26d4de4;
+    address lee =       0x64297e2f974041514dF4A9326BB2e03400cdE622;
+    address zhang =     0x6ab63c36879C16A89ec81A3CFD928f50a2793F63;
+    address redeem =    0x0c2018C37c2EC91020e73897fB5Ae48e0C936bD3;
         
     address pnode =     0x82bC5Cd564EA21642910796aE7Ec675772AE642F;
-
-    address sh1 =       0x8eECD63101878DAF5879495f85ca7067a5e63969;
-    address sh2 =       0x50F390FE885bf0A68c49054367C1b763EAfE59D1;
-    address sh3 =       0x146a522C1985B72d9b04a1E73Df579823376e39A;
-    address sh4 =       0xa300f601a4A479Ed74c0204b90331597128387d3;
-    address sh5 =       0xe5a308Be4D5ecd55d590f7b7Fb490038aa53b2b7;
-    address sh6 =       0xd27Da575AC9f178aaa1D9D113b7e2895865B39F2;
-    address sh7 =       0x231a713dC82d39aC050dc50F379eC0c431945256;
-    address sh8 =       0x79938398F8C55B483977856b123350c8e1d71109;
-    address sh9 =       0x04577360A1093199e46D5E5404DC20325A337e87;
-    // sh1
-    address g1 =       0x64297e2f974041514dF4A9326BB2e03400cdE622;
-    address g2 =       0x6ab63c36879C16A89ec81A3CFD928f50a2793F63;
-    address g3 =       0x0c2018C37c2EC91020e73897fB5Ae48e0C936bD3;
-    address g4 =       0xdFBa160135351c39349F2Bae4B1a39Ccc55A9A7A;
-    address g5 =       0x540a68E421f5FB90826d54EC820FAE868570743e;
-    address g6 =       0xD4DeB4566756daEDaDDd8571af3FA76AA24Eb199;
-     // g1
-    address g10 =      0xC63493B07ba1E028E952A7FFc738F2f82fECcC8a;
-    address g11 =      0x1f06CE392b96f82211E0Cb6C477B165f064ece1B;
-    address g12 =      0xD434F9c8bF8f4F55815FD9551EDd1f2033f494AD;
-    address g13 =      0xcfC89d81B0906D5C76037510b6ffd1030FD4BD6b;
-    address g14 =      0xFC8CaFA73B13D0cA5Fa0f68eDD7324Fc7ff11a0f;
-    address g15 =      0x29bD405C7fCF764332CdCF7441EA972c701a43DD;
-    address g16 =      0x26dFf1d7f42CB2B2DD137F8105C451276Ae79791;
-    address g17 =      0x510e88E5Fe67e502Ae42bA2E45Bb4BaA682f54d8;
-    address g18 =      0x73aB977975a7204A03684CD9dC2b32bc6644f2AD;
-    address g19 =      0xcab55593141D94312202974De8626E4B8320e746;
-    address g20 =      0xaEfd764a7c8405cBC5ffaf874B7f44A9a6a52d1a;
-    address g21 =      0x1670157F9AD02B0A287c13b8aADcA9A0400a423e;
-    address g22 =      0xf1C126199a7023A9990C4fFD08bB96a669138Ad2;
-    address g23 =      0x17764816633399B8045EACCc3e58E6c185D3C738;
-    address g24 =      0xe53c5ebDf454dBFBf8dAE88922867e9dd5F5D3Ed;
-    address g25 =      0x330165D7c5dCB995E2d151bAB4fA3643BAbB56FC;
-    address g26 =      0xc9fDA9c14b37deb6E072373ce018767FeEeE9B16;
-    address g27 =      0xAc3Da5e081383D024887D8827Ca442d332996b74;
-    address g28 =      0x86E1F96CFE48b91a6B6B6229033dDBFa9687EfEf;
-    address g29 =      0xe01637921aE1E1D67c93cd2F958b430B1DD483f7;
-    address g30 =      0xeE8136aBbF5913be2f74377eAb9024b2a5EE5813;
-    address g31 =      0x65b8CCe9449C4924b28831A26a9Bd24f6285b667;
-    address g32 =      0x40A9371a69F4e8C94bd0Cc63a4c82ad2bf5fc6F2;
-    address g33 =      0x5342453b53f930FAFF7A04AeeB868e191B168634;
-    address g34 =      0x6C00F3ab2aECFAcf3b17A47aF013fC6Cb58F5Dc1;
-    address g35 =      0x1C314Edc905FD07Ac4e952206F5F993B7cC789e2;
-    address g36 =      0xD9416cBa46B7E1E335BE67b5B9b01021aAdE6531;
-    address g37 =      0x5c35ae31456F705Bf3d782816A0e00585791422E;
-    address g38 =      0x6670a3c0e7a1E60023307a714d11B433b4f8C975;
-    address g39 =      0xA80B1bc73a14d83041C6a90A19F5B18A7542d86E;
-    address g40 =      0xaBEb2b0613Ba7C54dEAF8e68295dD133CbDf3cf2;
-    // g1
-    address g41 =      0xD2CF5D1bE3F9BB8F7941B664E285f55AAf31F887;
-    address g42 =      0xa1b61ef0dC8f4aE0C14B07461D5a37673ed014f0;
-    address g43 =      0x45AaD2Ed3b5FbD4D08e213668A38dB79AB535Dd7;
-    address g44 =      0xB2230b00d5379088D55e82e4ab54D9733cc5B97E;
-    address g45 =      0xcB380c92BE9b81bdAAaCC4e2f2691813195eFfa0;
-    address g46 =      0xBEb2F6365e3e9F956cFA51C95772d272698A2B3B;
-    address g47 =      0x209EC581670C9F5c639E82D7B9Be2E467Ccbe94B;
-    address g48 =      0x4783dc5a8BdEe67798c9128EfFb8cC2030e4c524;
-    address g49 =      0x39259D71f17A2BAa2E501E38C7A89e3F9CD74939;
-    address g50 =      0xd0EdC6667a0c93c9aE189b0c705f73800B0F63A3;
-    // g2
-    address g51 =      0x5bFbC31e854B4f23835D1245E22042De21EFb7Ee;
-    address g52 =      0xfd59B3E586c90d588C3BAfcEec9cd3edfdA653f5;
-    address g53 =      0x5E3Da773033Fe2B2330Fc43153e6642614c135d8;
-    address g54 =      0xC0DD7e8bEFc122f3D23Ee4f919581686fc83817d;
-    address g55 =      0xAD84713AC4afCf3FE27d3C33e2A0307691fc9F4b;
-    address g56 =      0x968b674E5FAfB79b0d6446a8408f90f79EC3530C;
-    address g57 =      0xe5F46D3593e2771D85318eBB748E8961E6fC9e56;
-    address g58 =      0x56f2009B9Bc93AFb4dc366C103de9Fb1E44964a2;
-    address g59 =      0xB73723547D91cCD0A84950e35b234C66b2b2AaD5;
-    address g60 =      0x39DEC51A572790ee7719E150959023939A4ED9ad;
-    // g3
-    address g61 =      0xe8D4F827ddcA5994DcDc5c59b7bf9066AC3DC343;
-    address g62 =      0xEEA07Ff706aC94721B1B08Edbf69bdD2dA4bfB58;
-    address g63 =      0xE6a7E61b193c4b183009B860866Da745F1Bea029;
-    address g64 =      0x3F9c57C56Cb82F6a751e57Db3a1F988cF95fbeCa;
-    address g65 =      0xF218cAC10BeA55B407De0D6e78ccFF96819B345A;
-    address g66 =      0xFaEb65e6dA53BBaA4C2d6B03a3d639E3add31C6b;
-    address g67 =      0x65754B13802438875F80606721BBAD271dA72C77;
-    address g68 =      0x157066DaD9a84341baDb542A1DB8cB72C51d3f17;
-    address g69 =      0x35DcA6089696D924Cae0350981729DE638616116;
-    address g70 =      0x1176e1bB2e4db150F04204CE6cEAb92b22eaf2D9;
-    // g4
-    address g71 =      0xcC747B27e79F4bcc8269eB56B470077086bbEFA7;
-    address g72 =      0x26eaB3630e0665DB4D475080e942C6F8AfF5B580;
-    address g73 =      0x9323C2781585Ef22F804527FD42a9a02F2EeA3ad;
-    address g74 =      0x8E955798d2f74e7B4F84eE31fC1E1169C85D4a31;
-    address g75 =      0x3D5Ed0DFc58cd4c7b4869f772EbD5a4219ea3b00;
-    address g76 =      0x3B0387290a992191aBE6A577Dfe842ec0e885b4B;
-    address g77 =      0x43215b03af682507f20c8c18344919449DEBB22B;
-    address g78 =      0x86402492658c12a78064514943c73Ed50fd3E04f;
-    address g79 =      0xEB22a53C17d3e3f2B58649A2Fa7a8B72659dfAf0;
-    address g80 =      0xF0E4E37d8a2De9284d493ec5e3DAE5FBc4102509;
-    // g5
-    address g81 =      0x180f31cda8aB6722e8AB2E4c510f6e22236401ad;
-    address g82 =      0x86e902f640b3FF6065Fc4adb0c312ee74dAb7516;
-    address g83 =      0xb7DD4b7f2263847DA551598024c94b2cF54b6933;
-    address g84 =      0x41AAE80e2a1ca25698adb15937601b3D24D5d409;
-    address g85 =      0x5a1a1C2fB6Caa9CBfDCE0E39174E3fA0321D6BdB;
-    address g86 =      0xE2147F68728Ed5939591990f15943a04493B84f5;
-    address g87 =      0x9cCf614fe59A57B874F49278233917b0031313a1;
-    address g88 =      0x7D1F37e65504b81d802D1a047e0392E82eA3C0c7;
-    address g89 =      0xd6cbeC12015F8e5F0881a60908858E67738022c8;
-
-    address[] pnode_s = [
-        sh1,
-        sh2,
-        sh3,
-        sh4,
-        sh5,
-        sh6,
-        sh7,
-        sh8,
-        sh9
-    ];
-    address[] sh1_s = [
-        g1,
-        g2,
-        g3,
-        g4,
-        g5,
-        g6
-    ];
-    address[] g1_s = [
-        g10,
-        g11,
-        g12,
-        g13,
-        g14,
-        g15,
-        g16,
-        g17,
-        g18,
-        g19,
-        g20,
-        g21,
-        g22,
-        g23,
-        g24,
-        g25,
-        g26,
-        g27,
-        g28,
-        g29,
-        g30
-    ];
-    address[] g2_s = [
-        g31,
-        g32,
-        g33,
-        g34,
-        g35,
-        g36,
-        g37,
-        g38,
-        g39,
-        g40
-    ];
-    address[] g3_s = [
-        g41,
-        g42,
-        g43,
-        g44,
-        g45,
-        g46,
-        g47,
-        g48,
-        g49,
-        g50
-    ];
-    address[] g4_s = [
-        g51,
-        g52,
-        g53,
-        g54,
-        g55,
-        g56,
-        g57,
-        g58,
-        g59,
-        g60
-    ];
-    address[] g5_s = [
-        g61,
-        g62,
-        g63,
-        g64,
-        g65,
-        g66,
-        g67,
-        g68,
-        g69,
-        g70
-    ];
     
-    address[] g6_s = [
-        g71,
-        g72,
-        g73,
-        g74,
-        g75,
-        g76,
-        g77,
-        g78,
-        g79,
-        g80
-    ];
-    address[] g10_s = [
-        g81,
-        g82,
-        g83,
-        g84,
-        g85,
-        g86,
-        g87,
-        g88,
-        g89
-    ];
+    address[] sh;
+    address[] g1;
+    address[] g2;
+
     mapping(string=>bool) called;
-    modifier needTps {
-        require(tokenTPS!=address(0), "undefined_tps_contract");
-        _;
+    
+    uint limit = 10;
+    uint public start = 0;
+    
+    function _address_init(address tps) public {
+        tokenTPS = tps;
+        ITLB10(tokenTPS)._test_admin(address(this), admin,lee,zhang,redeem);
+        sh = [
+            0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db,
+            0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB,
+            0x617F2E2fD72FD9D5503197092aC168c91465E7f2,
+            0x17F6AD8Ef982297579C203069C1DbfFE4348c372,
+            0x5c6B0f7Bf3E7ce046039Bd8FABdfD3f9F5021678,
+            0x03C6FcED478cBbC9a4FAB34eF9f40767739D1Ff7,
+            0x1aE0EA34a72D944a8C7603FfB3eC30a6669E454C,
+            0x0A098Eda01Ce92ff4A4CCb7A4fFFb5A43EBC70DC,
+            0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c
+        ];
+        _addAccount(pnode,admin);
+        for(uint i = 0; i<sh.length; i++) _addAccount(sh[i],pnode);
+    }
+    function _address_fill1() public {
+        g1 = [
+            0x067A3D53fE3390A60C5b13E2d4207f429bF7799E,
+            0x2742d710dbfA64507F3Bd447d5A7FB9e23D1228C,
+            0xd786D4A18e6FA2aD7522fBd1894CAab3061166c3,
+            0x354D4d2740D23E039B86e653De4aE47411024133,
+            0x345F9D5415CaA5E38713a902C311Cd2d7Aa2871D,
+            0xa55207B45a2B6599872931204dAf6bAF34a098d3,
+            0x9Fe211CC1868C0D532cDF052Fe1FB1C6540bff66,
+            0xE0bED4790331e46Cc0A3D2b7C7a18D4706258819,
+            0xB5D82dBcc63C7c598F9D9e0842d02B32e00b8bAf,
+            0x3F7993C001cdBFaDf88bC9e3821eBAe55126dA6C,
+            0xe5aD1beec18235a1f8201f280c971a29BbE466fe,
+            0xf0CF4aF25b568FeE923B03daA9C9cA910C38E198,
+            0xb9E5c9fFd910C49624D29D089081917F0eBd7A85,
+            0x4954313bE39dE310CaccF01031394d104571Dd96,
+            0x3E79A63802eCD258b091caFE2133dBe45CDae125,
+            0xCE554bC610286fD2bA41776eD723E0A09E7892aE,
+            0xE3531804d1f3ec2035a28B08deF11dB7948D8ea0,
+            0x09c65eeAD225366402bE3a4f822aBED2a96F8532,
+            0x8b93cD8836035CDe7DBCfAd79A8E2c8455467694,
+            0x812957Aae15c722217066B2a47a5458990171454,
+            0x3EB065a8939EA62ad5d68f7eF3c04649A080c062,
+            0x0903311320635D38D4Ed8319902843FF3Cb04df2,
+            0xD6c006D4a9DB98Bc75A3475FEE95CEe65dde00b1,
+            0x50cd9fEFe486681bf62137aa6cc2B4D3351Db57D,
+            0x1A0C823c5658B52606b1f3ae63BA7Bb937F8a188,
+            0xbA031ACe5b5f26165905Feb1B1902e9a9f3cDbF9,
+            0x4DC76B0Bc9Dd7C8F9Ac0b6035D2286832F6CD1Ef,
+            0xcbdAD5dfB11A1C5fd38A29e1F0cC3D15dFEEDAbd,
+            0x6C3C971184fe26d12D5D5F8a5b4682aC8631E375,
+            0xD5EF18505476DF1566DAEE1370Dab14d4aa91bf4,
+            0xd0c6FB22850bc60A05933e70280fCbDD41248870,
+            0x42E373942625B1a8681968C29F5dB94352619Ce5,
+            0x73A82AF9Bee7F4bb3D40A9740BF075AEcaEaD1aa,
+            0x670207796a3b304301267fD113cd72f6531320Fa,
+            0x68692d95b11cec11C03Cb1003Db23497ACc913e9,
+            0x8284Ed3F2666A366Dd8144a344Ca20E593145DFA,
+            0x55cfaad14d36dd1845B89FBEDF2eAB6272B23519,
+            0x3F22A7EECd59d4E278BC1e89B71aE649529599e1,
+            0x9EB42AeCC35a0ab3d078f2182F42349D9eb2ea85,
+            0x01DF4Da4716F65a82fA77F05AD85604D20cBEEBA,
+            0xd5227ef4366225ad7F5d9748497519E62872067d,
+            0x9DB0F2cfac46015a9D91573E86DE3998D65c73a0,
+            0xe91Fe9Ac86e70256c35c237cD8538D111Dfd5f42,
+            0x15bcadCA00BA4f75c1c8C27a8a90Cb02758Fb65D,
+            0xD82370d543b8b475cFca888307bEd13C167687A8,
+            0xdBB7A45C1Bc70E290cBE7b607ac01E02a4BE387b,
+            0x9F1EB67120923BB4e7De03989af861c654f37B63,
+            0x7aDb35925EDA5918559fCe63Eb5CD8E0B6040863,
+            0xD9CC93142a62aEb75552be1AD8c7eb0Fd0De1551,
+            0xb9ab421DA906755C4092ef19692F9A35Cf79aF50,
+            0x6baA1EaA7367936170e9679D709eBa1de6272eE7,
+            0xBaFCd8DbF7cACFd636FCf3f14ac0E2544eA34Ff8,
+            0x89Cc1341615f094dBFa0D683e0a71CeD0E5684C8,
+            0x27EC6Ffe1b30410e67E88717b37Dd87cCeBfE2C2,
+            0xb60c720fD17A6771a3A31b97Cf13B13Be510aF44,
+            0xcdc34BDadfcC104422fCBd5af8AC02D7f85ff29b,
+            0xf70f78a47F22e166A51402a51A886597A3Ea63A8,
+            0xad4DD74626626da5b3453a7cee42C5429B1E545c,
+            0x8BaE7B6d7A65F977e6Ab09f22138d3FA8AEF758b,
+            0xD199C59Ee9D3d08ba8bCcA0d1ce8dC40a7fCb217,
+            0xBB290B4548B82ffAcABE59569252EDFed352e888,
+            0xa454D2d035dAa873703CC9Cea7Ef53a58C6AF26c,
+            0x5B687f1B1a368bD1faC45FF6b7C77F04e2aB59f5,
+            0x7024fdA8737a67106e0F921269a9a3647E238acb,
+            0x94778f31D292441683be292F5d3ecBA2dc128316,
+            0xbb7Ecd75a68ca0871A6615603366f04B038567E6,
+            0xFE90a147E709137e1DC6Ac4762e81Ec8570B2797,
+            0xbb5e78f9Bf691003EAa7162A386f0Bd19F070723,
+            0x4bfafAd5340624E51308D2dBB720a318980F4CC1,
+            0x21E1889962B1C516d2a89fcb412c3c7785f7EaA4,
+            0xe1670cB7607bF6B155307Ac38CEBb95f56cc3adD,
+            0xeAa02A207EC355Ff3C8d9fA2A92Dfa8a0D7E3028,
+            0xbbF68d1cC94FE4D9aF5325aD9542508f53FA2211,
+            0x2C8f16df280D1FFB93cE8111F78D262c7b0FD409,
+            0x7E965Bd1B96DC41Bb578c076557651Cbe8dD5baa,
+            0xdd3e8296ACEc73fE1E3500057f5B3541Fa7877bD,
+            0x9850cDE85Af949a841074b3DBad9523F4D59bcdF,
+            0xaE52Fe1E0cdd6C20894904ccadDD1E6ECd510DaA,
+            0xE2FcFB2d35CF53a143298366b1bBEF3AAC354283,
+            0x21286FA2c75ac350d6CB77480743dB73f0Af6A10,
+            0xd7e68303058Ee24c7784a1ad26bF155E99e2A5ee,
+            0xe3D52FE77317D2bf0c54Fa2Ce58960cA0EE64A05,
+            0x0D1002e4ECfC3eC382ed8cFBEEB693aa4677c872,
+            0x712c898f37242Fd136Ffe9bd5E69f12b76b567D3,
+            0xDaF19E965928123D168B9ef417912e8F5F6a3D10,
+            0xC122631B532ddd7ffCa0F0d74cd53F3a68ed1D84,
+            0x4f709B2795B068441E18Be18dEeC96b0d99D1717,
+            0xE607C25F3fCc3001b7CdC2860b11BE1790CD1588,
+            0xe9F2419aE935cfA6BFAEd525446fd5197082370d,
+            0xD529cC63d525F91Ba976719829A5b661d9ecBf97,
+            0x785e4Ddb1764683Ef67390F6087df90129829eE3,
+            0xD1E19CE2fAeE40F48379807488caD1F667dA8459,
+            0x5e0C1545672882EC002322EAFBc1869BDfE017cB,
+            0x18fb51702bc4bfdD8C904bC9812D2bF6F630Fea8,
+            0xA1e5dEC240D7A429311044e30E43FCC58740A618,
+            0x6199d3F83E1241135669d2385d38128528C2a8d7,
+            0x425EC3c8bC00a879cf7B462c4d832c3E2f2d8b43,
+            0x9657fa0075c989660A7d3cd01270C9c80057D7BD,
+            0xA2E9d5063278b5F61034763C04DA77949b0c3b96,
+            0x92F97ff2e907Bd3e19d12379AFAf8d91e1a7f41D,
+            0x3dd12ca67F2cebce961Bd8782272D96d3Ae9BAA9,
+            0xB27632A773aEfE1812Fb3a7F051961c64b96802a,
+            0xFD0d3DCb6e0C2260FD3b57c95ab4E4d7D9eDD71E,
+            0x81815285d33A81B3C97e425E0f0e85f896710F93,
+            0x1631aF46a5CAa558Fa5c6BD281B08FCE00A1B115,
+            0xfb8322B8b15C4EfA9D0dD9AEAA99c45bfbe15D93,
+            0x7bebce9BeBa0D4C43A5E1981C6111345fA405688,
+            0xdcE127955B5Cf165CF7443bF38f265747F33Ad48,
+            0x1E76fD4C5459635af914Da67A953DC898CeC0789,
+            0x053F3fBc05ea8f39A698866ED6a2D60611761384,
+            0x6867f3a62DA8E84A8B30546FE4752Cc5aE76355A,
+            0xd7eb67BA416360Dc98c530A3391EECBd4f65B539,
+            0x28dF6c9946F75d433D801b1bF82ABa8B8067B2BA,
+            0x340C5B77F90fE46f7aB8750b1E1Cc7f466b5e923,
+            0x50E49e68e5B59b3DB9020dC1DAfE2ACE956B72C6,
+            0xc11d18709E5256A3d926FB34BBcced76A7d791C8,
+            0xCB2de694465B1F2B6FBF2aeb84Db746936b92fFd,
+            0x0Db1B7ed6fd44b93f6E13ccD02f74050357EC5A5,
+            0x058312AbD29F87b5fA15cb3EF67f95a944EDA4fC,
+            0x009f2592b5710f534c90DB5eb758FD2a79CAe913,
+            0x0DD498E412Af861500a9B8C5456A4eD2D688078e,
+            0x7e386DCb4C07d1e4fb0f6ECBca52cF83Fcacc2cE,
+            0xaF199f1E85e945F6ecb932314df8A3C05406c382,
+            0xbfa066D2135A4c9eCcc28529017eBC31936e43AD,
+            0x3E2E7845f40f745662D0d41eBDE4D979ab450aF6,
+            0x32336263254144127f53521aE6195ee38F2af9F5,
+            0xd565f5Ea52050Ff8aE9a8c3918B5DAcd77bF869e,
+            0x27bdDeE8aDfdd6C31a9c9B29ef4014062651b9Dc,
+            0xD179bA45287fc186B3DB86a090A22caD279ccb8a,
+            0x19d4C117B43D97387f6221cEE859cD46d7BCE134,
+            0xA2721aed96266ad1eaD643C36Dc570389A6E3cFF,
+            0xF49306476228BA9D92DAF47cfE4dAD10d3E1cE19,
+            0xf12a68F14304AE874F2c6959cfA79714A39E5Cb1,
+            0xe97f93F82801aEedf95D7b98C34CfF32B194D393,
+            0x9422ED38E726477b71107ffEeDeEe4308ac4080b,
+            0xe3496D808Cd05910836A0D981eCa3E067DD9334d,
+            0x65924618bDa0A7E2047d8400C3B87F64f0479c27,
+            0x4c68B40f27fB09Bb50Efa7e7868b7fe3371FC14F,
+            0x86E1813960A8c83276aD4a62E7F5C0127d9D270D,
+            0xc5e3bE87C0ef03EFC8324Df0EeB8bcFfA3749C43,
+            0x431b5FDF182d1D664c214034eA12f422ca13B923,
+            0x9370b8796a9A67f8E3925542cdF7d86ccB548D05,
+            0x35720f2ed7baf060D53876ae2A2Df50fAA5a379D,
+            0xA97D07289EB8c6e3ff18d00040370433949187eF,
+            0x773B73421BA0418B7C1e2fb2cb8b7F90c053AA0D,
+            0x03dDF0861544C0c3c55b58DFDae824A535345030,
+            0x7f93Fd9d0b7dA0d0581B54488b2147BE0e8510DB,
+            0x3C54Fd31c2Bcdd45041c3FC7C1858dE038d1AA6e,
+            0xF1266199A1c23593c5F75227D2b147056DdCc67E,
+            0x0c0E577D22f5e80482D3B78F3f974c2DD7bD9DeF,
+            0x4092757934B11c9f4513c27D4B86a08eAe981158,
+            0x29f27eBF23425a3F36d197d6a614FC6f3388216B,
+            0xDfF623FDEb8af20c1cBad847CF13c11A95430f9b,
+            0x64f68166EE47A3133B60470ECb2963236e732716,
+            0x42e18ff9524BC6Dd4b74725B46174ee09bbe8aBD,
+            0x3DC7AFF4727e43e375f7DaC7382ddfde29438601,
+            0x552d3081395C850281014f3C3D58653582c5a332,
+            0x4fbF94673318A31344D009799BDb4C6290db6e34,
+            0x9bF378E535178729342F7f0CfbdC87A5FE20655d,
+            0xd06370a055cf72E9bbFf440bB00A63583db5F4f1,
+            0x2a11565616469D99466172950DA4019627045A44,
+            0xb03E20275F069Be69d4629b01e5d5c3c7C4b00c4,
+            0x8dCb47C2e0CeAAec2a1605F1F7B5f5c7997f2e38,
+            0xDaB05E19021ed1B350739EC410A946828745eb10,
+            0xD9acDe71a87830797f1c888b36c4b3B1F2778861,
+            0x6463118872fcD32A5652Da05c7E31AE0F4A87C29,
+            0xfEce1e9DE1F0a692ACeA02D43D17244fd9aad5C2,
+            0x5DA83C397F8902F0d1C2663e10c63756CC2488AF,
+            0xf60B39237A0FEfB6e178f246f03fBF3d0863c5b6,
+            0x645A29D8bF7BA5924B0044BCC7a595a7984714b8,
+            0x9A7E74818ADaAc6C466673920b688F605434505d,
+            0xfAc77fae6f54C98D55e11C6b478F3eb910e16CE2,
+            0x7D9D85bD680Eb2C322113499FA7ba97fF18aC609,
+            0x1e76971da9f87a5F32ABaDC086Aa5F0AB8667C5E,
+            0xC93F2C41F9AB7B5a1C7c99F76037BFBd93C50BEc,
+            0x2C6cDa08e1643e08bd39072D8124863913C5Ad77,
+            0xb12D092D676114A6975412a7264a4C8552e87a16,
+            0xE8F9C422e44250d2578462AcccA89FCf4e5C28Ba,
+            0x47f005cA9F25756108b70A7fF84EEaeF44FF4A78,
+            0x50fABd53D591690108a51A9DDAC5A8cB9B81bA7E,
+            0x51f3b05261bfF03d22EFaA7cF95402Bf5Ef2AB71,
+            0x526134B8d1082ba8c79d75a95bE4c30f21f87024,
+            0x05c37A74920b152c653BECdc33487EB951f0fF40,
+            0xD42328cf1d7ecEC6041c6039cbAD859924D69bC4,
+            0xF486dc3C93495710c301a4613ad5EE75fC19EC8d,
+            0xfc3Dc3f04188961555c0615E7Bd0d69ed5D4Dc51,
+            0xb056E7763DffFaA03e3D22D50483542E1ABe8f1B,
+            0x9E32c50174989196926C81B548173f352184490e,
+            0x690653925075AA1a85236C02DD14C7B9E0e38529,
+            0xD62670afB3716dEa5281eCeBbd7567Df887BAde5,
+            0x5000FB4FA34119E452159b3a8f451FfBa757D13B,
+            0x3b57CD65E91edcc98569840a411dd45834009E95,
+            0x16347230AEF99093DcaCFf60629dBc1be44e7ab2,
+            0x34D7612285A1532a98eC2F944134B1baEb0E2799,
+            0xe2e998E6Be1a0EEC46e0Dc632E4EF8513126D8eA,
+            0xe838E083b9c2c8A70868e160aA11f852B2C50Ee8,
+            0x64Be535035Cdf8920c27C097ff94b87702c9F5e8,
+            0x8C6C18b1F56f4c706551e17eBa170E0d7F1AfCEC,
+            0xd38E5aDf2a1508D530d7A8b1020AE568C8Ad7835,
+            0x6E4e1A3fe7579f333d5fc9a101610AA79566B2EA
+        ];
     }
     
-    function _initAddress(address account,uint amountUSDT,uint amountTPS) internal {
+    function _address_fill2() public {
+        g2 = [
+            0xD4855C6837B64879fa4286CcccFD194F235da056,
+            0x2c320a03f3cd4F1B4d8047a1B2a702b7834da39B,
+            0x9201114690f6D80b4c7a3e2c29C2e42ae95B022A,
+            0x4d81f5a8C776083dE9E6237040D0Fcc7a8C70699,
+            0x04ea204E7238Ce274712Eb75BDd706f91f990679,
+            0x3B5944040C0E4502639e627CDac3f48d83Ddb355,
+            0x40d4fc21303C141539C5B18Ad49BB0D8eC071491,
+            0xF58e67F5C549E9Fd4BE10e3EdD026964F1Af22b6,
+            0x323a6d58d342955f4EF36AB2BEd6835d58F0fF60,
+            0xbFb458e4e4b73Dad2Cb2E35f6C1fCFE8ba0aAb7E,
+            0x38f3ebB0655168563AF1e3fDCeB406D37E440f0C,
+            0x54f356d52a9547000a4613E28B44F6D06CF1F1dc,
+            0x0cE3c9f5E76BcE6c951d4483c2eBA34b47BFA3Cf,
+            0x19c41eCe265a2259cb10983f0Cb4287e63AE2f51,
+            0xD6c07455fC2940fD090b41d00E24F853478A5991,
+            0x8A9440347D1dfE1a1D08388F9f4d8D9e0543B02C,
+            0x6C930900F92985087E2A1940298C70f215Fe8534,
+            0x511af29a37A5743A67506E3972ebd319F9c7ebB8,
+            0xCeA27b36082bbC0e06B110f8a8c32A6E269a8B58,
+            0x6B6D6Fe9F9d17881583b56cA11ca18Ff18705bad,
+            0x1f095e326cd3381b683cE77a518883D0A6C11C81,
+            0x99C90572b442a0a93858AFFFc3a1565D8f2e5038,
+            0x6DE8f1eD4DAB3620d7069c128b482f504Ee8bcC4,
+            0xf17Cb54231C3204f2438F1E2A36Af2718c1BE1B5,
+            0x8F11f09184AF69B6B31FE5651a36393a281C1e2D,
+            0xbcb2b2811cD8F31775A72E16f79615b203EC1dd2,
+            0x377bd831a77c9108bFc4Cb057FABa4E5c1bb286C,
+            0xb5436E1f00a81b4A9FD17B49a9b6ef4f8Fec0807,
+            0xe048CdFE9800018d55b89747136283F9FaD043C2,
+            0xD2bd122Dc0267A51bb30Df69fa1145a260209F4F,
+            0xb606299A3513166AE24B238D86aE17B608D4058e,
+            0xf9E3Dc50C10e9c228E7Fa52d01290a91f9A556F3,
+            0x3D884d774009aA9Fd52Cb5cBc431a5fd65195ADD,
+            0x356852A96ae81D6b21F3eEBf1418331FD778e99D,
+            0x8356a650ee5193530Efc2709902648935ec1E2E7,
+            0x364b08f865984fFD10CCEc9F96B6734f791eD0Ee,
+            0xB998F7160E1619326f9243F105A1B694475190cF,
+            0x0DF91a6d6F5d35e84D68450763544122656E6429,
+            0x0475f79FE41D48bDbA516E22f75a2cdD76286352,
+            0x9e31F03F512281da442E6A22CBa669390749e877,
+            0xCF86038E2c054b11F22dbE43Ccfd1EAbec7dE6f0,
+            0x3D533584126f68360663BB4E93b056dA0EeAc45E,
+            0xB1eC402d725B00205C4F3c509643A1913AB6392F,
+            0x627395df51eb6Be80F4EFDA23682ab1F967e77Ad,
+            0xfa3f3AF9Cd9777315A3D46f046BADD7e7AC1C57b,
+            0x203A96aD2EB88800F5489B2157e21291697633be,
+            0x8621FD097627FC9Bc52Ab596c1C735F6098fcfFd,
+            0xCa0B579409B57e4d0fF2874079AA8E0823032f24,
+            0x22f7F1697f33D126A5e9c9832DC25083D2194C99,
+            0x41e22Fde082CE29529f3Fa88138c3D36367BFA35,
+            0x4DDDF0cA5d4bc8eE8e90CF87229f147A0513F7e4,
+            0x96B711DEe45D7F9eB4DF2dCB6E520694Fb4c3683,
+            0x1E0c5A9a15777766D698Beb21cCc27F014F62C9a,
+            0x062eDDC77E7E9DF67D8448da1a8dae0823CA7291,
+            0xc2820576c8d78B304335327a2C630b37Cc06AD13,
+            0x638A2Cdc2dE247E4fc9Fa36D2012Dd4F2B4c55F1,
+            0x551278D79f988b5D9cfB6965c364E7ae35f8a3AD,
+            0x8f8CEA1df18b8c8A8E321E4b95139FBcaEcA60a3,
+            0x897D9f7e43dAa4D184896d39A53f50b82eE3e048,
+            0x66F30A8E9b72C57d517e6A43652511bA30187E05,
+            0x415F3788315bf69677605B1Cc7E46ceEd732CFF6,
+            0xD154a10051BAb637A4FD76Cc5F97b01fE771f185,
+            0x64411768019FA5251bD67181b20b1e49ca16A9E2,
+            0x8052bd276783c8Dd217c9F2C750ad83CF4210EE8,
+            0xc17c04dd2fd25AD18E52ada2D3446850C6F9a871,
+            0xab35b1dDE39402e5C3DCA9F73Fc5Bd8e16Ba0401,
+            0x49a6E4629F8fB9B1B2CDf447E3D47970a41860f3,
+            0x916C6392F8AcDC5951230495F44216af97327D74,
+            0xd8D9e07c9dB29810f6CB26c8b3b792E8A753921B,
+            0xf49b208Bfc9153D6F48fC3989ae25ea7c013fc63,
+            0xA4CbE2e2f1ce9bf1ecA2765167Bc064998eEb075,
+            0x967F43cFE613f9a2c8e6C8103c6C0e042CAfB149,
+            0x0b86edf38463A2a80116B28965FA59155d9c9f1a,
+            0xb279CA0A19fb28D9A6B3a16bd202A7641209DD6c,
+            0xaAe2e758d5538C176C1418267a7eB614f8fCC4e1,
+            0x7dA17dd06747E7Ed59796b667796e777206Bb576,
+            0xD2282a242cCD7d2947267cd0DC4Dc4A13CB1EA4e,
+            0x7DEB2172e0C02305e7E466B55f4dC096d54171E9,
+            0x3209865B0Fb320750E9238F8eBFF2b268170E156,
+            0xe85CAe1bAaBF5AEAbCc044f1131b9988446f607D,
+            0x87007D04f4F5B63eAFA4Ee831049dfC27548681f,
+            0x690e5349cafDe39cd4DDf2d0C5C4a14445Bf5d9e,
+            0x7b1867f28a77f5952c1d1A2278dF278E67Dc1e46,
+            0xc231cd3013d885e9Fe2EB3ce4bad29893aa0e351,
+            0x48A23B31ae111426a0C7e8DD47330556C069F7Ae,
+            0xf4431dA5eA6453FFE390dB9d381a4beFAEfAF267,
+            0x03c0A9261e47b7e4914B94fFECDe80973b6c8e1B,
+            0x42e26956BEa7577cEA00151EF7CC70dE2B5BD2bE,
+            0xA9De64824B7e3FE7d46d31f16f3cd9a3fce8e2Df,
+            0x4E73AD31633b8249A61FAFE4e320c787C7253d17,
+            0xcd5aeFc4508D6d0D8Fb1F12095025159382e7e9a,
+            0x1bE1BCE96442c1e74AF8C72d5e8c75D239B0FAae,
+            0xa94912381f71ABaEd2554b3C6Ac4A0a31311266E,
+            0xAe7E57EDD8Cd577f52d1e4f05B9C8E8874D90f37,
+            0x7F3002e0Dde84F0F571Dd8b3CAA4F2c593C41E99,
+            0x17cE8a62078aEE4C651f1632Fa5c190BAa409FB9,
+            0x9554849157eF25951137D71CF00d6338De84C7D0,
+            0x57f5B5c44727e9408546fEdaaA5dC2669559670E,
+            0x8aA33e8d47C83762A1298777DBd41155aEb04900,
+            0x5452e85B4115dEb1e3640bE3b6950Df478cedA76,
+            0xa069Bf70D06D16B64bD869FEBD69fE49198fE1D6,
+            0xf514332710104c3ACC92438f3A153Cc337cB8d01,
+            0x116aDDDBCE60eD77926C3a4b37D41a776de67441,
+            0x534c44C329EFb878b98ea04D9B8091b8E3f86406,
+            0x9CFb517D25c64A8fa490713D4CfBd4fd1fc40282,
+            0x4009D133efd8e8C1a3A210FFe3f9808a06aD9435,
+            0xA6d99518D93b5D9aac897EfDf0a952eD9FB39D81,
+            0x406dAb8C75d1559625BBd284063846fFbF4F1A6c,
+            0xE4301A18BFBbbB83d9397C33b796cD139Ed82cF8,
+            0x12491F06C0Cc7bbB459679be67De38c4b8D80270,
+            0x15Be269741e522D204BbE6a127dB2366659e869B,
+            0x898cCA405248C002c088D02A75D0a9eDd40FBE33,
+            0x25204839DF5B1FAaFD57d2f991B266Be1c65d24c,
+            0xA27D89643eB8B66f78A9B9c289B27c6EAA820Ebf,
+            0x95451B815420aC0521a22F1188568D179D5Dab24,
+            0xee76884B2d4202d1286175BEAA8aEA849ceA0d0a,
+            0x7ce91fC4a9C34E72fc7C3B871a052130fff695Ed,
+            0x085D9aFFc102f23bcF11C6cfD80fdF6d3Ab5F99d,
+            0x26af624aAc5d9A2454F51e5B04eBE6cea733F4a8,
+            0x23eBf786286fbD04bc75bAC759dF1D3804187519,
+            0x2281aCd47B383D34Cf2E9e9d2C39aC82fD6A2077,
+            0xebA71782ec54e677Becf7C3105d7467A6E8FF2Fb,
+            0x6E387E064c2A1056C523eC22a023E3ceBEb3932E,
+            0x835FF007dE7cA2b293E2251d267A9772D8e27739,
+            0x71113D383366d7Ce1A9FF1986D3dE52223e05Ab7,
+            0xEe9D6fB22B3047c2a6726d3CA91Db35247623dDf,
+            0xce58fe3071F5FFb801EE95A5c84FC1b6a080b1E9,
+            0xD6a3718C6f67946999b6EA5bcB988e3d2A9f6927,
+            0x98DCB39cDAdAC1C86C3081D405Ed496A5786a794,
+            0xd8179eE796352D643a3CD17195f4c66C8A3Bc25A,
+            0x837f3eD35891bFf020598C974A297430DB0AEa48,
+            0x145A9e6AaFDcAF013a605Da8c5F36f51caF19113,
+            0x63E326101943b38eeadFb2Af6305642a0ecfe4F8,
+            0x53404C3705B48Dd05c7Ce515DF9D76cDc6940A0C,
+            0x394F197F38FB9dFE814c774AcDcc956D1D6d7A01,
+            0x16adcda30265e319237313CcdFaF6B824394A896,
+            0x77Cf5e4e893D14D9B8fAe619D64172C808e1a1CC,
+            0xBD67AB41FD4e1bc6dB84B490B701C8Ec11BF63F2,
+            0x9E9cF2A2b7909Bbb00ec3282F7B7aF99C4dEd445,
+            0xf2968036Ad08DEA1c6E6CC81AC010A0ca67eD78c,
+            0xDd2BcCE68ed75c60fd3A28bbfa72556966096304,
+            0x3483D50601ad85580C8F50623b453DB8B0c71A8a,
+            0x022F7e364416b476318AF2FA105E224ABD3B0683,
+            0x954573e7b6EDae98321354438E47A76b95E34103,
+            0x17995e34a073E205e39b554460C9c1f434B421ee,
+            0x1c0DBFeD7FcA78D1072FA11D114a9B7a163a91f6,
+            0xf90fE5AAe11315C6e5bc81448B64b3bFfA382F3b,
+            0xCC769abD46A534b882dD82a758322ea7B1c62623,
+            0x9067dA62b8F370F318072FE217536d44eb4b3d51,
+            0x05536cEffef3432AAf9F5ea570Fd88881277a99D,
+            0xDA37Fba8A51dc69DCC9b5BA84E6DD122aA68DA37,
+            0x00827b6eB5fE79961AB7DF5C144175760f31e8D5,
+            0x204547cFd5f610cee3275d816AE0E2dca576B696,
+            0x0b78BF9D7eff89eB6C80CC315965AA92B3fF1a2C,
+            0x0b2427386a4FBAAa438551924084331658D8eB62,
+            0xac8bccD911dCFA4A593C06B63C0Bc93093d13057,
+            0x6501c7D0098B4eb08816dDDee2f3c191f0C1aA6a,
+            0x0754BbBbcB0c49b117C83A5FeF82fAf8Eb9CD3dD,
+            0xD00977309CE9C10366eD341a14D2E7fAb0d0804F,
+            0xb809794BE99940c4356557D50d9C34Fbb4c8494C,
+            0xcA73B8b63B9398EF6636f075DE7A93E881561be2,
+            0xcf2b8a657d78851730c4c5426Fb099E1dd828060,
+            0xbE31bc88DDF0a52984D19d0D3AD11a9b9C868D39,
+            0x66C86676943c3C6C492BaE7ec13774FdD54fe5E3,
+            0x5e2488Ae475083c090209cBfeB81001CeC58F1b0,
+            0x53e773e70441FD5Dc3B8C9FcA2888B41D3CD80af,
+            0x3B7387878FbC92A1d211397DE0f6164409e2e34f,
+            0xA7709baa0d0e9Ea5a3d8e56f5DBAf64dd16C7ba9,
+            0xdE3Eaf5245660045E4210DAC1a5Fc171cAf383d6,
+            0x862a72C58ab0F42B2B367E836f583B30dD99a461,
+            0xDFAa7e36DAc2cE8726A0D1Cdaa33327A7d9764FA,
+            0x69713181C15E7f2a6deC0fb1A10997dE93dbdE4B,
+            0xD9F9B0258c385eDC881C6fE680F8E55D43A31Af1,
+            0x1A94047A82aAD803c42035192F2C317B88DcC38C,
+            0xE63cC34233e9dFa5C92dEe11c650E094771fA35C,
+            0x8Bab42b5BA47678ec62c58135D4a77bb118ef38d,
+            0x6265fA9400b024D2722B33CB364A8393D191D12b,
+            0x982eed8315c40f879FA7109Ec0BDBd0CAe17b039,
+            0x4aE7fA5Fb4681d35d7dbC10195316eEd94DD64d3,
+            0xe91F9D637c0B1e3C23a4479f3964a280e732b55B,
+            0xC77d57449b51Be0875E6d27f46842cD89dBe43b7,
+            0x1c8940B14D9B276c9881c8D620bb506f9C220F79,
+            0xf2d758a618059916Fdf15eB7C2159aa0B16f6D09,
+            0x43846Be57AB46985bd1Bd4E31810FaFF9D31870e,
+            0xd0047C2Ed6Ceb77cB7c5A6d6f7d54d308a8079E0,
+            0xA5ddaEcEccb9b722561369EecfE322922725f9F0,
+            0x39CA85Aa57Fe03728a99765520613Fdb2b652199,
+            0xcb5cc6a65E852A9E55E6263064565Dc24bC88338,
+            0x9D50692909acCC7273aa5d1679FE1159DB25C7E1,
+            0x82960A96DB5ac59B256849fDF6EdC5f35646a371,
+            0xB8dBA361Ccd06A05593c910517D42812c738636A,
+            0x74D5f459683505c73F9686CedD5a1C255eDF710c,
+            0xDFc342649440A83f5C3e7D1f9621cB5163Db0c2d,
+            0x1eE2f32f18c4396738Bd11F678A0df46F7f31060,
+            0x39d735EAFEe1A101cCc1a638Bc38A567Cb63360A,
+            0x188Cc5ba6668c067a4301EF8FbDaFe7CE53f9540,
+            0x616bd9660704d850E365057796d68D0c8ECBf069,
+            0x37E856d0525cf3a0AdBE736499B650f5f2095588,
+            0xf4f5d008b694f8fA183458f055524134299183f4,
+            0xDec8A45E5475F143edAb93b206f8dcEDCf8EF5A4
+        ];
+
+    }
+    function _address_fillcount1() public view returns(uint) {
+        return g1.length;
+    }
+    function _address_fillcount2() public view returns(uint) {
+        return g2.length;
+    }
+    function address_add() public {
+        require(start<400, "account_full");
+        uint end = start + limit;
+        if (start<200) {
+            address parent = start==0 ? sh[0] : g1[start - limit];
+            for(uint i=start; i<end; i++) _addAccount(g1[i], parent);
+        } else {
+            address parent = start==200 ? g1[190] : g2[(start%200) - limit];
+            for(uint i=start; i<end; i++) _addAccount(g2[i%200], parent);
+        }
+        start = end;
+    }
+    
+    function _addAccount(address account, address referal) internal {
+        uint amountUSDT = 10000 * 10 ** 2;
+        uint amountTPS = 10000 * 10 ** 4;
         _mint(account, amountUSDT);
         ITLB10(tokenTPS)._test_mint(account, amountTPS);
-    }
-    
-    function _deposit(address account, address referal, uint amount) internal needTps {
+        
+        uint amount = 1000 * 10 ** 2;
         _approve(account, tokenTPS, amount);
-        ITLB10(tokenTPS)._test_deposit(account, referal, amount);   
+        ITLB10(tokenTPS)._test_deposit(account, referal, amount);
     }
     
-    function _buyMiner(address account, address referal, uint amount) internal needTps {
+    function _addBuy(address account, uint amount) public {
+        amount *= 10 ** 2;
+        _approve(account, tokenTPS, amount);
+        ITLB10(tokenTPS)._test_buy(account, amount);
+    }
+    function _addSellBook() public {
+        uint amountTPS = 100 * 10 ** 4;
+        for(uint i = 0; i<sh.length; i++) {
+            ITLB10(tokenTPS)._test_sell(sh[i],amountTPS);
+        }
+    }
+    
+    function buyMiner(address account, address referal, uint8 tier) internal {
+        uint amount = ITLB10(tokenTPS).minerPrice(tier);
         _approve(account, tokenTPS, amount);
         ITLB10(tokenTPS)._test_buyMiner(account,referal,amount);
     }
     
-    function _init(address tpsContract) public {
-        require(called["_init"]!=true, "ALREADY_CALLED"); 
-        called["_init"] = true;
-        
-        tokenTPS = tpsContract;
-        ITLB10(tokenTPS)._testSetAdmin(admin,lee,zhang,redeem);
-        uint amountUSDT = 10000 * 10 ** 2;
-        uint amountTPS = 10000 * 10 ** 4;
-        _initAddress(pnode,amountUSDT,amountTPS);
-        for(uint i = 0; i<pnode_s.length; i++) _initAddress(pnode_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<sh1_s.length; i++) _initAddress(sh1_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<g1_s.length; i++) _initAddress(g1_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<g2_s.length; i++) _initAddress(g2_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<g3_s.length; i++) _initAddress(g3_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<g4_s.length; i++) _initAddress(g4_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<g5_s.length; i++) _initAddress(g5_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<g6_s.length; i++) _initAddress(g6_s[i],amountUSDT,amountTPS);
-        for(uint i = 0; i<g10_s.length; i++) _initAddress(g10_s[i],amountUSDT,amountTPS);
-        
-        // uint amount = 200 * 10 ** 2;
-        // _deposit(pnode,admin,amount);
-    }
-    
-    function _init_1() public needTps {
-        require(called["_init_1"]!=true, "ALREADY_CALLED"); 
-        called["_init_1"] = true;
-        
-        uint amount = 200 * 10 ** 2;
-        _deposit(pnode,admin,amount);
-        for(uint i=0; i<pnode_s.length;i++)  _deposit(pnode_s[i],pnode,amount);
-        for(uint i=0; i<sh1_s.length; i++)    _deposit(sh1_s[i], sh1, amount);
-    }
-    function _init_g1() public needTps {
-        require(called["_init_g1"]!=true, "ALREADY_CALLED"); 
-        called["_init_g1"] = true;
-        uint amount = 200 * 10 ** 2;
-        for(uint i=0; i<g1_s.length; i++)    _deposit(g1_s[i], g1, amount);
-    }
-    function _init_g2() public needTps {
-        require(called["_init_g2"]!=true, "ALREADY_CALLED"); 
-        called["_init_g2"] = true;
-        uint amount = 200 * 10 ** 2;
-        for(uint i=0; i<g2_s.length; i++)    _deposit(g2_s[i], g2, amount);
-    }
-    function _init_g3() public needTps {
-        require(called["_init_g3"]!=true, "ALREADY_CALLED"); 
-        called["_init_g3"] = true;
-        uint amount = 200 * 10 ** 2;
-        for(uint i=0; i<g3_s.length; i++)    _deposit(g3_s[i], g3, amount);
-    }
-    function _init_g4() public needTps {
-        require(called["_init_g4"]!=true, "ALREADY_CALLED"); 
-        called["_init_g4"] = true;
-        uint amount = 200 * 10 ** 2;
-        for(uint i=0; i<g4_s.length; i++)    _deposit(g4_s[i], g4, amount);
-    }
-    function _init_g5() public needTps {
-        require(called["_init_g5"]!=true, "ALREADY_CALLED"); 
-        called["_init_g5"] = true;
-        uint amount = 200 * 10 ** 2;
-        for(uint i=0; i<g5_s.length; i++)    _deposit(g5_s[i], g5, amount);
-    }
-    function _init_g6() public needTps {
-        require(called["_init_g6"]!=true, "ALREADY_CALLED"); 
-        called["_init_g6"] = true;
-        uint amount = 200 * 10 ** 2;
-        for(uint i=0; i<g6_s.length; i++)    _deposit(g6_s[i], g4, amount);
-    }
-    function _init_g7() public needTps {
-        require(called["_init_g7"]!=true, "ALREADY_CALLED"); 
-        called["_init_g7"] = true;
-        uint amount = 200 * 10 ** 2;
-        for(uint i=0; i<g10_s.length; i++)    _deposit(g10_s[i], g4, amount);
-    }
-    
-    function _miner_1() public needTps {
-        uint amount = ITLB10(tokenTPS).minerPrice(1);
-        _buyMiner(g6,sh9,amount);
-    }
-    
-    function _test2_price() public needTps view returns(uint) {
-        uint amount = ITLB10(tokenTPS).minerPrice(1);
+    function minerPrice(uint8 tier) public view returns(uint) {
+        uint amount = ITLB10(tokenTPS).minerPrice(tier);
         return amount;
     }
+    
 }
