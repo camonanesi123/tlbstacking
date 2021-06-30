@@ -17,6 +17,8 @@ const precisionTlb = config[chainId].tlb.precision;
 export default class Metamask {
 	static explorer = blockExplorer;
 	static contract = contractTlb;
+	static precisionUsdt = precisionUsdt;
+	static precisionTlb = precisionTlb;
 	static address;
 	static timeHandler;
 	static start(dispatch) {
@@ -117,7 +119,13 @@ export default class Metamask {
 			}
 			return {err: '无知错误'};
 		} catch (err) {
-			return {err:err.message};
+			let message;
+			if (err.code===4001) {
+				message = '您取消了交易';
+			} else {
+				message = err.message;
+			}
+			return {err:message};
 		}
 	}
 	
@@ -177,6 +185,11 @@ export default class Metamask {
 				result.minerCount = 	Number(res[i++]);
 				result.insuranceAmount= Number(res[i++]) / p2;
 			}
+			res = await this.call(contractTlb, 'orderHistory');
+			if (res && Array.isArray(res) && res.length) {
+				result.orders = (Array.isArray(res[0]) ? res : [res]).map(v=>[Number(v[0]),Number(v[1]),Number(v[2])/p1,Number(v[3])]);
+			}
+			
 			if (address) {
 				res = await this.call(contractUsdt, 'balanceOf', address);
 				if (res) {
@@ -196,6 +209,20 @@ export default class Metamask {
 					result._children = 		Number(res[i++]);
 					result._contribution = 	Number(res[i++]) / p2;
 				}
+				res = await this.call(contractTlb, 'pendingOrder', address);
+				if (res && Array.isArray(res) && res.length) {
+					result.pending = (Array.isArray(res[0]) ? res : [res]).map(v=>{
+						const time = Number(v[0]);
+						const type = Number(v[1]);
+						const precision = type===0 ? p2 : p1;
+						const initial = Number(v[2])/precision;
+						const balance = Number(v[3])/precision;
+						return [time, type, initial, balance];
+					});
+				} else {
+					result.pending = [];
+				}
+
 				res = await this.call(contractTlb, 'profits', address);
 				if (res) {
 					let i = 0;
@@ -223,7 +250,7 @@ export default class Metamask {
 		return null;
 	}
 	static async amountForDeposit(amount) {
-		let res = await this.call(contractTlb, 'amountForDeposit', amount * 10 ** precisionUsdt)
+		let res = await this.call(contractTlb, 'amountForDeposit', Math.round(amount * 10 ** precisionUsdt))
 		if (res) {
 			console.log('amountForDeposit',res);
 			return Number(res) / 10 ** precisionTlb;
@@ -240,12 +267,24 @@ export default class Metamask {
 	}
 	
 	static approve(amount) {
-		return this.callBySigner(contractUsdt, 'approve', contractTlb, amount * 10 ** precisionUsdt);
+		return this.callBySigner(contractUsdt, 'approve', contractTlb, Math.round(amount * 10 ** precisionUsdt));
 	}
 	static deposit(referalLink, amount) {
-		return this.callBySigner(contractTlb, 'deposit', referalLink, amount * 10 ** precisionUsdt);
+		return this.callBySigner(contractTlb, 'deposit', referalLink, Math.round(amount * 10 ** precisionUsdt));
 	}
 	static withdraw() {
 		return this.callBySigner(contractTlb, 'withdraw');
+	}
+	static buy(amount) {
+		return this.callBySigner(contractTlb, 'buy', Math.round(amount * 10 ** precisionUsdt));
+	}
+	static cancelBuyOrder() {
+		return this.callBySigner(contractTlb, 'cancelBuyOrder');
+	}
+	static sell(amount) {
+		return this.callBySigner(contractTlb, 'sell', Math.round(amount * 10 ** precisionTlb));
+	}
+	static cancelSellOrder() {
+		return this.callBySigner(contractTlb, 'cancelSellOrder');
 	}
 }

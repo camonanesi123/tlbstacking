@@ -43,6 +43,8 @@ export const contractSlice = createSlice({
         blockHeight: 0,
         allowance: 0,
         
+        orders: [],
+        pending: [],
 
         
     }, 

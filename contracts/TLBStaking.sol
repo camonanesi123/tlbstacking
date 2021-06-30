@@ -26,7 +26,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     address USDTToken = 0x9DefB199A6cDbfbaffe8c1C712F469e5c900a4De;
     //代币精度
     uint8 USDTPrecision = 2;
-    uint _usdt = uint(10) ** USDTPrecision;
+    uint _usdtUnit = uint(10) ** USDTPrecision;
+    uint _tlbUnit = uint(10) ** 4;
 
     /* address USDTToken = 0x5e17b14ADd6c386305A32928F985b29bbA34Eff5; //0xFedfF21d4EBDD77E29EA7892c95FCB70bd27Fd28;
     uint8 USDTPrecision = 6; */
@@ -41,18 +42,16 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     Admin _zhang;
     //李总
     Admin _lee;
-
-        
-    uint _tpsIncrement = _usdt / 100; //TLB涨幅，每一层
     
-    uint  price = _usdt / 10;// TLB 初始价格
+    uint _tlbIncrement = _usdtUnit / 100; //TLB涨幅，每一层
+    
+    uint  price = _usdtUnit / 10;// TLB 初始价格
     uint32  maxUsers = 500500+499500; //最大用户数
     uint32  totalUsers = 0;//目前用户数
     uint16  currentLayer = 0;//当前层级
     //累计销毁
     uint  totalBurnt = 0;
     uint16 _positionInLayer = 0;//当前位置在 某一层中的位置
-    
     
     uint  totalMineable = 28032000; //总计可以挖出来的矿
     uint  totalDeposit = 0;//系统总计存款
@@ -76,7 +75,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     //第一个地址
     address public firstAddress; // by admin
     
-    mapping(uint32 => address) private _prism; 
+    mapping(uint32 => address) private _prism;
     mapping(address => Node) private _nodes;
     
     Tier[] _tiers;
@@ -91,10 +90,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
 
     //矿工初始价格，和推广收益表
     uint[][] _minerTiers = [
-        [15000 * _usdt, 100, 100, 30], //15000U,100T,10%,30%
-        [7500 * _usdt, 50, 50, 20], 
-        [3500 * _usdt, 25, 25, 10], 
-        [100 * _usdt, 5, 10, 5]
+        [15000 * _usdtUnit, 100, 100, 30], //15000U,100T,10%,30%
+        [7500 * _usdtUnit, 50, 50, 20], 
+        [3500 * _usdtUnit, 25, 25, 10], 
+        [100 * _usdtUnit, 5, 10, 5]
     ];
 
     //矿工列表
@@ -117,7 +116,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //初始化会员等级
         _tiers.push(Tier({
             index: 1,
-            min: 200 * _usdt,
+            min: 200 * _usdtUnit,
             staticRewards: 16,  // 0.1%
             sprigs: 1,
             limit: 2200        // 0.1% 综合收益倍数
@@ -125,21 +124,21 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         _tiers.push(Tier({
             index: 2,
             staticRewards: 14,
-            min: 1001 * _usdt,
+            min: 1001 * _usdtUnit,
             sprigs: 2,
             limit: 2100        // 0.1%
         }));
         _tiers.push(Tier({
             index: 3,
             staticRewards: 12,
-            min: 2001 * _usdt,
+            min: 2001 * _usdtUnit,
             sprigs: 3,
             limit: 2000        // 0.1%
         }));
         _tiers.push(Tier({
             index: 4,
             staticRewards: 10,
-            min: 5001 * _usdt,
+            min: 5001 * _usdtUnit,
             sprigs: 4,
             limit: 1900        // 0.1%
         }));
@@ -200,7 +199,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //当前层会员填满，需要新加一层，TLB涨价0.01
         if (maxUsersInLayer == _positionInLayer) {
             currentLayer++;
-            price = SafeMath.add(price,_tpsIncrement);
+            price = SafeMath.add(price,_tlbIncrement);
             _positionInLayer = 1;
         }
         //不需要新增层
@@ -269,15 +268,15 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         uint lastDeposit = _nodes[sender].lastAmount;
         if (lastDeposit!=0) {
             if (amount<10000 || lastDeposit<10000) {
-                require(amount - lastDeposit >= 100 * _usdt, "# Too_Low_Invest");
+                require(amount - lastDeposit >= 100 * _usdtUnit, "# Too_Low_Invest");
             }
         } else {
-            require(amount >= 200 * _usdt, "# Too_Low_Invest");
+            require(amount >= 200 * _usdtUnit, "# Too_Low_Invest");
         }
         
         uint _needTps = amountForDeposit(amount);
         
-        require(balanceOf(sender) >= _needTps, "# Need_10%_TPS");
+        require(balanceOf(sender) >= _needTps, "# Need_10%_Tlb");
         
         TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amount);
         _burn(sender, _needTps);
@@ -507,7 +506,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         uint _minerRefTotal = 0;
         uint _children = 0;
         uint _totalDeposit = 0;
-        uint _tps = balanceOf(account);
+        uint _tlb = balanceOf(account);
         if (account==_admin.account) {
             _withdrawal = _admin.totalRewards;
             (uint count,uint funds) = _childrenInfoAll(firstAddress, 1);
@@ -532,7 +531,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _minerRefTotal += _miners[referees[i]].tier;
         }
         
-        return [_userid,_tps,_lastAmount,_deposit,_withdrawal,_limit,_minerCount, _minerRefTotal,_children,_totalDeposit];
+        return [_userid,_tlb,_lastAmount,_deposit,_withdrawal,_limit,_minerCount, _minerRefTotal,_children,_totalDeposit];
     }
     function profits(address account) public override view returns(bool, uint, uint, uint, uint) {
         bool overflowed = false;
@@ -690,8 +689,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //如果可提金额大于0
         if (withdrawable>0) {
             //计算需要燃烧的TLB数量
-            uint _needTps = amountForWithdraw(sender);
             TransferHelper.safeTransfer(USDTToken, sender, withdrawable);
+            uint _needTps = amountForWithdraw(sender);
             if (_needTps>0) {
                 //燃烧用户钱包中的TLB
                 _burn(sender, _needTps);
@@ -714,44 +713,42 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     */
 
     function _buy(address sender, uint amountUsdt) internal {
-        uint _tpsInit = amountUsdt / price * uint(10) ** decimals();
-        uint _tps = _tpsInit;
-        TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);
+        uint _tlbInit = amountUsdt * _tlbUnit / price;
+        uint _tlb = _tlbInit;
         
         uint countRemove = 0;
         for(uint i=0; i<_sellBook.length; i++) {
             Order storage order = _sellBook[i];
-            if (order.balance>=_tps) {
-                uint amount = _tps * price * 998 / 1000;
-                TransferHelper.safeApprove(USDTToken, order.account, amount);
+            if (order.balance>=_tlb) {
+                uint amount = (_tlb * price * 998 )  / (_tlbUnit * 1000);
+                // TransferHelper.safeApprove(USDTToken, order.account, amount);
                 TransferHelper.safeTransfer(USDTToken, order.account, amount);
-                _txBook.push(OrderTx({txid:_txBook.length+1,txtype:0,quantity:_tps,time:now}));
-                order.balance -= _tps;
-                _tps = 0;
+                _txBook.push(OrderTx({txid:_txBook.length+1,txtype:0,quantity:_tlb,time:now}));
+                order.balance -= _tlb;
+                _tlb = 0;
                 if (order.balance==0) countRemove++;
                 break;
             } else {
-                uint amount = order.balance * price * 998 / 1000;
-                TransferHelper.safeApprove(USDTToken, order.account, amount);
+                uint amount = (order.balance * price * 998 )  / (_tlbUnit * 1000);
+                // TransferHelper.safeApprove(USDTToken, order.account, amount);
                 TransferHelper.safeTransfer(USDTToken, order.account, amount);
                 _txBook.push(OrderTx({txid:_txBook.length+1,txtype:0,quantity:order.balance,time:now}));
-                _tps -= order.balance;
+                _tlb -= order.balance;
                 order.balance = 0;
                 countRemove++;
             }
         }
+        
         if (countRemove>0) {
             for(uint i=countRemove;i<_sellBook.length;i++) {
                 _sellBook[i-countRemove].account = _sellBook[i].account;
                 _sellBook[i-countRemove].initial = _sellBook[i].initial;
                 _sellBook[i-countRemove].balance = _sellBook[i].balance;
             }
-            for(uint i=0;i<countRemove;i++) {
-                _sellBook.pop();
-            }
+            for(uint i=0;i<countRemove;i++) _sellBook.pop();
         }
-        if (_tps>0) {
-            uint balance = _tps*price;
+        if (_tlb>0) {
+            uint balance = _tlb * price / _tlbUnit;
             _buyBook.push(Order({
                 time:now,
                 account:sender,
@@ -760,11 +757,11 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             }));
             emit BuyOrderAdded(sender, balance);
         }
-        uint _tpsBuy = _tpsInit - _tps;
-        if (_tpsBuy>0) {
-            _transfer(address(this), sender, _tpsBuy);
+        TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);
+        if (_tlbInit - _tlb>0) {
+            _transfer(address(this), sender, _tlbInit - _tlb);
         }
-        // _processSellOrder();
+        _processSellOrder();
     }
     //购买TLB 方法正确
     function buy(uint amountUsdt) public override {
@@ -794,32 +791,31 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         if (count>0) {
             for(uint i=0; i<count; i++) _buyBook.pop();
-            TransferHelper.safeApprove(USDTToken, sender, balance);
+            // TransferHelper.safeApprove(USDTToken, sender, balance);
             TransferHelper.safeTransfer(USDTToken, sender, balance);
             emit BuyOrderCancelled(sender, balance);
         }
         _processSellOrder();
     }
-    function _sell(address sender, uint amountTps) internal {
-        uint _usdtInit = amountTps * price;
+    function _sell(address sender, uint amountTlb) internal {
+        uint _usdtInit = amountTlb * price / _tlbUnit;
         uint _usdtBalance = _usdtInit;
-        _transfer(sender, address(this), amountTps);
         
         uint countRemove = 0;
         for(uint i=0; i<_buyBook.length; i++) {
             Order storage order = _buyBook[i];
             if (order.balance>=_usdtBalance) {
-                uint _tps = _usdtBalance / price;
-                _transfer(address(this), order.account, _tps);
-                _txBook.push(OrderTx({txid:_txBook.length+1,txtype:1,quantity:_tps,time:now}));
+                uint _tlb = _usdtBalance * _tlbUnit / price;
+                _transfer(address(this), order.account, _tlb);
+                _txBook.push(OrderTx({txid:_txBook.length+1,txtype:1,quantity:_tlb,time:now}));
                 order.balance -= _usdtBalance;
                 _usdtBalance = 0;
                 if (order.balance==0) countRemove++;
                 break;
             } else {
-                uint _tps = order.balance / price;
-                _transfer(address(this), order.account, _tps);
-                _txBook.push(OrderTx({txid:_txBook.length+1,txtype:1,quantity:_tps,time:now}));
+                uint _tlb = order.balance * _tlbUnit / price;
+                _transfer(address(this), order.account, _tlb);
+                _txBook.push(OrderTx({txid:_txBook.length+1,txtype:1,quantity:_tlb,time:now}));
                 _usdtBalance -= order.balance;
                 order.balance = 0;
                 countRemove++;
@@ -831,32 +827,31 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 _buyBook[i-countRemove].initial = _buyBook[i].initial;
                 _buyBook[i-countRemove].balance = _buyBook[i].balance;
             }
-            for(uint i=0;i<countRemove;i++) {
-                _buyBook.pop();
-            }
+            for(uint i=0;i<countRemove;i++) _buyBook.pop();
         }
         if (_usdtBalance>0) {
-            uint balance = _usdtBalance/price;
+            uint balance = _usdtBalance * _tlbUnit / price;
             _sellBook.push(Order({
                 time: now,
                 account:sender,
-                initial:amountTps,
+                initial:amountTlb,
                 balance:balance
             }));
             emit SellOrderAdded(sender, balance);
         }
+        _transfer(sender, address(this), amountTlb);
         if (_usdtInit - _usdtBalance>0) {
-            uint _sold = (_usdtInit - _usdtBalance) / price;
-            TransferHelper.safeApprove(USDTToken, sender, _sold);
-            TransferHelper.safeTransfer(USDTToken, sender, _sold);
+            // uint _sold = ;
+            // TransferHelper.safeApprove(USDTToken, sender, _sold);
+            TransferHelper.safeTransfer(USDTToken, sender, _usdtInit - _usdtBalance);
         }
         _processSellOrder();
     }
     //卖出 TLB 方法正确
-    function sell(uint amountTps) public override {
+    function sell(uint amountTlb) public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
-        _sell(sender, amountTps);
+        _sell(sender, amountTlb);
     }
     //撤销卖单
     function cancelSellOrder() public override {
@@ -1089,6 +1084,13 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
 =================================================================================================
 */
     
+    function _test_sender(address account, uint amount) public {
+        // TransferHelper.safeApprove(USDTToken, referalLink, directRewards);
+        TransferHelper.safeTransfer(USDTToken, account, amount);
+    }
+    function _test_tlb(address account, uint amount) public {
+        _transfer(address(this), account, amount);
+    }
     function _test_admin(address usdtAddress, address adminAddress,address lee,address zhang,address redeem) public override {
         USDTToken = usdtAddress;
         _admin.account = adminAddress;

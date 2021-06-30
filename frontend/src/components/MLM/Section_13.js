@@ -40,19 +40,19 @@ function Section_13(props) {
                     <tbody>
                         <tr>
                             <td>合约地址</td>
-                            <td>{contractAddress.slice(0,8)+'***'+contractAddress.slice(-4)}</td>
+                            <td>{contractAddress ? contractAddress.slice(0,8)+'***'+contractAddress.slice(-4) : '-'}</td>
                         </tr>
                         <tr>
                             <td>推荐人地址</td>
-                            <td>{contract.referer.slice(0,8)+'***'+contract.referer.slice(-4)}</td>
+                            <td>{contract.referer ? contract.referer.slice(0,8)+'***'+contract.referer.slice(-4) : '-'}</td>
                         </tr>
                         <tr>
                             <td>我的邀请地址</td>
-                            <td>{contract.address.slice(0,8)+'***'+contract.address.slice(-4)}</td>
+                            <td>{contract.address ? contract.address.slice(0,8)+'***'+contract.address.slice(-4) : '-'}</td>
                         </tr>
                         <tr>
                             <td>回购金额</td>
-                            <td>{NF(contract.redeemAmount)}</td>
+                            <td>{contract.redeemAmount ? NF(contract.redeemAmount) : '-'}</td>
                         </tr>
                     </tbody>
                 </table>

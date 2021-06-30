@@ -326,49 +326,6 @@
 				"internalType": "address",
 				"name": "sender",
 				"type": "address"
-			}
-		],
-		"name": "_test_children",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "_test_deep",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
 			},
 			{
 				"internalType": "address",
@@ -384,49 +341,6 @@
 		"name": "_test_deposit",
 		"outputs": [],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "_test_gettier",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "_test_minerType",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -448,33 +362,8 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			}
-		],
-		"name": "_test_parent",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			}
-		],
-		"name": "_test_referalCount",
+		"inputs": [],
+		"name": "_test_ordercount",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -542,19 +431,36 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "sender",
+				"name": "account",
 				"type": "address"
-			}
-		],
-		"name": "_test_tier",
-		"outputs": [
+			},
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "_test_sender",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "_test_tlb",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1048,31 +954,9 @@
 		"name": "orderHistory",
 		"outputs": [
 			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "txid",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "txtype",
-						"type": "uint8"
-					},
-					{
-						"internalType": "uint256",
-						"name": "quantity",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct ITLB10.OrderTx[]",
+				"internalType": "uint256[4][]",
 				"name": "",
-				"type": "tuple[]"
+				"type": "uint256[4][]"
 			}
 		],
 		"stateMutability": "view",
@@ -1086,6 +970,25 @@
 				"internalType": "address payable",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "pendingOrder",
+		"outputs": [
+			{
+				"internalType": "uint256[4][]",
+				"name": "",
+				"type": "uint256[4][]"
 			}
 		],
 		"stateMutability": "view",
@@ -1160,7 +1063,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amountTps",
+				"name": "amountTlb",
 				"type": "uint256"
 			}
 		],
