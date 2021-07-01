@@ -28,39 +28,39 @@ export default function(props) {
 				<h4 className="font_size_29 mb-0 me-3">
 					友情链接：
 				</h4>
-				<ul className="list-unstyled flex-grow-1 m-0 p-0 d-flex align-items-center justify-content-between">
+				<ul className="ad list-unstyled flex-grow-1 m-0 p-0 d-flex align-items-center justify-content-between">
 					<li>
-						<a className="font_size_49 text-white" href="#">
-							<i className="fab fa-facebook"></i>
+						<a href="#">
+							<i className="fab fa-facebook text-white"></i>
 						</a>
 					</li>
 					<li>
-						<a className="font_size_49 text-white" href="#">
-							<i className="fab fa-twitter"></i>
+						<a href="#">
+							<i className="fab fa-twitter text-white"></i>
 						</a>
 					</li>
 					<li>
-						<a className="font_size_49 text-white" href="#">
-							<i className="fab fa-linkedin-in"></i>
+						<a href="#">
+							<i className="fab fa-linkedin-in text-white"></i>
 						</a>
 					</li>
 					<li>
-						<a className="font_size_49 text-white" href="#">
-							<i className="fab fa-tumblr"></i>
+						<a href="#">
+							<i className="fab fa-tumblr text-white"></i>
 						</a>
 					</li>
 					<li>
-						<a className="font_size_49 text-white" href="#">
+						<a href="#">
 							<img src={ImgWechat} alt="wechat" />
 						</a>
 					</li>
 					<li>
-						<a className="font_size_49 text-white" href="#">
+						<a href="#">
 							<img src={ImgGoogle} alt="google" />
 						</a>
 					</li>
 					<li>
-						<a className="font_size_49 text-white" href="#">
+						<a href="#">
 							<img src={ImgYoutube} alt="youtube" />
 						</a>
 					</li>

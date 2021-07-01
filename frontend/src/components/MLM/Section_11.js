@@ -66,7 +66,7 @@ function Section_11(props) {
 	});
 
     return (
-        <Section className="section_paddingX">
+        <Section>
             <h3 className="text-center">
                 保险池机制倒计时
             </h3>

@@ -14,8 +14,6 @@ if ('ethereum' in window) {
 }
 
 const Style = styled.div`
-	
-	/* Chrome, Safari, Edge, Opera */
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
 		-webkit-appearance: none;
@@ -26,125 +24,6 @@ const Style = styled.div`
 	input[type="number"] {
 		-moz-appearance: textfield;
 	}
-
-	/* ...........Global Selector..........*/
-	
-
-	.font_size_29 {
-		font-size: 29.17px;
-		@media (max-width: 767px) {
-			font-size: 20px;
-			@media (max-width: 575px) {
-				font-size: 13px;
-			}
-		}
-	}
-	.font_size_168 {
-		font-size: 168.26px;
-		@media (max-width: 991px) {
-			font-size: 100px;
-			@media (max-width: 575px) {
-				font-size: 60px;
-				@media (max-width: 400px) {
-					font-size: 40px;
-				}
-			}
-		}
-	}
-	.font_size_139 {
-		font-size: 139.81px;
-		@media (max-width: 991px) {
-			font-size: 80px;
-			@media (max-width: 575px) {
-				font-size: 40px;
-				@media (max-width: 400px) {
-					font-size: 30px;
-				}
-			}
-		}
-	}
-	.font_size_68 {
-		font-size: 68.75px;
-		@media (max-width: 991px) {
-			font-size: 40px;
-			@media (max-width: 575px) {
-				font-size: 25px;
-				@media (max-width: 400px) {
-					font-size: 20px;
-				}
-			}
-		}
-	}
-	.font_size_79 {
-		font-size: 79.17px;
-		@media (max-width: 991px) {
-			font-size: 50px;
-			@media (max-width: 575px) {
-				font-size: 35px;
-				@media (max-width: 400px) {
-					font-size: 25px;
-				}
-			}
-		}
-	}
-	.font_size_49 {
-		font-size: 49.38px;
-		@media (max-width: 991px) {
-			font-size: 22px;
-			@media (max-width: 575px) {
-				font-size: 17px;
-			}
-		}
-	}
-	.font_size_58 {
-		font-size: 58.33px;
-		@media (max-width: 991px) {
-			font-size: 35px;
-			@media (max-width: 575px) {
-				font-size: 20px;
-				@media (max-width: 400px) {
-					font-size: 16px;
-				}
-			}
-		}
-	}
-	.font_size_37 {
-		font-size: 37.5px;
-		@media (max-width: 991px) {
-			font-size: 25px;
-			@media (max-width: 575px) {
-				font-size: 16px;
-				@media (max-width: 400px) {
-					font-size: 14px;
-				}
-			}
-		}
-	}
-	.font_size_90 {
-		font-size: 90.15px;
-		@media (max-width: 991px) {
-			font-size: 70px;
-			@media (max-width: 575px) {
-				font-size: 35px;
-				@media (max-width: 400px) {
-					font-size: 25px;
-				}
-			}
-		}
-	}
-	.font_size_104 {
-		font-size: 104.76px;
-		@media (max-width: 991px) {
-			font-size: 75px;
-			@media (max-width: 575px) {
-				font-size: 40px;
-				@media (max-width: 400px) {
-					font-size: 30px;
-				}
-			}
-		}
-	}
-
 	// text color
 	.text_red {
 		color: #cc0000;
@@ -211,33 +90,7 @@ const Style = styled.div`
 	}
 	// height and width
 
-	.h_400 {
-		height: 400px;
-	}
-	.w_h_20 {
-		width: 20px;
-		height: 20px;
-	}
-	.h_50 {
-		height: 50px;
-		@media (max-width: 767px) {
-			height: 30px;
-		}
-	}
 
-	// margin and padding
-	.section_paddingX {
-		padding-left: 40px;
-		padding-right: 40px;
-		@media (max-width: 767px) {
-			padding-left: 20px;
-			padding-right: 20px;
-			@media (max-width: 575px) {
-				padding-left: 15px;
-				padding-right: 15px;
-			}
-		}
-	}
 	.line_height_int {
 		line-height: initial;
 	}
@@ -301,20 +154,13 @@ const Style = styled.div`
 		}
 	}
 	.border_cyan {
-		border: 3px solid cyan;
-	}
-	.gray_shadow {
-		box-shadow: 0 0 0 3px #6f717c;
-	}
-	.table_spaceY {
-		border-spacing: 0px 5px;
-		border-collapse: separate;
+		border: 1px solid cyan;
 	}
 
 	// btn group.....
 	.cyan_btn_group {
 		.cyan_btn {
-			border: 3px solid #1c79a5;
+			border: 1px solid #1c79a5;
 			overflow: visible !important;
 			position: relative;
 			background: rgba(48, 64, 96, 0.357);
@@ -355,6 +201,9 @@ const Style = styled.div`
 					);
 					border-radius: 100%;
 				}
+			}
+			&:hover {
+				background-color: #1b50c7;
 			}
 		}
 	}

@@ -1,22 +1,41 @@
 import React,{useEffect} from 'react';
 import { useSelector, useDispatch} from 'react-redux';
-import { useHistory } from "react-router-dom";
-import { contractSlice } from '../../reducer';
-
+/* import { useHistory } from "react-router-dom"; */
 import styled from 'styled-components';
-import { Chart, LineAdvance} from 'bizcharts';
+
+import { contractSlice } from '../../reducer';
+import {NF} from '../../util';
+
 
 import SynChart from '../reuse_components/SynChart/SynChart';
-import DrilldownChart from '../reuse_components/DrilldownChart/DrilldownChart';
-import DoughnutChart from '../reuse_components/DoughnutChart/DoughnutChart';
-
 
 import Metamask from '../../connector';
 import ImgCell from '../../img/btn-cell.webp'
 import ImgUSDT from '../../img/usdt.svg'
 import ImgTLB from '../../img/logo.webp'
+import ImgCheck from '../../img/checkmark.png'
+import ImgWechat from '../../img/social-wechat.webp'
+import ImgGoogle from '../../img/social-google.webp'
+import ImgYoutube from '../../img/social-youtube.webp'
+
+import {IgrRadialGauge, IgrRadialGaugeModule} from 'igniteui-react-gauges';
+import {IgrLegendModule, IgrDoughnutChartModule, IgrItemLegend, IgrDoughnutChart, IgrRingSeries, IgrLegend, IgrCategoryChart} from 'igniteui-react-charts';
+
+const mods = [
+    IgrLegendModule,
+    IgrDoughnutChartModule,
+	IgrRadialGaugeModule
+];
+
+mods.forEach((m) => m.register());
 
 const Section = styled.section`
+	.radius {
+		border-radius: 10px;
+	}
+	.radius-button {
+		border-radius: 5px;
+	}
 	div.address {
 		&.btn  {
 			text-transform: none;
@@ -25,134 +44,51 @@ const Section = styled.section`
 	.top_bottom_cyan_bg {
 		background: url(${ImgCell}) center/100% 100% no-repeat;
 	}
-
+	.content_wrapper {
+		padding: 15px;
+	}
 	.wallet-panel {
-		margin-bottom: 100px;
+		margin-bottom: 50px;
 		text-align: right;
 	}
-`
-const data = [
-	{
-		month: "Jan",
-		city: "Tokyo",
-		temperature: 7
-	},
-	{
-		month: "Jan",
-		city: "London",
-		temperature: 3.9
-	},
-	{
-		month: "Feb",
-		city: "Tokyo",
-		temperature: 13
-	},
-	{
-		month: "Feb",
-		city: "London",
-		temperature: 4.2
-	},
-	{
-		month: "Mar",
-		city: "Tokyo",
-		temperature: 16.5
-	},
-	{
-		month: "Mar",
-		city: "London",
-		temperature: 5.7
-	},
-	{
-		month: "Apr",
-		city: "Tokyo",
-		temperature: 14.5
-	},
-	{
-		month: "Apr",
-		city: "London",
-		temperature: 8.5
-	},
-	{
-		month: "May",
-		city: "Tokyo",
-		temperature: 10
-	},
-	{
-		month: "May",
-		city: "London",
-		temperature: 11.9
-	},
-	{
-		month: "Jun",
-		city: "Tokyo",
-		temperature: 7.5
-	},
-	{
-		month: "Jun",
-		city: "London",
-		temperature: 15.2
-	},
-	{
-		month: "Jul",
-		city: "Tokyo",
-		temperature: 9.2
-	},
-	{
-		month: "Jul",
-		city: "London",
-		temperature: 17
-	},
-	{
-		month: "Aug",
-		city: "Tokyo",
-		temperature: 14.5
-	},
-	{
-		month: "Aug",
-		city: "London",
-		temperature: 16.6
-	},
-	{
-		month: "Sep",
-		city: "Tokyo",
-		temperature: 9.3
-	},
-	{
-		month: "Sep",
-		city: "London",
-		temperature: 14.2
-	},
-	{
-		month: "Oct",
-		city: "Tokyo",
-		temperature: 8.3
-	},
-	{
-		month: "Oct",
-		city: "London",
-		temperature: 10.3
-	},
-	{
-		month: "Nov",
-		city: "Tokyo",
-		temperature: 8.9
-	},
-	{
-		month: "Nov",
-		city: "London",
-		temperature: 5.6
-	},
-	{
-		month: "Dec",
-		city: "Tokyo",
-		temperature: 5.6
-	},
-	{
-		month: "Dec",
-		city: "London",
-		temperature: 9.8
+	.gauge{
+        position: relative;
+		width: 100%;
+		height: 100%;
+
+		div.text {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 1;
+			text-align: center;
+			
+		}
+    }
+	ul.ad {
+		img {
+			height: 1em;
+		}
 	}
-];
+	div.buy {
+		padding: 50px 30px 30px 30px;
+		button {
+			font-size: 1em;
+			padding-left: 0;
+			padding-top: 0.625rem;
+			padding-right: 0;
+    		padding-bottom: 0.5rem;
+		}
+	}
+	.mode-selector {
+		border-radius: .25rem;
+		background-color: white;
+		button {
+			margin-bottom: 0 !important;
+		}
+	}
+`
 
 const Section_1_d = () => {
 	let contract = useSelector(state => state.contract);
@@ -160,8 +96,14 @@ const Section_1_d = () => {
 	const connectWallet = () => {
 		Metamask.connect(dispatch);
 	};
+	const data = [
+		{val:37, label:"超级矿工 37%"},
+		{val:25, label:"优质矿工 25%"},
+		{val:12, label:"普通矿工 12%"},
+		{val:8,  label:"惰性矿工 8%"}
+	];
 	return (
-		<Section className="section_paddingX">
+		<Section>
 			<div className="wallet-panel">
 				{contract.address? (
 					<div className="h4 address btn bg-success text-white">
@@ -173,13 +115,28 @@ const Section_1_d = () => {
 					</button>
 				)}
 			</div>
-			<div className="content_head">
-				<h3 className="font_size_37 text-end text-white mb-2 mb-md-4">
-					全网实时算力
-				</h3>
-			</div>
+			<h4 className=" text-end text-white mb-2 mb-md-4">
+				全网实时算力
+			</h4>
 			<div className="content_wrapper">
-				<SynChart></SynChart>
+				<IgrCategoryChart
+				
+					height="200px"
+					width="100%"
+					
+					dataSource={data}
+					valueMemberPath="val"
+					labelMemberPath="label"
+
+                    chartType="Spline"
+                    isTransitionInEnabled="true"
+                    /* yAxisTitle="TWh" */
+                    /* legend={this.legend} */
+                    isHorizontalZoomEnabled="false"
+                    isVerticalZoomEnabled="false"
+                    toolTipType="Category"
+					>
+                </IgrCategoryChart>
 			</div>
 		</Section>
 	)
@@ -187,10 +144,9 @@ const Section_1_d = () => {
 const Section_2_d = () => {
 	let contract = useSelector(state => state.contract);
 	return (
-		<Section className="section_paddingX">
-			<br /><br /><br /> <br />
-			<div className="content_wrapper bg_blue_9 px-2 py-3 py-md-5 radius_30">
-				<table className="w-100 font_size_37 text-center">
+		<Section>
+			<div className="content_wrapper bg_blue_9 px-2 py-3 py-md-5 radius">
+				<table className="w-100 text-center">
 					<tbody>
 						<tr className="text-white">
 							<td>总发行量</td>
@@ -222,165 +178,168 @@ const Section_2_d = () => {
 const Section_3_d = () => {
 	let contract = useSelector(state => state.contract);
 	return (
-		<Section className="section_paddingX">
-			<br /><br /><br />
-			<div className="content_wrapper bg_blue_9 px-2 px-md-5 py-3 py-md-5 radius_30">
+		<Section>
+			<div className="content_wrapper bg_blue_9 p-3 radius">
 				<div className="chart_wrapper">
-
-					<div className="row">
-						<div className="col-12 col-md-7">
-							<div className="col_wrapper">
-								{/* <img src={require('./drilldown.png').default} alt="" /> */}
-								<DrilldownChart></DrilldownChart>
-							</div>
-						</div>
-						<div className="col-12 col-md-5">
-							<div className="col_wrapper text-center ">
-								<div className="txt_wrapper top_bottom_cyan_bg py-3">
-									<span className="text_cyan font_size_49">{contract._minerCount || 0}</span>
-									<br />
-									<span className="text-white font_size_29 ">
-										我的矿工
-									</span>
+					<div className="row no-gutters">
+						<div className="col-7">
+							<div className="gauge">
+								<div className="text" style={{backgroundColor:'#267a8e'}}>
+									我的算力<br/>
+									{contract.address ? contract._mineTier + ' T' : '-'}
 								</div>
-								<br />
-								<br />
+								<IgrRadialGauge
+									transitionDuration={0}
+									height="100%"
+									width="100%"
+									value={40}
+									interval={5}
+									minimumValue={0}
+									maximumValue={80}
+
+									labelInterval={10}
+									labelExtent={0.71}
+									minorTickCount={5}
+									minorTickEndExtent={.85}
+									minorTickStartExtent={.8}
+									minorTickStrokeThickness={1}
+									minorTickBrush = "#0dbafa"
+									TickBrush = "#0dbafa"
+									tickBrush="#0dbafa"
+									tickEndExtent={.85}
+									tickStartExtent={.8}
+									tickStrokeThickness="2"
+									needleShape="None"
+									backingBrush="#267a8e"
+									backingOutline="#2b5a6c"
+									backingStrokeThickness={10}
+									scaleStartAngle={140}
+									scaleEndAngle={40}
+									scaleBrush="#0b8fed"
+									rangeBrushes="267a8e"
+									rangeOutlines="#267a8e" />
+							</div>
+							
+						</div>
+						<div className="col-5">
+							<div className="text-center ">
 								<div className="txt_wrapper top_bottom_cyan_bg py-3">
-									<span className="text_cyan font_size_49">
-										{contract._minerRefTotal || 0}
-									</span>
-									<br />
-									<span className="text-white font_size_29">
-										矿工贡献算力
-									</span>
+									<h4 className="text_cyan">{contract.address ? contract._minerCount : '-'}</h4>
+									<span>我的矿工</span>
+								</div>
+								<div className="txt_wrapper top_bottom_cyan_bg py-3 mt-5">
+									<h4 className="text_cyan">{contract.address ? contract._minerRefTotal : '-'}</h4>
+									<span>矿工贡献算力</span>
 								</div>
 							</div>
 						</div>
 					</div>
 
 				</div>
-				<div className="txt_wrapper">
-					<h3 className="text-white font_size_37 mb-3">
+				<div className="txt_wrapper mt-5">
+					<h4 className="mb-3">
 						招募更多矿工
-					</h3>
+					</h4>
 					<div className="d-flex ">
-						<input type="text" placeholder={"www.tlb.com/"+contract.address.slice(0,4)+'...'+contract.address.slice(-4)} className="font_size_37 form-control w-100" />
-						<button className="btn btn-muted bg_cyan rounded-0 text-white ms-3 font_size_37 px-3 px-md-5 text-nowrap d-block">
+						<input readOnly value={"https://"+window.location.host+"/mlm/"+contract.address} className="form-control w-100" />
+						<button className="btn btn-muted bg_cyan text-white ms-2 text-nowrap radius-button">
 							点击复制
 						</button>
 					</div>
 				</div>
-				<div className="social_wrapper mb-3 mb-md-5">
+				<div className="social_wrapper mb-3 mb-md-5 mt-4">
 					<div className="row justify-content-center">
 						<div className="col-11">
-							<br />
-							<ul className="list-unstyled w-100 m-0 p-0 d-flex align-items-center justify-content-between">
+							<ul className="ad list-unstyled flex-grow-1 m-0 p-0 d-flex align-items-center justify-content-between">
 								<li>
-									<a className="font_size_49 text-white" href="#">
-										<i className="fab fa-facebook    "></i>
-									</a>
+									<a href="#"><i className="fab fa-facebook text-white"></i></a>
 								</li>
 								<li>
-									<a className="font_size_49 text-white" href="#">
-										<i className="fab fa-twitter    "></i>
-									</a>
+									<a href="#"><i className="fab fa-twitter text-white"></i></a>
 								</li>
 								<li>
-									<a className="font_size_49 text-white" href="#">
-										<i className="fab fa-linkedin-in    "></i>
-									</a>
+									<a href="#"><i className="fab fa-linkedin-in text-white"></i></a>
 								</li>
 								<li>
-									<a className="font_size_49 text-white" href="#">
-										<i className="fab fa-tumblr    "></i>
-									</a>
+									<a href="#"><i className="fab fa-tumblr text-white"></i></a>
 								</li>
 								<li>
-									<a className="font_size_49 text-white" href="#">
-										<img src={require('./chat_c.png').default} alt="chat_c" />
-									</a>
+									<a href="#"><img src={ImgWechat} alt="wechat" /></a>
 								</li>
 								<li>
-									<a className="font_size_49 text-white" href="#">
-										<img src={require('./social_ss.png').default} alt="social_ss.png" />
-									</a>
+									<a href="#"><img src={ImgGoogle} alt="google" /></a>
 								</li>
 								<li>
-									<a className="font_size_49 text-white" href="#">
-										{/* <img src={require('./youtube.png').default} alt="youtube" /> */}
-									</a>
+									<a href="#"><img src={ImgYoutube} alt="youtube" /></a>
 								</li>
 							</ul>
-
-							<br /><br />
 						</div>
 					</div>
 				</div>
 
-				<div className="footer_wrapper">
-					<h3 className="text-white font_size_37">
-						我的资产
-					</h3>
-					<br /><br />
-					<div className="d-flex justify-content-between">
-						<div className="col_wrapper d-flex align-items-start">
-							<img style={{ height: "90px" }} src={ImgTLB} alt="gudgudi" />
-							<div className="content font_size_37 ms-2 ms-md-3">
-								<h4 className="text-white">
-									TLB
-								</h4>
+				<div className="footer_wrapper mt-5">
+					<h4>我的资产</h4>
+					<div className="row">
+						<div className="col-6 d-flex align-items-start">
+							<img style={{ height: '3.6em' }} src={ImgTLB} alt="TLB" />
+							<div className="ms-2">
+								<h4 className="text-white">TLB</h4>
 								<span className="text_cyan">
-									{contract._tlb || 0}
+									{contract.address ? NF(contract._tlb,2) : '-'}
 								</span>
 							</div>
 						</div>
-						<div className="col_wrapper d-flex align-items-start">
+						<div className="col-6 d-flex align-items-start">
 							<span className="bg_cyan rounded-circle">
-								<img className="bg_blue_9 rounded-circle" style={{ height: "90px" }} src={ImgUSDT} alt="bitcoin_sm" />
-								
-								</span>
-							<div className="content font_size_37 ms-2 ms-md-3">
-								<h4 className="text-white">
-									USDT
-								</h4>
+								<img className="bg_blue_9 rounded-circle" style={{ height: '3.6em' }} src={ImgUSDT} alt="bitcoin_sm" />
+							</span>
+							<div className="ms-2">
+								<h4 className="text-white">USDT</h4>
 								<span className="text_cyan">
-									{contract._usdt || 0}
+									{contract.address ? NF(contract._usdt,2) : '-'}
 								</span>
 							</div>
 						</div>
 					</div>
-					<br /><br />
-					<div className="d-flex justify-content-end">
-						<button className="btn btn-muted text-white border_cyan rounded-3 font_size_29">
+					
+					<div className="text-center mt-5">
+						<button className="btn btn-muted text-white border_cyan radius-button">
 							查看更多
 						</button>
 					</div>
 				</div>
 			</div>
-			<br /><br /><br />
 		</Section>
 	)
 }
 const Section_4_d = () => {
+	const contract = useSelector(state => state.contract);
+
+	const blocks = '-';
+	const minedtps = '-';
 	return (
-		<Section className="section_paddingX">
-			<div className="content_wrapper bg_blue_9 px-2 px-md-5 py-3 py-md-5 radius_30">
+		<Section>
+			<div className="content_wrapper bg_blue_9 radius">
 				<div className="content_head">
-					<div className="d-flex justify-content-between text-white font_size_37">
-						<h3>区块高度/奖励/哈希/时间</h3>
-						<h3>状态</h3>
-					</div>
-					<br /><br />
-					<table className="w-100 text-center text-white font_size_37">
+					<table className="w-100 text-center text-white">
+						<thead>
+							<tr>
+								<th className="pb-3">
+									区块高度/奖励/哈希/时间
+								</th>
+								<th className="pb-3">
+									状态
+								</th>
+							</tr>
+						</thead>
 						<tbody>
 							<tr>
 								<td className="pb-3">
-									#32568
+									# {contract.blockHeight}
 								</td>
 								<td className="pb-3">
 									<div className="d-flex align-items-center justify-content-end">
-										正在挖矿
-									   <img src={require('./checkmark.png').default} alt="check" className="h_50" />
+										{contract.address ?  (contract._mineStatus ? '正在挖矿' : '停止') : '-'}
 									</div>
 								</td>
 							</tr>
@@ -390,7 +349,7 @@ const Section_4_d = () => {
 								</td>
 								<td className="pb-3">
 									<div className="d-flex align-items-center justify-content-end">
-									   <img src={require('./checkmark.png').default} alt="check" className="h_50" />
+									   <img src={ImgCheck} alt="check" style={{height:'1.5em'}} />
 									</div>
 								</td>
 							</tr>
@@ -400,7 +359,7 @@ const Section_4_d = () => {
 								</td>
 								<td className="pb-3">
 									<div className="d-flex align-items-center justify-content-end">
-									   <img src={require('./checkmark.png').default} alt="check" className="h_50" />
+									   <img src={ImgCheck} alt="check" style={{height:'1.5em'}} />
 									</div>
 								</td>
 							</tr>
@@ -410,392 +369,156 @@ const Section_4_d = () => {
 								</td>
 								<td className="pb-3">
 									<div className="d-flex align-items-center justify-content-end">
-									   <img src={require('./checkmark.png').default} alt="check" className="h_50" />
+									   <img src={ImgCheck} alt="check" style={{height:'1.5em'}} />
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
-					<br /><br /><br />
+					
 				</div>
-				<div className="content_body">
-					<h4 className="text-white font_size_37">
+				<div className="content_body mt-5">
+					<h4 className="mb-5">
 						初始矿机认购
 					</h4>
-					<br /><br />
+					
 					<div className="cyan_btn_group row">
-						<div className="col-6 mb-3 mb-md-5">
-							<div className="col_wrapper px-3 px-md-5 mb-3 mb-md-4 text-center ">
-								<button data-mdb-ripple-color="#303447" data-mdb-ripple-duration="0.1s"
-									className="btn btn-muted w-100 shadow-0 cyan_btn text_cyan">
-									<strong className="font_size_58 cyan_btn_bottom">100T</strong>
-									<br />
-									<span className="font_size_37">
-										15000U认购
-									</span>
-								</button>
-							</div>
+						<div className="col-6 buy">
+							<button className=" btn w-100 cyan_btn text_cyan">
+								<h4 className="cyan_btn_bottom">100T</h4>
+								<div>15000U认购</div>
+							</button>
 						</div>
-						<div className="col-6 mb-3 mb-md-5">
-							<div className="col_wrapper px-3 px-md-5 mb-3 mb-md-4 text-center ">
-								<button data-mdb-ripple-color="#303447" data-mdb-ripple-duration="0.1s"
-									className="btn btn-muted w-100 shadow-0 cyan_btn text_cyan">
-									<strong className="font_size_58 cyan_btn_bottom">50T</strong>
-									<br />
-									<span className="font_size_37">
-										7500U认购
-									</span>
-								</button>
-							</div>
+						<div className="col-6 buy">
+							<button className=" btn w-100 cyan_btn text_cyan">
+								<h4 className="cyan_btn_bottom">50T</h4>
+								<div>7500U认购</div>
+							</button>
 						</div>
-						<div className="col-6 mb-3 mb-md-5">
-							<div className="col_wrapper px-3 px-md-5 mb-3 mb-md-4 text-center">
-								<button data-mdb-ripple-color="#303447" data-mdb-ripple-duration="0.1s"
-									className="btn btn-muted w-100 shadow-0 cyan_btn text_cyan">
-									<strong className="font_size_58 cyan_btn_bottom">25T</strong>
-									<br />
-									<span className="font_size_37">
-										3500U认购
-									</span>
-								</button>
-							</div>
+						<div className="col-6 buy">
+							<button className=" btn w-100 cyan_btn text_cyan">
+								<h4 className="cyan_btn_bottom">25T</h4>
+								<div>3500U认购</div>
+							</button>
 						</div>
-						<div className="col-6 mb-3 mb-md-5">
-							<div className="col_wrapper px-3 px-md-5 mb-3 mb-md-4 text-center">
-								<button data-mdb-ripple-color="#303447" data-mdb-ripple-duration="0.1s"
-									className="btn btn-muted w-100 shadow-0 cyan_btn text_cyan">
-									<strong className="font_size_58 cyan_btn_bottom">5T</strong>
-									<br />
-									<span className="font_size_37">
-										100U认购
-									</span>
-								</button>
-							</div>
+						<div className="col-6 buy">
+							<button className=" btn w-100 cyan_btn text_cyan">
+								<h4 className="cyan_btn_bottom">25T</h4>
+								<div>3500U认购</div>
+							</button>
 						</div>
 					</div>
-					<br /><br />
-					<div className="content_body_body">
-						<h3 className="text-white text-center font_size_49">
+					
+					<div className="content_body_body mt-5">
+						<h4 className="text-center ">
 							模式选择
-						</h3>
-						<br /><br />
-						<div className="row justify-content-center">
-							<div className="col-11 col-md-10">
-								<div className="btn-group d-flex w-100">
-									<button className="btn font_size_37 btn-primary w-50">灵活挖矿</button>
-									<button className="btn font_size_37 btn-light w-50 text_blue">固定挖矿</button>
-								</div>
-								<br /><br />
-								<br />
-
-							</div>
+						</h4>
+						
+						<div className="mt-5 text-center mode-selector">
+							<button className={"h4 btn "+(contract._mineType===0?'btn-primary':'btn-light text_blue')+" w-50"}>灵活挖矿</button>
+							<button className={"h4 btn "+(contract._mineType===1?'btn-primary':'btn-light text_blue')+" w-50"}>固定挖矿</button>
 						</div>
-						<div className="row justify-content-center">
-							<div className="col-10 col-md-9">
-								<button className="btn btn-primary w-100 font_size_58 rounded-pill">
-									立即挖矿
+						<div className="mt-5 text-center">
+							<button className="h4 btn btn-primary w-100 rounded-pill">立即挖矿</button>
+						</div>
+						<div className="d-flex mt-5">
+							<div style={{marginRight:10}}>
+								<button className="h4 btn btn-muted w-100  border_cyan text-nowrap text_cyan round-button">
+									领取收益
 								</button>
-								<br /><br />
-								<br />
-								<br />
 							</div>
-
-						</div>
-						<div className="row align-items-center">
-							<div className="col-5">
-								<div className="col_wrapper px-3 px-md-4">
-									<button className="btn btn-muted w-100 font_size_49 border_cyan text_cyan rounded-3">
-										领取收益
-									</button>
-								</div>
-							</div>
-							<div className="col-7">
-								<div className="col_wrapper ">
-									<p className="text-white font_size_37">
-										参与<span className="text_cyan">68</span>个区块
-										获得<span className="text_cyan">0.00248546</span>TLB
-									</p>
-									<br />
-									<p className="text-white-50 font_size_29">
-										(9600个区块奖励未领取自动暂停挖矿)
-									</p>
-									<br /><br />
-								</div>
+							<div>
+								<div>参与<span className="text_cyan">{blocks}</span>个区块</div>
+								<div>获得<span className="text_cyan">{minedtps}</span> TLB</div>
+								<small className="text-white-50">(9600个区块奖励未领取自动暂停挖矿)</small>
 							</div>
 						</div>
-						<div className="row">
-							<div className="col-12">
-								<div className="col_wrapper">
-									<table className="w-100 text-center table_spaceY">
-										<tbody>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-											<tr className="gray_shadow radius_30">
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														#32567
-														<br />
-														30 TLB
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper font_size_29 text-center text-white">
-														e15t26...65f98
-														<br />
-														6-18 18:16
-													</div>
-												</td>
-												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center font_size_29 text-center text-white">
-														<span>
-															0.00005189
-															<br />
-															TLB
-														</span>
-														<img style={{ height: "60px" }} className="ms-3" src={require('./gudgudy_sm.png').default} alt="gudgudi" />
-													</div>
-												</td>
-											</tr>
-
-										</tbody>
-									</table>
-								</div>
-
+						<div className="mt-4">
+							<div className="radius mt-3">
+								<table className="w-100 text-center">
+									<tbody>
+										<tr className="gray_shadow radius_30">
+											<td className="p-2 p-md-4">
+												<div className="td_wrapper  text-center text-white">
+													#32567
+													
+													30 TLB
+												</div>
+											</td>
+											<td className="p-2 p-md-4">
+												<div className="td_wrapper  text-center text-white">
+													e15t26...65f98
+													
+													6-18 18:16
+												</div>
+											</td>
+											<td className="p-2 p-md-4">
+												<div className="td_wrapper d-flex justify-content-end align-items-center  text-center text-white">
+													<span>
+														0.00005189
+														
+														TLB
+													</span>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<br /><br /><br />
 		</Section>
 	)
 }
 
 const Section_5_d = () => {
+	const data = [
+		{val:37, label:"超级矿工 37%"},
+		{val:25, label:"优质矿工 25%"},
+		{val:12, label:"普通矿工 12%"},
+		{val:8,  label:"惰性矿工 8%"}
+	];
 	return (
-		<Section className="section_paddingX">
-			<div className="content_wrapper bg_blue_9 px-2 px-md-5 py-3 py-md-5 radius_30">
-				<div className="chart_wrapper">
-					<h3 className="text-end text_cyan font_size_68">
-						矿工监视
-					</h3>
-					<br /><br />
-					<div className="chart d-flex justify-content-center font_size_29">
-						<DoughnutChart></DoughnutChart>
+		<Section>
+			<div className="content_wrapper bg_blue_9 radius">
+				<h4 className="text-end text_cyan">矿工监视</h4>
+					<div className="gauge">
+						<div className="text">
+							<img style={{ height: '2em' }} src={ImgTLB} alt="TLB" />
+						</div>
+						<IgrDoughnutChart 
+							allowSliceExplosion="true" 
+							width="100%" 
+							height="300px">
+							<IgrRingSeries
+							
+								brush="white"
+								outline="white" 
+								fontSize={16}
+								labelColor="white"
+
+								dataSource={data}
+								valueMemberPath="val"
+								labelMemberPath="label"
+								labelsPosition="OutsideEnd"
+								/* legend={this.legend} */
+								labelExtent="30"
+								startAngle="30"
+								outlines="white"
+								radiusFactor="0.6"
+								name="series">
+							</IgrRingSeries>
+						</IgrDoughnutChart>
 					</div>
-					<br /><br />
-				</div>
+					
+					
 				<hr className="bg-white mx-n2 mx-md-n5" style={{ height: '5px', opacity: '1' }} />
-				<br /><br />
+				
 				<div className="table_wrapper">
 					<table className="w-100 text-white">
-						<thead className="font_size_37 text-center">
+						<thead className=" text-center">
 							<tr>
 								<th className="pb-4 pb-md-5">
 									矿工
@@ -808,137 +531,10 @@ const Section_5_d = () => {
 								</th>
 							</tr>
 						</thead>
-						<tbody className="font_size_29 text-center">
+						<tbody className=" text-center">
 							<tr>
 								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#FF0000' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#19B819' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#19B819' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#F55B08' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#19B819' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#A0A0A0' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#19B819' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#FF0000' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#F55B08' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#F55B08' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#19B819' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
-								</td>
-								<td className="pb-2 pb-md-3">
-									18.72%
-								</td>
-								<td className="pb-2 pb-md-3">
-									3.42%
-								</td>
-							</tr>
-							<tr>
-								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#FF0000' }} className="w_h_20 d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
+									<span style={{ background: '#FF0000' }} className="d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
 								</td>
 								<td className="pb-2 pb-md-3">
 									18.72%
@@ -948,21 +544,10 @@ const Section_5_d = () => {
 								</td>
 							</tr>
 						</tbody>
-						<tfoot>
-							<tr>
-								<td></td>
-								<td className="py-3 py-md-5">
-
-									<div className="d-flex justify-content-center">
-										<button className="btn btn-muted shadow-0 text-white font_size_37">
-											{'查看更多 >>'}
-										</button>
-									</div>
-								</td>
-								<td></td>
-							</tr>
-						</tfoot>
 					</table>
+					<button className="btn btn-muted shadow-0 text-white">
+						{'查看更多 >>'}
+					</button>
 				</div>
 			</div>
 		</Section>
@@ -970,7 +555,7 @@ const Section_5_d = () => {
 }
 export default (props)=>{
 	let contract = useSelector(state => state.contract);
-	let history = useHistory();
+	/* let history = useHistory(); */
 	const dispatch = useDispatch()
 	useEffect(() => {
 		const url = window.location.pathname;

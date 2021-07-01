@@ -84,7 +84,7 @@ function Section_1(props) {
 					{contract.totalDeposit ? '$ ' + NF(contract.totalDeposit) : '-'}
 				</h2>
 			</div>
-			<div className="h_400">
+			<div>
 			<LineChart></LineChart>
 			</div>
 			<span className="text-end d-block text_cyan">

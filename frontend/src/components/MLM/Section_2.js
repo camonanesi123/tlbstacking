@@ -37,7 +37,7 @@ const Section = styled.section`
 function Section_2(props) {
 	return (
 		<Section className="mt-5">
-			<h3 className="section_paddingX mb-3 mb-md-5">项目介绍</h3>
+			<h3 className="mb-3 mb-md-5">项目介绍</h3>
 			<div className="content_wrapper">
 				TLBstaking是一个全球去中心化金融综合商
 				业体，致力于成为波场用户最广泛使用的

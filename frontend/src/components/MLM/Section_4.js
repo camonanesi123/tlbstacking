@@ -31,7 +31,7 @@ function Section_4(props) {
 		<Section>
 			<h3 className="text-center">代码审计</h3>
 			<div className="content_wrapper">
-				<div className="row justify-content-center section_paddingX">
+				<div className="row justify-content-center ">
 					<div className="col-6 col-md-5 h-auto">
 						<button className="h-100 bg-white d-inline-block btn btn-muted">
 							<img className="w-100 img_contain" src={ImgFairy1} alt="fairyproof" />

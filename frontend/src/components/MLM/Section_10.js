@@ -58,7 +58,7 @@ const Section = styled.section`
 
 function Section_10(props) {
 	return (
-		<Section className="section_paddingX">
+		<Section>
 			<h3 className="text-center">
 				TLBstaking生态
 			</h3>
