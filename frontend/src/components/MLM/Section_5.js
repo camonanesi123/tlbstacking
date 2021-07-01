@@ -251,7 +251,7 @@ function WithdrawDialog(props) {
 				{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 				{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 				<div className="text-center mt-3">
-					{status.completed || contract._withdrawable===0 || contract._tlb<status.tlb ? null : <button onClick={()=>handleSubmit()} className="h4 btn btn-success text-white">提交</button>}
+					{(status.completed || contract._withdrawable===0 || contract._tlb<status.tlb) ? null : <button onClick={()=>handleSubmit()} className="h4 btn btn-success text-white">提交</button>}
 					<button onClick={()=>props.handleClose()} className="h4 mx-3 btn text-white">取消</button>
 				</div>
 			</div>

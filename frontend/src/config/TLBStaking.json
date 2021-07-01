@@ -252,82 +252,6 @@
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "amountUsdt",
-				"type": "uint256"
-			}
-		],
-		"name": "_test_buy",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "referalLink",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amountUsdt",
-				"type": "uint256"
-			}
-		],
-		"name": "_test_buyMiner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "_test_buybook",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "initial",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "balance",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct ITLB10.Order[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
 				"internalType": "address",
 				"name": "referalLink",
 				"type": "address"
@@ -363,108 +287,6 @@
 	},
 	{
 		"inputs": [],
-		"name": "_test_ordercount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amountTlb",
-				"type": "uint256"
-			}
-		],
-		"name": "_test_sell",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "_test_sellbook",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "initial",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "balance",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct ITLB10.Order[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "_test_sender",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "_test_tlb",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "_totalSupply",
 		"outputs": [
 			{
@@ -487,9 +309,9 @@
 		"name": "accountInfo",
 		"outputs": [
 			{
-				"internalType": "uint256[10]",
+				"internalType": "uint256[8]",
 				"name": "",
-				"type": "uint256[10]"
+				"type": "uint256[8]"
 			}
 		],
 		"stateMutability": "view",
@@ -713,9 +535,9 @@
 		"name": "contractInfo",
 		"outputs": [
 			{
-				"internalType": "uint256[9]",
+				"internalType": "uint256[14]",
 				"name": "",
-				"type": "uint256[9]"
+				"type": "uint256[14]"
 			}
 		],
 		"stateMutability": "view",
@@ -843,26 +665,16 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "miner",
+				"name": "account",
 				"type": "address"
 			}
 		],
-		"name": "minerInfo",
+		"name": "mineInfo",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "uint256[11]",
 				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "enum ITLB10.MineType",
-				"name": "",
-				"type": "uint8"
-			},
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
+				"type": "uint256[11]"
 			}
 		],
 		"stateMutability": "view",
@@ -873,11 +685,6 @@
 		"name": "minerList",
 		"outputs": [
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
 				"components": [
 					{
 						"internalType": "address",
@@ -886,32 +693,23 @@
 					},
 					{
 						"internalType": "uint256",
+						"name": "mineType",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
 						"name": "tier",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lastBlock",
 						"type": "uint256"
 					}
 				],
-				"internalType": "struct ITLB10.MinerInfo[]",
+				"internalType": "struct ITLB10.WorkingMiner[]",
 				"name": "",
 				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint8",
-				"name": "tier",
-				"type": "uint8"
-			}
-		],
-		"name": "minerPrice",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -1002,25 +800,6 @@
 				"type": "address"
 			}
 		],
-		"name": "pendingPool",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
 		"name": "profits",
 		"outputs": [
 			{
@@ -1096,19 +875,6 @@
 			}
 		],
 		"name": "setAdmin",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "enum ITLB10.MineType",
-				"name": "mineType",
-				"type": "uint8"
-			}
-		],
-		"name": "setMineType",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

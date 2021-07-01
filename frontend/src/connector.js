@@ -161,9 +161,12 @@ export default class Metamask {
 		if (window.web3) {
 			const result = {};
 			const web3 = new Web3(process.env.REACT_APP_NETWORK_URL);
-			let res = await web3.eth.getBlockNumber();
-			if (res) {
-				result.blockHeight = Number(res);
+			let res = await web3.eth.getBlock("latest");
+			// let res = await web3.eth.getBlockNumber();
+			if (res && !res.err) {
+				result.blockHeight = res.number;
+				result.blockHash = res.hash;
+				result.blockTime = res.timestamp;
 			}
 			/* res = await this.call(contractTlb, 'insuranceAmount');
 			if (res) {
@@ -173,7 +176,7 @@ export default class Metamask {
 			let p1 = 10**precisionTlb;
 			let p2 = 10**precisionUsdt;
 			res = await this.call(contractTlb, 'contractInfo');
-			if (res) {
+			if (res && !res.err) {
 				let i = 0;
 				result.price = 			Number(res[i++]) / p2;
 				result.totalDeposit = 	Number(res[i++]) / p2;
@@ -181,13 +184,43 @@ export default class Metamask {
 				result.totalSupply = 	Number(res[i++]) / p1;
 				result.totalBurnt = 	Number(res[i++]) / p1;
 				result.insuranceCounterTime = Number(res[i++]);
-				result.totalPower = 	Number(res[i++]);
-				result.minerCount = 	Number(res[i++]);
 				result.insuranceAmount= Number(res[i++]) / p2;
+				// miner
+				result.minerCount = 	Number(res[i++]);
+				result.minerWorkingPower = 	Number(res[i++]);
+				result.minerWorkingCount = 	Number(res[i++]);
+				result.minerTierPrice1 = 	Number(res[i++]) / p2;
+				result.minerTierPrice2 = 	Number(res[i++]) / p2;
+				result.minerTierPrice3 = 	Number(res[i++]) / p2;
+				result.minerTierPrice4 = 	Number(res[i++]) / p2;
 			}
 			res = await this.call(contractTlb, 'orderHistory');
 			if (res && Array.isArray(res) && res.length) {
 				result.orders = (Array.isArray(res[0]) ? res : [res]).map(v=>[Number(v[0]),Number(v[1]),Number(v[2])/p1,Number(v[3])]);
+			}
+			res = await this.call(contractTlb, 'minerList');
+			if (res && Array.isArray(res) && res.length) {
+				let t1 = 0, t2 = 0, t3 = 0;
+				result.minerList = (Array.isArray(res[0]) ? res : [res]).map(v=>{
+					if (v.tier>=100) {
+						t1++;
+					} else if (v.tier>=50) {
+						t2++;
+					} else {
+						t3++;
+					}
+					return [
+						v.account,
+						v.mineType,
+						v.tier,
+						v.lastBlock,
+					];
+				});
+				result.minerList.sort((a,b)=>a.tier-b.tier);
+				result.minerTier1 = Math.round(t1 * 100 / result.minerCount);
+				result.minerTier2 = Math.round(t2 * 100 / result.minerCount);
+				result.minerTier3 = Math.round(t3 * 100 / result.minerCount);
+				result.minerTier4 = Math.round((result.minerCount - t1 - t2 - t3) * 100 / result.minerCount);
 			}
 			
 			if (address) {
@@ -196,7 +229,7 @@ export default class Metamask {
 					result._usdt = Math.round(Number(res) / p2);
 				}
 				res = await this.call(contractTlb, 'accountInfo', address);
-				if (res) {
+				if (res && !res.err) {
 					let i = 0;
 					result._userid = 		Number(res[i++]);
 					result._tlb = 			Number(res[i++]) / p1;
@@ -204,8 +237,6 @@ export default class Metamask {
 					result._deposit = 		Number(res[i++]) / p2;
 					result._withdrawal = 	Number(res[i++]) / p2;
 					result._limit = 		Number(res[i++]) / p2;
-					result._minerCount = 	Number(res[i++]);
-					result._minerRefTotal = Number(res[i++]);
 					result._children = 		Number(res[i++]);
 					result._contribution = 	Number(res[i++]) / p2;
 				}
@@ -224,13 +255,28 @@ export default class Metamask {
 				}
 
 				res = await this.call(contractTlb, 'profits', address);
-				if (res) {
+				if (res && !res.err) {
 					let i = 0;
 					result._overflowed = 	res[i++];
 					result._staticRewards = Number(res[i++]) / p2;
 					result._dynamicRewards= Number(res[i++]) / p2;
 					result._rewards = 		Number(res[i++]) / p2;
 					result._withdrawable = 	Number(res[i++]) / p2;
+				}
+				res = await this.call(contractTlb, 'mineInfo', address);
+				if (res && !res.err) {
+					let i = 0;
+					result._minerTier = 	Number(res[i++]);
+					result._mineBlockRewards = 	Number(res[i++]) / p1;
+					result._mineType = 		Number(res[i++])
+					result._minerCount = 	Number(res[i++]) 
+					result._minerRefTotal = Number(res[i++])
+					result._mineStatus = 	Number(res[i++]) !== 0;
+					result._mineLastBlock = Number(res[i++])
+					result._mineLastTime = 	Number(res[i++])
+					result._mineRewards = 	Number(res[i++]) / p1
+					result._minePendingBlocks =	Number(res[i++])
+					result._minePending = 	Number(res[i++]) / p1
 				}
 			}
 			if (Object.keys(result).length) {
@@ -243,7 +289,7 @@ export default class Metamask {
 	
 	static async allowance() {
 		let res = await this.call(contractUsdt, 'allowance', this.address, contractTlb)
-		if (res) {
+		if (res && !res.err) {
 			console.log('allowance',res);
 			return Number(res) / 10 ** precisionUsdt;
 		}
@@ -251,7 +297,7 @@ export default class Metamask {
 	}
 	static async amountForDeposit(amount) {
 		let res = await this.call(contractTlb, 'amountForDeposit', Math.round(amount * 10 ** precisionUsdt))
-		if (res) {
+		if (res && !res.err) {
 			console.log('amountForDeposit',res);
 			return Number(res) / 10 ** precisionTlb;
 		}
@@ -259,7 +305,7 @@ export default class Metamask {
 	}
 	static async amountForWithdraw(address) {
 		let res = await this.call(contractTlb, 'amountForWithdraw', address)
-		if (res) {
+		if (res && !res.err) {
 			console.log('amountForWithdraw',res);
 			return Number(res) / 10 ** precisionTlb;
 		}
@@ -286,5 +332,19 @@ export default class Metamask {
 	}
 	static cancelSellOrder() {
 		return this.callBySigner(contractTlb, 'cancelSellOrder');
+	}
+	
+	static startMine() {
+		return this.callBySigner(contractTlb, 'startMine');
+	}
+	
+	static setMineType(mineType) {
+		return this.callBySigner(contractTlb, 'setMineType',mineType);
+	}
+	static buyMiner(referalLink, amount) {
+		return this.callBySigner(contractTlb, 'buyMiner', referalLink, Math.round(amount * 10 ** precisionUsdt));
+	}
+	static withdrawFromPool() {
+		return this.callBySigner(contractTlb, 'withdrawFromPool');
 	}
 }

@@ -1,11 +1,11 @@
 {
     "256": {
         "tlb": {
-            "contract": "0x16549eA10dB6CF983F63B7A7cD1444CBF01fA555",
+            "contract": "0x9d906Ed22f995129E6F180812A1A67446d86942C",
             "precision": 4
         },
         "usdt": {
-            "contract": "0xA5aaef3BFF0c09df3BE33E0532669Cc781bb10CE",
+            "contract": "0xace22bf4B69d07D12AE15a97FD3FE2246F91F26e",
             "precision": 2
         }
     }

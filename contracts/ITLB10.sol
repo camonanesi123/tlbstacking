@@ -12,7 +12,6 @@ interface ITLB10{
     //会员类型
     enum NodeType{ PNode, Shareholder, Guest }
     //矿工种类 灵活挖矿 or 固定挖矿
-    enum MineType{ Flexible, Fixed }
     
     //会员等级
     struct Tier {
@@ -77,11 +76,12 @@ interface ITLB10{
     
     //矿工
     struct Miner {
-        MineType mineType;
+        uint mineType;
         address referer;//推荐人
         uint tier;//算力
         uint lastBlock;//上一次激活挖矿时间
-        uint rewards;//可以提现的TLB数量
+        uint rewards;// 总提现的TLB数量
+        uint lastTime; // 最后购买矿机时间
     }
     //矿工信息
     struct MinerInfo {
@@ -101,13 +101,6 @@ interface ITLB10{
         uint initial;
         uint balance;
     }
-    //交易记录表
-    struct OrderTx {
-        uint txid;
-        uint8 txtype;
-        uint quantity;
-        uint time;
-    }
     struct ChildInfoReturn {
         uint count;
         uint funds;
@@ -122,11 +115,12 @@ interface ITLB10{
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
     
-    function contractInfo() external view returns(uint[9] memory);
-    function accountInfo(address account) external view returns(uint[10] memory);
+    function contractInfo() external view returns(uint[13] memory);
+    function accountInfo(address account) external view returns(uint[8] memory);
     function profits(address account) external view returns(bool, uint, uint, uint, uint);
     // function contribution(address account) external view returns(uint, uint);
     
+    // 
     function checkInsurance() external;
     
     function deposit(address referalLink, uint amount) external;
@@ -136,15 +130,13 @@ interface ITLB10{
     function cancelBuyOrder() external;
     function sell(uint amountTps) external;
     function cancelSellOrder() external;
-    function orderHistory() external view returns(OrderTx[] memory);
+    function orderHistory() external view returns(uint[4][] memory);
     
-    function minerPrice(uint8 tier) external view returns(uint);
+    function mineInfo(address account) external view returns(uint[8] memory);
     function buyMiner(address referalLink, uint amountUsdt) external;
-    function pendingPool(address account) external view returns(uint);
     function withdrawFromPool() external;
-    function minerInfo(address account) external view returns(uint,MineType,bool);
     function startMine() external;
-    function setMineType(MineType mineType) external;
+    function setMineType(uint mineType) external;
     function minerList() external view returns(uint, MinerInfo[] memory);
     
     
