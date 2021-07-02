@@ -262,7 +262,7 @@ function WithdrawDialog(props) {
 function Section_5(props) {
 	const [open, setOpen] = React.useState(0);
 	const contract = useSelector(state => state.contract);
-	const smallestAmount = contract.lastAmount ? contract.lastAmount + 100 : 200;
+	const smallestAmount = contract._lastAmount ? (contract._lastAmount>=10000 ? 10000 : contract._lastAmount + 100) : 200;
 	let [amount,setAmount] = useState(smallestAmount);
 	let [part,setPart] = useState({
 		left: 1000,

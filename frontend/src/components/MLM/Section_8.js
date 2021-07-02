@@ -132,8 +132,8 @@ function TradeDialog(props) {
 			{type===TYPE_BUY ? (
 				<div className="dialog">
 					<h3 className="mb-4">购买TLB</h3>
-					<h4 className="mb-4">USDT {amount ? NF(amount) : '-'} {contract._usdt<amount ? <span className="text-danger">余额不够</span> : null}</h4>
-					<h4 className="mb-4">TLB {amount2 ? NF(amount2) : '-'}</h4>
+					<h4 className="mb-4">USDT {amount ? NF(amount,Metamask.precisionUsdt) : '-'} {contract._usdt<amount ? <span className="text-danger">余额不够</span> : null}</h4>
+					<h4 className="mb-4">TLB {amount2 ? NF(amount2,Metamask.precisionTlb) : '-'}</h4>
 					{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 					{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 					<div className="text-center mt-3">
@@ -150,8 +150,8 @@ function TradeDialog(props) {
 			) : (
 				<div className="dialog">
 					<h3 className="mb-4">出售TLB</h3>
-					<h4 className="mb-4">TLB {NF(amount)} {contract._tlb<amount ? <span className="text-danger">余额不够</span> : null}</h4>
-					<h4 className="mb-4">USDT {NF(amount2)}</h4>
+					<h4 className="mb-4">TLB {NF(amount,Metamask.precisionTlb)} {contract._tlb<amount ? <span className="text-danger">余额不够</span> : null}</h4>
+					<h4 className="mb-4">USDT {NF(amount2,Metamask.precisionUsdt)}</h4>
 					{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 					{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 					<div className="text-center mt-3">
@@ -256,9 +256,7 @@ function Section_8(props) {
 				</div>
 
 				<div className="text-center p-4">
-					<button className="btn btn-muted text-white m-0 p-0 rounded-circle">
-						<i className="far fa-arrow-alt-circle-down font_size_79"></i>
-					</button>
+					<i className="h3 far fa-arrow-alt-circle-down"></i>
 				</div>
 
 				<div className="h3 select_form_wrapper p-2 bg-white rounded-3 d-flex align-items-center">

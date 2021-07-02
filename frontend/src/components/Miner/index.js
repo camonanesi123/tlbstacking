@@ -149,7 +149,6 @@ const Section_1_d = () => {
 			</h4>
 			<div className="content_wrapper">
 				<IgrCategoryChart
-				
 					height="200px"
 					width="100%"
 					
@@ -667,7 +666,7 @@ const Section_4_d = () => {
 						</div>
 						<div className="col-6 buy">
 							<button onClick={()=>setStatus({...status, open:DLG_BUY, param:4})} className="btn w-100 cyan_btn text_cyan">
-								<h4 className="cyan_btn_bottom">25T</h4>
+								<h4 className="cyan_btn_bottom">5T</h4>
 								<div>{contract.minerTierPrice4 ? contract.minerTierPrice4+'U认购' : '-'}</div>
 							</button>
 						</div>
