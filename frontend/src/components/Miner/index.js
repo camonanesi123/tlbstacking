@@ -466,10 +466,11 @@ function StartDialog(props) {
 			{status.loading?<Loading/>:null}
 			<div className="dialog">
 				<h3 className="mb-4">启动矿机</h3>
+				{contract._mineStatus ? <div className="text-center text-success">矿机已经启动</div> : null}
 				{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 				{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 				<div className="text-center mt-3">
-					{status.completed ? null : <button onClick={()=>handleSubmit()} className="h4 btn btn-success text-white">启动</button>}
+					{(status.completed || contract._mineStatus) ? null : <button onClick={()=>handleSubmit()} className="h4 btn btn-success text-white">启动</button>}
 					<button onClick={()=>props.handleClose()} className="h4 mx-3 btn text-white">取消</button>
 				</div>
 			</div>
@@ -701,7 +702,7 @@ const Section_4_d = () => {
 								<table className="w-100 text-center">
 									<tbody>
 										{contract._mineStatus ? blocks.map((v,k)=>(
-											<tr key={k} className="gray_shadow">
+											contract._mineLastBlock>v.number ? null : <tr key={k} className="gray_shadow">
 												<td className="p-2 p-md-4">
 													<div className="td_wrapper  text-center text-white">
 														# {v.number}
