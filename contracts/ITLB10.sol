@@ -8,7 +8,6 @@ interface ITLB10{
     event SellOrderAdded(address guest, uint amount);
     event SellOrderCancelled(address guest, uint amount);
     
-    
     //会员类型
     enum NodeType{ PNode, Shareholder, Guest }
     //矿工种类 灵活挖矿 or 固定挖矿
@@ -50,7 +49,6 @@ interface ITLB10{
         uint lastAmount;//上一次存款金额
         
         uint lastTime;//上次 存款/提现时间
-        // uint lastWithdrawTime; // 上次提现金额 
         uint staticRewards;
         uint dynamicRewards;
         
@@ -58,7 +56,6 @@ interface ITLB10{
         uint balance;//剩余本金
         uint rewards; // for shareholder 4% or position rewards, calculate statically and dynamically(999~1001) 股东收益 或者 位置奖金 
 
-        
         //推荐人
         address referer;
         //父节点
@@ -68,10 +65,6 @@ interface ITLB10{
         uint16 referalCount;
         //分支数，子节点个数
         address[] children; // first child address (may be not his referee) in every branch
-        
-        // will save all history to calculate dynamicRewards dynamically  用户出入金记录
-        // FundLog[] logs;
-        
     }
     
     //矿工
@@ -83,16 +76,16 @@ interface ITLB10{
         uint rewards;// 总提现的TLB数量
         uint lastTime; // 最后购买矿机时间
     }
+    struct WorkingMiner {
+        address account;
+        uint mineType;
+        uint tier;//算力
+        uint lastBlock;//上一次激活挖矿时间
+    }
     //矿工信息
     struct MinerInfo {
         address account; //地址
         uint tier;//算力
-    }
-    //矿池统计
-    struct MinePool {
-        uint totalPower; //总算力
-        uint minerCount; //矿工个数
-        uint minedTotal; //已经挖出多少矿
     }
     //订单表
     struct Order {
@@ -115,12 +108,10 @@ interface ITLB10{
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
     
-    function contractInfo() external view returns(uint[13] memory);
+    function contractInfo() external view returns(uint[14] memory);
     function accountInfo(address account) external view returns(uint[8] memory);
     function profits(address account) external view returns(bool, uint, uint, uint, uint);
-    // function contribution(address account) external view returns(uint, uint);
     
-    // 
     function checkInsurance() external;
     
     function deposit(address referalLink, uint amount) external;
@@ -132,14 +123,11 @@ interface ITLB10{
     function cancelSellOrder() external;
     function orderHistory() external view returns(uint[4][] memory);
     
-    function mineInfo(address account) external view returns(uint[8] memory);
+    function mineInfo(address account) external view returns(uint[11] memory);
     function buyMiner(address referalLink, uint amountUsdt) external;
     function withdrawFromPool() external;
     function startMine() external;
-    function setMineType(uint mineType) external;
-    function minerList() external view returns(uint, MinerInfo[] memory);
-    
-    
+    function minerList() external view returns(WorkingMiner[] memory);
 /* 
 =================================================================================================
                         
@@ -154,7 +142,7 @@ interface ITLB10{
     function _test_mint(address sender, uint amount) external;
     function _test_approve(address sender, address spender, uint amount) external;
     function _test_deposit(address sender, address referalLink, uint amount) external;
-    function _test_buy(address sender, uint amountUsdt) external;
-    function _test_sell(address sender, uint amountTlb) external;
-    function _test_buyMiner(address sender, address referalLink, uint amountUsdt) external;
+    // function _test_buy(address sender, uint amountUsdt) external;
+    // function _test_sell(address sender, uint amountTlb) external;
+    // function _test_buyMiner(address sender, address referalLink, uint amountUsdt) external;
 }

@@ -191,6 +191,25 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "tier",
+				"type": "uint256"
+			}
+		],
+		"name": "_test_MinerPrice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "usdtAddress",
 				"type": "address"
@@ -240,6 +259,29 @@
 			}
 		],
 		"name": "_test_approve",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "referalLink",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tier",
+				"type": "uint256"
+			}
+		],
+		"name": "_test_buyMiner",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
