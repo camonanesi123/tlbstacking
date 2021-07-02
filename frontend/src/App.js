@@ -1,6 +1,7 @@
 import React,{useEffect, useState} from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch} from 'react-redux';
+import { contractSlice } from './reducer';
 
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
@@ -19,14 +20,49 @@ const Style = styled.div`
 	background: url(${ImgBg}) center/cover no-repeat;
 `;
 
+const blockTime = (Number(process.env.REACT_APP_BLOCKTIME) || 3)*1000;
+
 function App() {
-	const dispatch = useDispatch()
-	/* const contract = useSelector(state => state.contract); */
+	const contract = useSelector(state => state.contract);
 	const [loading, setLoading] = useState(true)
+	const [lastTime, setLastTime] = useState(0)
+	const dispatch = useDispatch();
+
+	const accountChange = (newAccount)=>{
+		setLoading(true)
+		dispatch(contractSlice.actions.login(newAccount));
+	}
+	const chainChanged = (valid)=>{
+		setLoading(true);
+		if (valid) {
+			Metamask.connect().then(address=>{
+				dispatch(contractSlice.actions.login(address));
+				Metamask.setHandler((address)=>accountChange(address),(chainid)=>chainChanged(chainid));
+			})
+		} else {
+			dispatch(contractSlice.actions.logout());
+		}
+	}
 	useEffect(() => {
-		Metamask.start(dispatch).then(res=>{
-			if (res) setLoading(false);
-		});
+		if (!contract.address) {
+			Metamask.connect().then(address=>{
+				dispatch(contractSlice.actions.login(address));
+				Metamask.getInfo(contract,address).then(res=>dispatch(contractSlice.actions.update(res)));
+				Metamask.setHandler((address)=>accountChange(address),(chainid)=>chainChanged(chainid));
+			})
+		}
+		let delay = contract.lastTime ? blockTime - (+new Date() - contract.lastTime) : blockTime;
+		if (delay>3000) {
+			delay = blockTime;
+		} else if (delay<0) {
+			delay = 1;
+		}
+		console.log('delay',delay+'ms');
+		let timer = setTimeout(()=>Metamask.getInfo(contract).then(res=>{
+			if (loading) setLoading(false);
+			dispatch(contractSlice.actions.update(res))
+		}), delay)
+		return () => clearTimeout(timer);
 	});
 	return (
 		<Router>

@@ -1,7 +1,6 @@
 import Web3 from 'web3';
 import JSBI from 'jsbi';
 
-import { contractSlice } from './reducer';
 import abiTlb from './config/TLBStaking.json';
 import abiErc20 from './config/erc20.json';
 import config from './config/v1.json';
@@ -19,61 +18,66 @@ export default class Metamask {
 	static contract = contractTlb;
 	static precisionUsdt = precisionUsdt;
 	static precisionTlb = precisionTlb;
-	static address;
-	static timeHandler;
-	static start(dispatch) {
+	/* static address; */
+	/* static started = false; */
+	static cbAccountsChanged = null;
+	static cbChainChanged = null;
+
+	/* static timeHandler; */
+	/* static start(dispatch) {
+		if (this.address) return true;
+		this.getInfo(dispatch,this.address).then(()=>resolve(true));
 		return new Promise(resolve=>{
 			if (this.timeHandler) clearTimeout(this.timeHandler);
-			this.getInfo(dispatch,this.address).then(()=>resolve(true));
+			
 			this.timeHandler = setTimeout(()=>this.start(dispatch),blockTime);
 		})
+	} */
+	static setHandler(cbAccountsChanged,cbChainChanged) {
+		const {ethereum} = window;
+		if (ethereum) {
+			if (this.cbAccountsChanged===null) {
+				this.cbAccountsChanged = cbAccountsChanged;
+				ethereum.on('accountsChanged', (accounts) => {
+					if (accounts.length) {
+						this.cbAccountsChanged(accounts[0])
+					} else {
+						this.cbAccountsChanged(null);
+					}
+				});
+			}
+			ethereum.on('chainChanged', (currentChainId) => {
+				cbChainChanged(currentChainId===chainId)
+			});
+		}
 	}
-	static connect(dispatch) {
+	static connect() {
 		return new Promise(resolve=>{
 			const {ethereum} = window;
 			if (ethereum) {
 				try {
 					ethereum.request({ method: 'eth_requestAccounts' }).then(async (accounts)=>{
-						console.log(accounts[0]);
 						if (accounts.length) {
 							const address = accounts[0];
 							const currrentChainId = await this.getChainId();
 							if (chainId===currrentChainId) {
-								this.address = address;
-								dispatch(contractSlice.actions.login(address));
-								this.getInfo(dispatch,address);
-								resolve({status:'ok', data:address});
+								resolve(address);
 							} else {
-								resolve({status:'err', data: `🦊 Invalid chainid. expected [${chainId}]`});
+								console.log(`🦊 Invalid chainid. expected [${chainId}]`);
+								resolve(null);
 							}
 						} else {
-							resolve({status:'err', data: "🦊 No selected address."});
+							console.log("🦊 No selected address.");
+							resolve(null);
 						}
-					});
-					ethereum.on('accountsChanged', (accounts) => {
-						if (accounts.length) {
-							this.address = accounts[0];
-							dispatch(contractSlice.actions.login(this.address));
-							this.getInfo(dispatch,this.address);
-							resolve({status:'ok', data:this.address});
-						} else {
-							dispatch(contractSlice.actions.logout());
-						}
-					});
-					ethereum.on('chainChanged', (currentChainId) => {
-						if (chainId===currentChainId) {
-							this.getInfo(dispatch,this.address);
-							resolve({status:'ok', data:this.address});
-						} else {
-							dispatch(contractSlice.actions.logout());
-							resolve({status:'err', data: `🦊 Invalid chainid. expected [${chainId}]`});
-						}
-					});
+					})
 				} catch (error) {
-					resolve({status:'err', data: "🦊 Connect to Metamask using the button on the top right."});
+					console.log("🦊 Connect to Metamask using the button on the top right.");
+					resolve(null);
 				}
 			} else {
-				resolve({status:'err', data: "🦊 You must install Metamask into your browser: https://metamask.io/download.html"});
+				console.log("🦊 You must install Metamask into your browser: https://metamask.io/download.html");
+				resolve(null);
 			}
 		})
 	}
@@ -157,24 +161,27 @@ export default class Metamask {
 			return null;
 		}
 	}
-	static async getInfo(dispatch,address) {
+	static async getInfo(state) {
 		if (window.web3) {
-			const result = {};
+			const result = {lastTime:+new Date()};
 			const web3 = new Web3(process.env.REACT_APP_NETWORK_URL);
 			let res = await web3.eth.getBlock("latest");
-			// let res = await web3.eth.getBlockNumber();
 			if (res && !res.err) {
-				result.blockHeight = res.number;
-				result.blockHash = res.hash;
-				result.blockTime = res.timestamp;
+				result.block = {
+					number: res.number,
+					hash: res.hash,
+					time: res.timestamp
+				};
+
+				let blocks = [];
+				let len = state.blocks.length;
+				let count = len>9 ? 9 : len;
+				for(let i=0; i<count; i++) blocks.push(state.blocks[len-count+i]);
+				blocks.push(result.block);
+				result.blocks = blocks;
 			}
-			/* res = await this.call(contractTlb, 'insuranceAmount');
-			if (res) {
-				result.insuranceAmount = Math.round(Number(res) / 10 ** precisionUsdt) * 0.05;
-			} */
-			
-			let p1 = 10**precisionTlb;
-			let p2 = 10**precisionUsdt;
+			let p1 = 10 ** precisionTlb;
+			let p2 = 10 ** precisionUsdt;
 			res = await this.call(contractTlb, 'contractInfo');
 			if (res && !res.err) {
 				let i = 0;
@@ -223,12 +230,12 @@ export default class Metamask {
 				result.minerTier4 = Math.round((result.minerCount - t1 - t2 - t3) * 100 / result.minerCount);
 			}
 			
-			if (address) {
-				res = await this.call(contractUsdt, 'balanceOf', address);
+			if (state.address) {
+				res = await this.call(contractUsdt, 'balanceOf', state.address);
 				if (res) {
 					result._usdt = Math.round(Number(res) / p2);
 				}
-				res = await this.call(contractTlb, 'accountInfo', address);
+				res = await this.call(contractTlb, 'accountInfo', state.address);
 				if (res && !res.err) {
 					let i = 0;
 					result._userid = 		Number(res[i++]);
@@ -240,7 +247,7 @@ export default class Metamask {
 					result._children = 		Number(res[i++]);
 					result._contribution = 	Number(res[i++]) / p2;
 				}
-				res = await this.call(contractTlb, 'pendingOrder', address);
+				res = await this.call(contractTlb, 'pendingOrder', state.address);
 				if (res && Array.isArray(res) && res.length) {
 					result.pending = (Array.isArray(res[0]) ? res : [res]).map(v=>{
 						const time = Number(v[0]);
@@ -254,7 +261,7 @@ export default class Metamask {
 					result.pending = [];
 				}
 
-				res = await this.call(contractTlb, 'profits', address);
+				res = await this.call(contractTlb, 'profits', state.address);
 				if (res && !res.err) {
 					let i = 0;
 					result._overflowed = 	res[i++];
@@ -263,7 +270,7 @@ export default class Metamask {
 					result._rewards = 		Number(res[i++]) / p2;
 					result._withdrawable = 	Number(res[i++]) / p2;
 				}
-				res = await this.call(contractTlb, 'mineInfo', address);
+				res = await this.call(contractTlb, 'mineInfo', state.address);
 				if (res && !res.err) {
 					let i = 0;
 					result._minerTier = 	Number(res[i++]);
@@ -281,7 +288,7 @@ export default class Metamask {
 			}
 			if (Object.keys(result).length) {
 				console.log('info',result);
-				dispatch(contractSlice.actions.updateInfo(result));	
+				return result;
 			}
 		}
 		return null;

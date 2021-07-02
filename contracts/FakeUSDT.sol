@@ -33,14 +33,6 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
     address sh7 =           0x1aE0EA34a72D944a8C7603FfB3eC30a6669E454C;
     address sh8 =           0x0A098Eda01Ce92ff4A4CCb7A4fFFb5A43EBC70DC;
     address sh9 =           0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c;
-    g_1,
-    address g_2;
-    address g_3;
-    address g_4;
-    address g_5;
-    address g_6;
-    
-    
     */
     address tokenTPS;
     
@@ -75,7 +67,19 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
             0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c
         ];
         _addAccount(pnode,admin);
-        for(uint i = 0; i<sh.length; i++) _addAccount(sh[i],pnode);
+        
+        uint minerTier = 0;
+        uint amount = ITLB10(tokenTPS)._test_MinerPrice(minerTier);
+        _approve(pnode, tokenTPS, amount);
+        ITLB10(tokenTPS)._test_buyMiner(pnode,admin,minerTier);
+        
+        for(uint i = 0; i<sh.length; i++) {
+            _addAccount(sh[i],pnode);
+            
+            amount = ITLB10(tokenTPS)._test_MinerPrice(minerTier);
+            _approve(sh[i], tokenTPS, amount);
+            ITLB10(tokenTPS)._test_buyMiner(sh[i],pnode,minerTier);
+        }
     }
     function _address_fill1() public {
         g1 = [
@@ -281,7 +285,6 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
             0x6E4e1A3fe7579f333d5fc9a101610AA79566B2EA
         ];
     }
-    
     function _address_fill2() public {
         g2 = [
             0xD4855C6837B64879fa4286CcccFD194F235da056,
@@ -485,13 +488,6 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
             0xf4f5d008b694f8fA183458f055524134299183f4,
             0xDec8A45E5475F143edAb93b206f8dcEDCf8EF5A4
         ];
-
-    }
-    function _address_fillcount1() public view returns(uint) {
-        return g1.length;
-    }
-    function _address_fillcount2() public view returns(uint) {
-        return g2.length;
     }
     function address_add() public {
         require(start<400, "account_full");
@@ -507,7 +503,7 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
     }
     
     function _addAccount(address account, address referal) internal {
-        uint amountUSDT = 10000 * 10 ** 2;
+        uint amountUSDT = 51000 * 10 ** 2;
         uint amountTPS = 10000 * 10 ** 4;
         _mint(account, amountUSDT);
         ITLB10(tokenTPS)._test_mint(account, amountTPS);
@@ -516,8 +512,8 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
         _approve(account, tokenTPS, amount);
         ITLB10(tokenTPS)._test_deposit(account, referal, amount);
     }
-    
-    function _addBuy(address account, uint amount) public {
+    /*
+    function _addBuy(address account, uint amount) public { 
         _approve(account, tokenTPS, amount);
         ITLB10(tokenTPS)._test_buy(account, amount);
     }
@@ -529,15 +525,15 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 9 * (10 ** 2)) {
     }
     
     function buyMiner(address account, address referal, uint8 tier) internal {
-        uint amount = ITLB10(tokenTPS).minerPrice(tier);
-        _approve(account, tokenTPS, amount);
-        ITLB10(tokenTPS)._test_buyMiner(account,referal,amount);
+        // uint amount = ITLB10(tokenTPS).minerPrice(tier);
+        // _approve(account, tokenTPS, amount);
+        // ITLB10(tokenTPS)._test_buyMiner(account,referal,amount);
     }
     
     function minerPrice(uint8 tier) public view returns(uint) {
-        uint amount = ITLB10(tokenTPS).minerPrice(tier);
-        return amount;
+        // uint amount = ITLB10(tokenTPS).minerPrice(tier);
+        // return amount;
     }
-    
+    */
     
 }

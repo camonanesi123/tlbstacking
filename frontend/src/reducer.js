@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 export const contractSlice = createSlice({
     name: 'contract',
     initialState: {
-        address: '',
-        referer: '',
+        address: null,
+        referer: null,
         
         price: 0,
         totalDeposit: 0,
@@ -58,13 +58,20 @@ export const contractSlice = createSlice({
         _minePending: 0,
         _minePendingBlocks: 0,
 
-        blockHeight: 0,
-        blockHash: 0,
-        blockTime: 0,
+        block: {
+            number: 0,
+            hash:null,
+            time:0,
+        },
+        /* blockHash: 0,
+        blockTime: 0, */
         allowance: 0,
         
         orders: [],
         pending: [],
+        blocks: [],
+        lastTime: 0
+
 
         
     }, 
@@ -79,7 +86,7 @@ export const contractSlice = createSlice({
         rejected: state => {
             state.address = null;
         },
-        updateInfo: (state,action) => {
+        update: (state,action) => {
             for(let k in action.payload) {
                 if (state[k]!==undefined) {
                     state[k] = action.payload[k];

@@ -39,7 +39,7 @@ const HomePage = () => {
 	const valueChanger = (e) => {
 		if (!value) return setError('请输入推荐人地址')
 		if (!Metamask.validAddress(value)) return setError('无效地址');
-		dispatch(contractSlice.actions.updateInfo({referer:value}));
+		dispatch(contractSlice.actions.update({referer:value}));
 		history.push("/mlm/"+value);
 	}
 	

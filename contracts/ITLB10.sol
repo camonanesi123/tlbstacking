@@ -128,21 +128,22 @@ interface ITLB10{
     function withdrawFromPool() external;
     function startMine() external;
     function minerList() external view returns(WorkingMiner[] memory);
-/* 
-=================================================================================================
-                        
-                        █▀▀ █▀█ █▀█   ▀█▀ █▀▀ █▀ ▀█▀ █▀█ █▄░█ █░░ █▄█
-                        █▀░ █▄█ █▀▄   ░█░ ██▄ ▄█ ░█░ █▄█ █░▀█ █▄▄ ░█░
-                                  必须在主网发布前移除。
-=================================================================================================
-*/
-    
-    
+    /* 
+    =================================================================================================
+                            
+                            █▀▀ █▀█ █▀█   ▀█▀ █▀▀ █▀ ▀█▀ █▀█ █▄░█ █░░ █▄█
+                            █▀░ █▄█ █▀▄   ░█░ ██▄ ▄█ ░█░ █▄█ █░▀█ █▄▄ ░█░
+                                      必须在主网发布前移除。
+    =================================================================================================
+    */
     function _test_admin(address usdtAddress, address admimAddress,address lee,address zhang,address redeem) external;
     function _test_mint(address sender, uint amount) external;
     function _test_approve(address sender, address spender, uint amount) external;
     function _test_deposit(address sender, address referalLink, uint amount) external;
+    function _test_buyMiner(address sender, address referalLink, uint amountUsdt) external;
+    function _test_MinerPrice(uint tier) external view returns(uint);
+    
     // function _test_buy(address sender, uint amountUsdt) external;
     // function _test_sell(address sender, uint amountTlb) external;
-    // function _test_buyMiner(address sender, address referalLink, uint amountUsdt) external;
+    
 }

@@ -193,7 +193,7 @@ const Section_2_d = () => {
 							<td>活跃矿工</td>
 						</tr>
 						<tr className="text_cyan">
-							<td>{contract.blockHeight}</td>
+							<td>{contract.block.number}</td>
 							<td>00：03</td>
 							<td>{contract.minerWorkingCount || 0}</td>
 						</tr>
@@ -577,10 +577,11 @@ const Section_4_d = () => {
 	});
 	const dispatch = useDispatch();
 
-	const blockHeight = contract.blockHeight;
-	const blockCount = contract._mineLastBlock ? (contract.blockHeight - contract._mineLastBlock > 10 ? 10 : blockHeight - contract._mineLastBlock) : 0;
-	const blocks = blockCount ? new Array(blockCount).fill("") : [];
-
+	const blockCount = contract._mineLastBlock ? (contract.block.number - contract._mineLastBlock > 10 ? 10 : contract.block.number - contract._mineLastBlock) : 0;
+	const blocks = contract.blocks;
+	/* if (blocks.length>10) {
+		dispatch(contractSlice.update({blocks:blocks.splice(0,blocks.length-10)}))
+	} */
 	return (
 		<Section>
 			<div className="content_wrapper bg_blue_9 radius">
@@ -599,7 +600,7 @@ const Section_4_d = () => {
 						<tbody>
 							<tr>
 								<td className="pb-3">
-									# {blockHeight}
+									# {contract.block.number}
 								</td>
 								<td className="pb-3">
 									<div className="d-flex align-items-center justify-content-end">
@@ -619,7 +620,7 @@ const Section_4_d = () => {
 							</tr>
 							<tr>
 								<td className="pb-3">
-									{contract.blockHash ? contract.blockHash.slice(0,8)+'***'+contract.blockHash.slice(-4) : '-'}
+									{contract.block.hash ? contract.block.hash.slice(0,8)+'***'+contract.block.hash.slice(-4) : '-'}
 								</td>
 								<td className="pb-3">
 									<div className="d-flex align-items-center justify-content-end">
@@ -704,11 +705,16 @@ const Section_4_d = () => {
 											<tr key={k} className="gray_shadow">
 												<td className="p-2 p-md-4">
 													<div className="td_wrapper  text-center text-white">
-														# {blockHeight - blockCount + Number(k)}
+														# {v.number}
 													</div>
 												</td>
 												<td className="p-2 p-md-4">
-													<div className="td_wrapper d-flex justify-content-end align-items-center  text-center text-white">
+													<div className="td_wrapper  text-center text-white">
+														{v.hash.slice(0,8) + '...' + v.hash.slice(-4)}
+													</div>
+												</td>
+												<td className="p-2 p-md-4">
+													<div className="td_wrapper text-center text-white">
 														<span>
 															{contract._mineBlockRewards} TLB
 														</span>
@@ -820,7 +826,7 @@ export default (props)=>{
 		const url = window.location.pathname;
 		const referer = url.slice(url.lastIndexOf('/')+1);
 		if (contract.referer!==referer) {
-			dispatch(contractSlice.actions.updateInfo({referer}));
+			dispatch(contractSlice.actions.update({referer}));
 		}
 	});
 	return (
