@@ -487,7 +487,7 @@ function ModeDialog(props) {
 	const contract = useSelector(state => state.contract);
 	const {mode, param, title} = props;
 	const handleSubmit = () => {
-		setStatus({...status, loading:true, err:null, txid: null});
+		/* setStatus({...status, loading:true, err:null, txid: null});
 		Metamask.setMineType(contract.address, param).then(res=>{
 			if (res.txid) {
 				setStatus({...status, loading:true, err: null, ...res});
@@ -502,9 +502,9 @@ function ModeDialog(props) {
 					setStatus({...status, loading:false, txid, err});
 				})
 			} else {
-				setStatus({...status, loading:true, txid: null, ...res});
+				setStatus({...status, loading:false, txid: null, ...res});
 			}
-		});
+		}); */
 	}
 
 	return (
@@ -546,7 +546,7 @@ function WithdrawDialog(props) {
 					setStatus({...status, loading:false, txid, err});
 				})
 			} else {
-				setStatus({...status, loading:true, txid: null, ...res});
+				setStatus({...status, loading:false, txid: null, ...res});
 			}
 		});
 	}
@@ -577,7 +577,6 @@ const Section_4_d = () => {
 	});
 	const dispatch = useDispatch();
 
-	const blockCount = contract._mineLastBlock ? (contract.block.number - contract._mineLastBlock > 10 ? 10 : contract.block.number - contract._mineLastBlock) : 0;
 	const blocks = contract.blocks;
 	/* if (blocks.length>10) {
 		dispatch(contractSlice.update({blocks:blocks.splice(0,blocks.length-10)}))
@@ -687,7 +686,7 @@ const Section_4_d = () => {
 						</div>
 						<div className="d-flex mt-5">
 							<div style={{marginRight:10}}>
-								<button disabled={contract._mineStatus} onClick={()=>setStatus({...status, open:DLG_WITHDRAW})} className="h4 btn btn-muted w-100  border_cyan text-nowrap text_cyan round-button">
+								<button disabled={contract._minePending===0} onClick={()=>setStatus({...status, open:DLG_WITHDRAW})} className="h4 btn btn-muted w-100  border_cyan text-nowrap text_cyan round-button">
 									领取收益
 								</button>
 							</div>

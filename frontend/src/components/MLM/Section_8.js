@@ -170,9 +170,10 @@ function CancelDialog(props) {
 		txid: null,
 		completed: false
 	});
+	const contract = useSelector(state => state.contract);
 	const handleSubmit = () => {
 		setStatus({...status, loading:true, err:null, txid: null});
-		Metamask['cancel'+(props.type===TYPE_BUY?'Buy':'Sell')+'Order']().then(res=>{
+		Metamask['cancel'+(props.type===TYPE_BUY?'Buy':'Sell')+'Order'](contract.address).then(res=>{
 			if (res.txid) {
 				setStatus({...status, loading:true, err: null, ...res});
 				const txid = res.txid;
