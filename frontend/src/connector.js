@@ -18,21 +18,9 @@ export default class Metamask {
 	static contract = contractTlb;
 	static precisionUsdt = precisionUsdt;
 	static precisionTlb = precisionTlb;
-	/* static address; */
-	/* static started = false; */
 	static cbAccountsChanged = null;
 	static cbChainChanged = null;
 
-	/* static timeHandler; */
-	/* static start(dispatch) {
-		if (this.address) return true;
-		this.getInfo(dispatch,this.address).then(()=>resolve(true));
-		return new Promise(resolve=>{
-			if (this.timeHandler) clearTimeout(this.timeHandler);
-			
-			this.timeHandler = setTimeout(()=>this.start(dispatch),blockTime);
-		})
-	} */
 	static setHandler(cbAccountsChanged,cbChainChanged) {
 		const {ethereum} = window;
 		if (ethereum) {
@@ -110,14 +98,14 @@ export default class Metamask {
 			return {err};
 		}
 	}
-	static async callBySigner(to, method, ...args) {
+	static async callBySigner(from, to, method, ...args) {
 		try {
 			const {ethereum} = window;
 			if (ethereum) {
 				const web3 = new Web3(ethereum);
-				let contract = new web3.eth.Contract(to===contractUsdt?abiErc20:abiTlb, to, {from: this.address});
+				let contract = new web3.eth.Contract(to===contractUsdt?abiErc20:abiTlb, to, {from});
 				let data = contract.methods[method](...args).encodeABI();
-				const json = {from: this.address, to, value: 0x0, data};
+				const json = {from, to, value: 0x0, data};
 				const res = await ethereum.request({method: 'eth_sendTransaction',params: [json]});
 				if (res) return {txid: res};
 			}
@@ -294,8 +282,8 @@ export default class Metamask {
 		return null;
 	}
 	
-	static async allowance() {
-		let res = await this.call(contractUsdt, 'allowance', this.address, contractTlb)
+	static async allowance(address) {
+		let res = await this.call(contractUsdt, 'allowance', address, contractTlb)
 		if (res && !res.err) {
 			console.log('allowance',res);
 			return Number(res) / 10 ** precisionUsdt;
@@ -319,39 +307,39 @@ export default class Metamask {
 		return null;
 	}
 	
-	static approve(amount) {
-		return this.callBySigner(contractUsdt, 'approve', contractTlb, Math.round(amount * 10 ** precisionUsdt));
+	static approve(address,amount) {
+		return this.callBySigner(address, contractUsdt, 'approve', contractTlb, Math.round(amount * 10 ** precisionUsdt));
 	}
-	static deposit(referalLink, amount) {
-		return this.callBySigner(contractTlb, 'deposit', referalLink, Math.round(amount * 10 ** precisionUsdt));
+	static deposit(address, referalLink, amount) {
+		return this.callBySigner(address, contractTlb, 'deposit', referalLink, Math.round(amount * 10 ** precisionUsdt));
 	}
-	static withdraw() {
-		return this.callBySigner(contractTlb, 'withdraw');
+	static withdraw(address) {
+		return this.callBySigner(address, contractTlb, 'withdraw');
 	}
-	static buy(amount) {
-		return this.callBySigner(contractTlb, 'buy', Math.round(amount * 10 ** precisionUsdt));
+	static buy(address, amount) {
+		return this.callBySigner(address, contractTlb, 'buy', Math.round(amount * 10 ** precisionUsdt));
 	}
-	static cancelBuyOrder() {
-		return this.callBySigner(contractTlb, 'cancelBuyOrder');
+	static cancelBuyOrder(address) {
+		return this.callBySigner(address, contractTlb, 'cancelBuyOrder');
 	}
-	static sell(amount) {
-		return this.callBySigner(contractTlb, 'sell', Math.round(amount * 10 ** precisionTlb));
+	static sell(address, amount) {
+		return this.callBySigner(address, contractTlb, 'sell', Math.round(amount * 10 ** precisionTlb));
 	}
-	static cancelSellOrder() {
-		return this.callBySigner(contractTlb, 'cancelSellOrder');
-	}
-	
-	static startMine() {
-		return this.callBySigner(contractTlb, 'startMine');
+	static cancelSellOrder(address) {
+		return this.callBySigner(address, contractTlb, 'cancelSellOrder');
 	}
 	
-	static setMineType(mineType) {
-		return this.callBySigner(contractTlb, 'setMineType',mineType);
+	static startMine(address) {
+		return this.callBySigner(address, contractTlb, 'startMine');
 	}
-	static buyMiner(referalLink, amount) {
-		return this.callBySigner(contractTlb, 'buyMiner', referalLink, Math.round(amount * 10 ** precisionUsdt));
+	
+	static setMineType(address, mineType) {
+		return this.callBySigner(address, contractTlb, 'setMineType',mineType);
 	}
-	static withdrawFromPool() {
-		return this.callBySigner(contractTlb, 'withdrawFromPool');
+	static buyMiner(address, referalLink, amount) {
+		return this.callBySigner(address, contractTlb, 'buyMiner', referalLink, Math.round(amount * 10 ** precisionUsdt));
+	}
+	static withdrawFromPool(address) {
+		return this.callBySigner(address, contractTlb, 'withdrawFromPool');
 	}
 }

@@ -84,18 +84,18 @@ function TradeDialog(props) {
 			Metamask.connect(dispatch);
 		} else {
 			if (type===TYPE_BUY && status.allowance===null) {
-				Metamask.allowance().then(res=>setStatus({...status, loading:false, allowance:res}));
+				Metamask.allowance(contract.address).then(res=>setStatus({...status, loading:false, allowance:res}));
 			}
 		}
 	});
 	const handleApprove = () => {
 		setStatus({...status, loading:true, err:null, txid: null});
-		Metamask.approve(amount).then(res=>{
+		Metamask.approve(contract.address, amount).then(res=>{
 			if (res.txid) {
 				const txid = res.txid;
 				Metamask.waitTransaction(res.txid).then(res=>{
 					if (res===true) {
-						Metamask.allowance().then(res=>setStatus({...status, txid, err: null, loading:false, allowance:res}));
+						Metamask.allowance(contract.address).then(res=>setStatus({...status, txid, err: null, loading:false, allowance:res}));
 					} else {
 						setStatus({...status, loading:false, txid, err: res===false ? '失败合约授权' : '无知错误'});
 					}
@@ -107,7 +107,7 @@ function TradeDialog(props) {
 	}
 	const handleSubmit = () => {
 		setStatus({...status, loading:true, err:null, txid: null});
-		Metamask[type===TYPE_BUY?'buy':'sell'](amount).then(res=>{
+		Metamask[type===TYPE_BUY?'buy':'sell'](contract.address, amount).then(res=>{
 			if (res.txid) {
 				setStatus({...status, loading:true, err: null, ...res});
 				const txid = res.txid;
