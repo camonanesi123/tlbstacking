@@ -126,10 +126,10 @@ const Section_1_d = () => {
 		Metamask.connect(dispatch);
 	};
 	const data = [
-		{val:37, label:"超级矿工 37%"},
-		{val:25, label:"优质矿工 25%"},
-		{val:12, label:"普通矿工 12%"},
-		{val:8,  label:"惰性矿工 8%"}
+		{x:37,y:37, label:"超级矿工 37%"},
+		{x:25,y:37, label:"优质矿工 25%"},
+		{x:25,y:37, label:"普通矿工 12%"},
+		{x:25,y:37, label:"惰性矿工 8%"}
 	];
 	return (
 		<Section>
@@ -153,8 +153,6 @@ const Section_1_d = () => {
 					width="100%"
 					
 					dataSource={data}
-					valueMemberPath="val"
-					labelMemberPath="label"
 
                     chartType="Spline"
                     isTransitionInEnabled="true"
@@ -173,7 +171,7 @@ const Section_2_d = () => {
 	let contract = useSelector(state => state.contract);
 	const totalSupply = (Math.round(contract.totalSupply/100)/100) + ' 万枚';
 	const circulating = (Math.round((contract.totalSupply-contract.totalBurnt)/100)/100) + ' 万枚';
-	const totalBurnt = contract.totalBurnt>10000 ? (Math.round((contract.totalSupply-contract.totalBurnt)/100)/100) + '万枚' : contract.totalBurnt + 'TLB';
+	const totalBurnt = contract.totalBurnt>10000 ? (Math.round(contract.totalBurnt/100)/100) + '万枚' : contract.totalBurnt + 'TLB';
 	return (
 		<Section>
 			<div className="content_wrapper bg_blue_9 px-2 py-3 py-md-5 radius">

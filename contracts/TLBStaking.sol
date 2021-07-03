@@ -157,12 +157,12 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         _zhang.account = zhang;
         _redeemAddress = redeem;
     }
-    
+    /*
     function admin() public override view returns(address,address,address,address) {
         require(owner() == msg.sender, 'Ownable: caller is not the owner');
         return (_admin.account,_zhang.account,_lee.account,_redeemAddress);
     }
-    
+    */
     function basicInfoAdmin() public override view returns(uint,uint,uint,uint) {
         require(owner() == msg.sender, 'Ownable: caller is not the owner');
         return (currentLayer,totalUsers,totalMineable,_insuranceTime);
@@ -183,7 +183,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
      * @dev Return required number of TPS to member. 计算入金时候需要的TLB数量
      */
     function amountForDeposit(uint amount) public override view returns(uint256) {
-        return amount * uint(10) ** decimals() /  10 / price; // 10% TPS of amount
+        return (amount * _tlbUnit) / (price * 10); // 10% TPS of amount
     }
     /**
      * @dev Return required number of TPS to member. 计算出金的时候TLB数量，前1000层 5个，1001层开始2个
@@ -204,11 +204,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //当前层会员填满，需要新加一层，TLB涨价0.01
         if (maxUsersInLayer == _positionInLayer) {
             currentLayer++;
+            emit AddLayer(currentLayer);
             price = SafeMath.add(price,_tlbIncrement);
             _positionInLayer = 1;
-        }
-        //不需要新增层
-         else {
+        } else {
             _positionInLayer++;
         }
         //总用户增加1
@@ -233,11 +232,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
      */
     function getLastInBranch(address parent) internal view returns(address){
         Node storage parentNode = _nodes[parent];
-        if (parentNode.children.length==0) {
-            return parent;
-        } else {
-            return getLastInBranch(parentNode.children[0]);
-        }
+        return parentNode.children.length==0 ? parent : getLastInBranch(parentNode.children[0]);
     }
     
     /**
@@ -246,11 +241,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
      */
     function getShareholderInBranch(address parent) internal returns(address){
         Node storage parentNode = _nodes[parent];
-        if (parentNode.role==NodeType.Shareholder) {
-            return parent;
-        } else {
-            return getShareholderInBranch(parentNode.parent);
-        }
+        return parentNode.role==NodeType.Shareholder ? parent : getShareholderInBranch(parentNode.parent);
     }
     
     /**
@@ -271,7 +262,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         uint lastDeposit = _nodes[sender].lastAmount;
         if (lastDeposit!=0) {
-            if (amount<10000 || lastDeposit<10000) {
+            if (amount<10000) {
                 require(amount - lastDeposit >= 100 * _usdtUnit, "# Too_Low_Invest");
             }
         } else {
@@ -293,6 +284,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         
         //新用户第一次入金，改变树形结构
         if (node.lastTime==0) {
+            
             uint32 position = addUserToPrism();
             address parent;
             //共生节点
@@ -332,6 +324,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             if (position > 502503) { // save prism position from 1002 layer
                 _prism[position] = sender;
             }
+            
+            emit AddUser(sender,totalUsers);
         } else { //老用户入金，不改变结构，直接改变本金
             if (node.isOverflowed || insuranceCounterTime>node.lastTime) {
                 node.staticRewards = 0;
@@ -425,13 +419,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             }
         }
     }
-    /*
-    function _staticRewardOf(Node storage node) internal view returns(uint) {
-        if (node.lastTime<_insuranceTime) return 0;
-        uint date = (now - node.lastTime) / 86400;
-        return node.lastTime<_insuranceTime ? 0 : node.staticRewards + node.balance * _tiers[node.tier-1].staticRewards * date / 1000;
-    }
-    */
     // for test
     function _staticRewardOf(Node storage node) internal view returns(uint) {
         if (node.lastTime<_insuranceTime) return 0;
@@ -558,6 +545,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _userid,_tlb,_lastAmount,_adep,_aw,_limit,_children,_totalDeposit
         ];
     }
+    function nodeinfo(address sender) public override view returns(uint, address, address[] memory) {
+        return (_nodes[sender].referalCount, _nodes[sender].parent,_nodes[sender].children);
+    }
+    
     function profits(address account) public override view returns(bool, uint, uint, uint, uint) {
         bool overflowed = false;
         uint staticRewards = 0;
@@ -660,6 +651,9 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             if (node.balance>0) {
                 node.totalWithdrawal += withdrawable;
                 node.lastTime = now;
+                node.staticRewards = 0;
+                node.dynamicRewards = 0;
+                node.rewards = 0;
                 //计算方式 正确
                 uint benefit = staticRewards + dynamicRewards;
                 uint half = ((node.layer<5 ? 0 : rewards ) + benefit) / 2;
@@ -957,7 +951,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                     _redeemAmount -= amount;
                     redeemAmount -= amount;
                     sumTps += order.balance;
-                    TransferHelper.safeApprove(USDTToken, order.account, amount);
+                    // TransferHelper.safeApprove(USDTToken, order.account, amount);
                     TransferHelper.safeTransfer(USDTToken, order.account, amount);
                     if (count==2) break;
                 } else {
@@ -1194,6 +1188,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         return res;
     }
+    
 /* 
 =================================================================================================
                         
@@ -1202,27 +1197,12 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                                   必须在主网发布前移除。
 =================================================================================================
 */
-    /*
-    function _test_sender(address account, uint amount) public {
-        // TransferHelper.safeApprove(USDTToken, referalLink, directRewards);
-        TransferHelper.safeTransfer(USDTToken, account, amount);
-    }
-    function _test_tlb(address account, uint amount) public {
-        _transfer(address(this), account, amount);
-    }
-    */
     function _test_admin(address usdtAddress, address adminAddress,address lee,address zhang,address redeem) public override {
         USDTToken = usdtAddress;
         _admin.account = adminAddress;
         _lee.account = lee;
         _zhang.account = zhang;
         _redeemAddress = redeem;
-    }
-    function _testMint(address test) public {
-        _mint(test, 1000000 * 10 ** 4);
-    }
-    function _testUSDT(address usdtAddress) public {
-        USDTToken = usdtAddress;
     }
     function _test_mint(address sender, uint amount) public override {
         _mint(sender, amount);
@@ -1261,15 +1241,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
     */
     /*
-    function _test_parent(address sender) public view returns(address) {
-        return _nodes[sender].parent;
-    }
-    function _test_children(address sender) public view returns(address[] memory) {
-        return _nodes[sender].children;
-    }
-    function _test_referalCount(address sender) public view returns(uint) {
-        return _nodes[sender].referalCount;
-    }
+    
     function _test_tier(address sender) public view returns(uint) {
         return _nodes[sender].tier;
     }

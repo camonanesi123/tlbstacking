@@ -27,6 +27,20 @@ let precisionTlb = 0;
 let contractUsdt = null;
 let precisionUsdt = 0;
 
+const setlog = (title=null)=>{
+	let date = new Date();
+	let y=date.getUTCFullYear();
+	let m=date.getUTCMonth() + 1;
+	let d=date.getUTCDate();
+	let hh=date.getUTCHours();
+	let mm=date.getUTCMinutes();
+	let ss=date.getUTCSeconds();
+	let datetext = [y,("0" + m).slice(-2),("0" + d).slice(-2)].join('-');
+	let timetext = [("0" + hh).slice(-2),("0" + mm).slice(-2),("0" + ss).slice(-2)].join(':');
+	let data = `[${timetext}] ${title}\r\n`;
+	fs.appendFileSync(__dirname+'/tlb.log',data);
+	console.log(data);
+}
 
 class Test {
     constructor() {
@@ -55,37 +69,48 @@ class Test {
         console.log('G Count = '+g.length);
     }
     async test() {
+        let k = 0;
         let index = 0;
+        let filename = __dirname + '/log.txt';
+
         for(let i=0; i<9; i++) {
             let parent = sh[i];
-            let count = 0;
-            for(let k=0; k<100; k++) {
-                let addrs = [g[index]];//,g[index+1],g[index+2],g[index+3],g[index+4],g[index+5],g[index+6],g[index+7],g[index+8],g[index+9]
-                let result = await this.callBySigner(admin, contractUsdt, 'addAccount', addrs, parent);
+            k = 0;
+            while(k<100) {
+                let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
                 if (result) {
-                    count++;
-                    console.log('SH'+(i+1) + ' <=' + count + ' / ' + index);
-                } else {
+                    setlog(`success sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+                    k++;
+                    index++;
                     continue;
+                } else {
+                    setlog(`failed sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
                 }
-                index += 1;
+                await new Promise(resolve=>setTimeout(resolve,300));
             }
         }
-        for(let i=index; i<4000; i+=10) {
-            // let addrs = [g[i],g[i+1],g[i+2],g[i+3],g[i+4],g[i+5],g[i+6],g[i+7],g[i+8],g[i+9]];
-            let parent = i = index ? sh[0] : g[i-10];
-            let pt = i = index ? 'sh[0]' : 'g['+(i-10)+']';
-            for(let k=0; k<10; k++) {
-                let result = await this.callBySigner(admin, contractUsdt, 'addAccount', [addrs[i+k]], parent);
+        index = 1073
+        let p = 50;
+        while(i<10000) {
+            let parent = g[p];
+            k = 0;
+            while(k<10) {
+                if (i>=10000) return;
+                let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
                 if (result) {
-                    console.log(pt + ' <=' + k + ' / ' + (i + k));
+                    setlog(`success g${p} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+                    k++
+                    index++;
+                    continue;
                 } else {
-                    break;
+                    setlog(`failed g${p} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
                 }
+                await new Promise(resolve=>setTimeout(resolve,300));
             }
+            p++;
         }
     }
-    callRPC(method,params,id=0) {
+    /* callRPC(method,params,id=0) {
         if (id===0) id = Math.round(Math.random()*89999998)+10000001;
         return new Promise(resolve=>{
             request(RPCAPI,{method: "post",headers:{'Content-Type': 'application/json'},json:{jsonrpc:"2.0",method,params,id}},(error,res,body)=>{
@@ -94,17 +119,6 @@ class Test {
             })
         })
     }
-    
-    /* async sendTx(raw) {
-        let res = await callRPC('eth_sendRawTransaction',[raw.hex]);
-        if (res.error) {
-            if (res.error.code===-32000) {
-                console.log('insufficient funds for gas * price + value');
-            } else {
-                console.log(res.error.message);
-            }
-        }
-    } */
     async call(to, method, ...args) {
         try {
             let contract = new web3.eth.Contract(to===contractUsdt?abiErc20:abiTlb, to);
@@ -113,7 +127,7 @@ class Test {
         } catch (err) {
             return {err};
         }
-    }
+    } */
     async callBySigner(from, to, method, ...args) {
         try {
             let contract = new web3.eth.Contract(to===contractUsdt?abiErc20:abiTlb, to, {from});
@@ -134,33 +148,6 @@ class Test {
         }
         return false;
     }
-    
-    /* async waitTransaction(txnHash, blocksToWait=1) {
-        try {
-            let repeat = 100;
-            while(--repeat > 0) {
-                let time = +new Date();
-                let receipt = await web3.eth.getTransactionReceipt(txnHash);
-                if (receipt) {
-                    let resolvedReceipt = await receipt;
-                    if (resolvedReceipt && resolvedReceipt.blockNumber){
-                        let block = await web3.eth.getBlock(resolvedReceipt.blockNumber);
-                        let current = await web3.eth.getBlock("latest");
-                        if (current.number - block.number >= blocksToWait) {
-                            let txn = await web3.eth.getTransaction(txnHash);
-                            if (txn.blockNumber != null) return Number(resolvedReceipt.status)===1;
-                        }
-                    }
-                }
-                let delay = blockTime - (+new Date() - time);
-                if (delay<1000)  delay = 1000;
-                await new Promise(resolve=>setTimeout(resolve,delay));
-            }
-        } catch (e) {
-            return null;
-        }
-    } */
-    
 }
 
 new Test().test();

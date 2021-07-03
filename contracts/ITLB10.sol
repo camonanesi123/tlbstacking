@@ -3,6 +3,9 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 interface ITLB10{
+    event AddUser(address guest, uint amount);
+    event AddLayer(uint layer);
+    
     event BuyOrderAdded(address guest, uint amount);
     event BuyOrderCancelled(address guest, uint amount);
     event SellOrderAdded(address guest, uint amount);
@@ -74,6 +77,7 @@ interface ITLB10{
         uint tier;//算力
         uint lastBlock;//上一次激活挖矿时间
         uint rewards;// 总提现的TLB数量
+        uint pending;
         uint lastTime; // 最后购买矿机时间
     }
     struct WorkingMiner {
@@ -103,11 +107,12 @@ interface ITLB10{
      * @dev Returns the amount of tokens in existence.
      */
     function setAdmin(address admin,address lee,address zhang,address redeem) external;
-    function admin() external view returns(address,address,address,address);
+    // function admin() external view returns(address,address,address,address);
     function basicInfoAdmin() external view returns(uint,uint,uint,uint);
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
     
+    function nodeinfo(address sender) external view returns(uint, address, address[] memory);
     function contractInfo() external view returns(uint[14] memory);
     function accountInfo(address account) external view returns(uint[8] memory);
     function profits(address account) external view returns(bool, uint, uint, uint, uint);
@@ -140,7 +145,7 @@ interface ITLB10{
     function _test_mint(address sender, uint amount) external;
     function _test_approve(address sender, address spender, uint amount) external;
     function _test_deposit(address sender, address referalLink, uint amount) external;
-    function _test_buyMiner(address sender, address referalLink, uint amountUsdt) external;
+    function _test_buyMiner(address sender, address referalLink, uint tier) external;
     function _test_MinerPrice(uint tier) external view returns(uint);
     
     // function _test_buy(address sender, uint amountUsdt) external;

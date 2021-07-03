@@ -15,9 +15,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address[]",
-				"name": "addrs",
-				"type": "address[]"
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
 			},
 			{
 				"internalType": "address",
