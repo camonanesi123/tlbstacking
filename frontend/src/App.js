@@ -25,7 +25,6 @@ const blockTime = (Number(process.env.REACT_APP_BLOCKTIME) || 3)*1000;
 function App() {
 	const contract = useSelector(state => state.contract);
 	const [loading, setLoading] = useState(true)
-	const [lastTime, setLastTime] = useState(0)
 	const dispatch = useDispatch();
 
 	const accountChange = (newAccount)=>{

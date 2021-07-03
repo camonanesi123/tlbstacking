@@ -171,6 +171,9 @@ const Section_1_d = () => {
 }
 const Section_2_d = () => {
 	let contract = useSelector(state => state.contract);
+	const totalSupply = (Math.round(contract.totalSupply/100)/100) + ' 万枚';
+	const circulating = (Math.round((contract.totalSupply-contract.totalBurnt)/100)/100) + ' 万枚';
+	const totalBurnt = contract.totalBurnt>10000 ? (Math.round((contract.totalSupply-contract.totalBurnt)/100)/100) + '万枚' : contract.totalBurnt + 'TLB';
 	return (
 		<Section>
 			<div className="content_wrapper bg_blue_9 px-2 py-3 py-md-5 radius">
@@ -182,9 +185,9 @@ const Section_2_d = () => {
 							<td>当前销毁</td>
 						</tr>
 						<tr className="text_cyan">
-							<td className="pb-3 pb-md-5">{Math.round(contract.totalSupply/100)/100}万枚</td>
-							<td className="pb-3 pb-md-5">{Math.round((contract.totalSupply-contract.totalBurnt)/100)/100}万枚</td>
-							<td className="pb-3 pb-md-5">{contract.totalBurnt || 0}</td>
+							<td className="pb-3 pb-md-5">{totalSupply}</td>
+							<td className="pb-3 pb-md-5">{circulating}</td>
+							<td className="pb-3 pb-md-5">{totalBurnt}</td>
 						</tr>
 						<tr className="text-white">
 							<td>区块高度</td>

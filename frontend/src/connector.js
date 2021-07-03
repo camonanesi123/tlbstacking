@@ -150,7 +150,7 @@ export default class Metamask {
 		}
 	}
 	static async getInfo(state) {
-		if (window.web3) {
+		if (Web3) {
 			const result = {lastTime:+new Date()};
 			const web3 = new Web3(process.env.REACT_APP_NETWORK_URL);
 			let res = await web3.eth.getBlock("latest");
