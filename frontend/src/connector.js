@@ -182,8 +182,8 @@ export default class Metamask {
 				result.insuranceAmount= Number(res[i++]) / p2;
 				// miner
 				result.minerCount = 	Number(res[i++]);
-				result.minerWorkingPower = 	Number(res[i++]);
-				result.minerWorkingCount = 	Number(res[i++]);
+				result.minerTotalPower = 	Number(res[i++]);
+				/* result.minerWorkingCount = 	Number(res[i++]); */
 				result.minerTierPrice1 = 	Number(res[i++]) / p2;
 				result.minerTierPrice2 = 	Number(res[i++]) / p2;
 				result.minerTierPrice3 = 	Number(res[i++]) / p2;
@@ -194,24 +194,28 @@ export default class Metamask {
 				result.orders = (Array.isArray(res[0]) ? res : [res]).map(v=>[Number(v[0]),Number(v[1]),Number(v[2])/p1,Number(v[3])]);
 			}
 			res = await this.call(contractTlb, 'minerList');
-			if (res && Array.isArray(res) && res.length) {
+			if (res && res[0] && res[1] && res[2]) {
 				let t1 = 0, t2 = 0, t3 = 0;
-				result.minerList = (Array.isArray(res[0]) ? res : [res]).map(v=>{
-					if (v.tier>=100) {
+				result.minerList = [];
+				for(let i = 0; i<res[0].length; i++) {
+					let address = res[0][i];
+					let power = Number(res[1][i]);
+					let lastblock = Number(res[2][i]);
+					result.minerList.push([
+						address,
+						power,
+						lastblock,
+					])
+					if (power>=100) {
 						t1++;
-					} else if (v.tier>=50) {
+					} else if (power>=50) {
 						t2++;
 					} else {
 						t3++;
 					}
-					return [
-						v.account,
-						v.mineType,
-						v.tier,
-						v.lastBlock,
-					];
-				});
-				result.minerList.sort((a,b)=>a.tier-b.tier);
+				}
+				
+				result.minerList.sort((a,b)=>a[1]-b[1]);
 				result.minerTier1 = Math.round(t1 * 100 / result.minerCount);
 				result.minerTier2 = Math.round(t2 * 100 / result.minerCount);
 				result.minerTier3 = Math.round(t3 * 100 / result.minerCount);
@@ -336,8 +340,8 @@ export default class Metamask {
 	static setMineType(address, mineType) {
 		return this.callBySigner(address, contractTlb, 'setMineType',mineType);
 	}
-	static buyMiner(address, referalLink, amount) {
-		return this.callBySigner(address, contractTlb, 'buyMiner', referalLink, Math.round(amount * 10 ** precisionUsdt));
+	static buyMiner(address, referalLink, tier) {
+		return this.callBySigner(address, contractTlb, 'buyMiner', referalLink, tier);
 	}
 	static withdrawFromPool(address) {
 		return this.callBySigner(address, contractTlb, 'withdrawFromPool');

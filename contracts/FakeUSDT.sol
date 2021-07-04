@@ -84,10 +84,7 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 12 * (10 ** 2)) {
              _mint(sh[i], amount);
             _approve(sh[i], tokenTPS, amount);
             
-            /*
-            
             ITLB10(tokenTPS)._test_buyMiner(sh[i],pnode,minerTier);
-            */
         }
     }
     function _addAccount(address account, address referal) internal {

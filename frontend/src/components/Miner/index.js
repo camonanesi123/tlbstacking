@@ -190,12 +190,12 @@ const Section_2_d = () => {
 						<tr className="text-white">
 							<td>区块高度</td>
 							<td>出块时间</td>
-							<td>活跃矿工</td>
+							<td>所有矿机</td>
 						</tr>
 						<tr className="text_cyan">
 							<td>{contract.block.number}</td>
 							<td>00：03</td>
-							<td>{contract.minerWorkingCount || 0}</td>
+							<td>{contract.minerCount}个 / {contract.minerTotalPower} T</td>
 						</tr>
 					</tbody>
 				</table>
@@ -376,6 +376,7 @@ function BuyDialog(props) {
 		Metamask.approve(contract.address, amount).then(res=>{
 			if (res.txid) {
 				const txid = res.txid;
+				setStatus({...status, loading:true, err: null, ...res});
 				Metamask.waitTransaction(res.txid).then(res=>{
 					if (res===true) {
 						Metamask.allowance(contract.address).then(res=>setStatus({...status, txid, err: null, loading:false, allowance:res}));
@@ -390,7 +391,7 @@ function BuyDialog(props) {
 	}
 	const handleSubmit = () => {
 		setStatus({...status, loading:true, err:null, txid: null});
-		Metamask.buyMiner(contract.address, contract.referer, amount).then(res=>{
+		Metamask.buyMiner(contract.address, contract.referer, param-1).then(res=>{
 			if (res.txid) {
 				setStatus({...status, loading:true, err: null, ...res});
 				const txid = res.txid;

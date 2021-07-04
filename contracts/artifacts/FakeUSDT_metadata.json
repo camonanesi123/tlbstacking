@@ -546,19 +546,19 @@
 	},
 	"sources": {
 		"FakeUSDT.sol": {
-			"keccak256": "0xc8c4d8e9ac52a6d94e0096506277b9ec22b8b5cc1c10a39dbe55d028978b4fd9",
+			"keccak256": "0x88bc328a4c50bd55fc13fc7af2c140dcc8d8154a8bf699612530bc35ec375b20",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a3002d169693619454c829eec03cbd5cc8d63aba08079a71ca7a510883163fc5",
-				"dweb:/ipfs/QmRijV2bVXUk44KAR6KHNPwZEu3EAh1WLxRxNEuy5j8nZT"
+				"bzz-raw://01d9e3bebee50ad464b7b129aa3c42dc27b433850607c4896f699310927f6595",
+				"dweb:/ipfs/QmTToigNY1Fp7jTMA6cvQeLfeJG5LVyUdCQFJivQxsxJ7E"
 			]
 		},
 		"ITLB10.sol": {
-			"keccak256": "0x217d283af55c18d06ccd9e96b1c27a1d7e29f7e8753bc8b51897783d530e2042",
+			"keccak256": "0xd99164843cfb4d931a4fabb6204a68a7a7a8ef94e7f40109b08ab81da1d99f82",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d95c3ea7766d02c63942827662465f4ea3da4c4babd147cd1a7810a37dbc5364",
-				"dweb:/ipfs/QmXzUzGDxdHnihudPkMhLEiduF2GqrcQr1mChpYDJk48kw"
+				"bzz-raw://aa6d7a6e15114bbd7adff3da6c826fcb8f4f0574520621d2dc44ebe3033ff14b",
+				"dweb:/ipfs/QmYsMQt3nt6bC28Bk5T5oR84af2ebascs4UFSTbQmJUUmV"
 			]
 		},
 		"lib/HRC20.sol": {

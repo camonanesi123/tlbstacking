@@ -14,8 +14,8 @@ export const contractSlice = createSlice({
         insuranceCounterTime: 0, 
         insuranceAmount: 0, 
         minerCount: 0, 
-        minerWorkingPower: 0, 
-        minerWorkingCount: 0, 
+        minerTotalPower: 0, 
+        /* minerWorkingCount: 0,  */
         minerTierPrice1: 0,
         minerTierPrice2: 0,
         minerTierPrice3: 0,

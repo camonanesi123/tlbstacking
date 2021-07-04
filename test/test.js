@@ -87,12 +87,12 @@ class Test {
                 await new Promise(resolve=>setTimeout(resolve,300));
             }
         }
-        index = 900
+        /* index = 900 */
         let p = 0;
         while(index<10000) {
-            let parent = g[p];
+            let parent = g[index-5];
             k = 0;
-            while(k<10) {
+            while(k<5) {
                 if (index>=10000) return;
                 let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
                 if (result) {

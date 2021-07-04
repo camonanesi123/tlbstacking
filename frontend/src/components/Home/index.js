@@ -50,7 +50,7 @@ const HomePage = () => {
 					<span className="text-white-50">推荐人地址</span>
 				</div>
 				<div className="form-group my-4 mb-4">
-					<input onChange={(e)=>setValue(e.target.value)} className="h4 w-100 p-3" value={value} />
+					<input onChange={(e)=>setValue(e.target.value)} placeholder="请务必输入正确推荐人地址，否则操作会报错" className="h4 w-100 p-3" value={value} />
 					<div className="text-danger">{error}</div>
 				</div>
 				<div className="text-center">

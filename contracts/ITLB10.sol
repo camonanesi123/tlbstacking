@@ -80,12 +80,14 @@ interface ITLB10{
         uint pending;
         uint lastTime; // 最后购买矿机时间
     }
+    /*
     struct WorkingMiner {
         address account;
         uint mineType;
         uint tier;//算力
         uint lastBlock;//上一次激活挖矿时间
     }
+    */
     //矿工信息
     struct MinerInfo {
         address account; //地址
@@ -113,7 +115,7 @@ interface ITLB10{
     function amountForWithdraw(address account) external view returns(uint256);
     
     function nodeinfo(address sender) external view returns(uint, address, address[] memory);
-    function contractInfo() external view returns(uint[14] memory);
+    function contractInfo() external view returns(uint[13] memory);
     function accountInfo(address account) external view returns(uint[8] memory);
     function profits(address account) external view returns(bool, uint, uint, uint, uint);
     
@@ -132,7 +134,7 @@ interface ITLB10{
     function buyMiner(address referalLink, uint amountUsdt) external;
     function withdrawFromPool() external;
     function startMine() external;
-    function minerList() external view returns(WorkingMiner[] memory);
+    function minerList() external view returns(address[] memory,uint[] memory,uint[] memory);
     /* 
     =================================================================================================
                             

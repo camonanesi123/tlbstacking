@@ -464,9 +464,9 @@
 			"name": "contractInfo",
 			"outputs": [
 				{
-					"internalType": "uint256[14]",
+					"internalType": "uint256[13]",
 					"name": "",
-					"type": "uint256[14]"
+					"type": "uint256[13]"
 				}
 			],
 			"stateMutability": "view",
@@ -514,31 +514,19 @@
 			"name": "minerList",
 			"outputs": [
 				{
-					"components": [
-						{
-							"internalType": "address",
-							"name": "account",
-							"type": "address"
-						},
-						{
-							"internalType": "uint256",
-							"name": "mineType",
-							"type": "uint256"
-						},
-						{
-							"internalType": "uint256",
-							"name": "tier",
-							"type": "uint256"
-						},
-						{
-							"internalType": "uint256",
-							"name": "lastBlock",
-							"type": "uint256"
-						}
-					],
-					"internalType": "struct ITLB10.WorkingMiner[]",
+					"internalType": "address[]",
 					"name": "",
-					"type": "tuple[]"
+					"type": "address[]"
+				},
+				{
+					"internalType": "uint256[]",
+					"name": "",
+					"type": "uint256[]"
+				},
+				{
+					"internalType": "uint256[]",
+					"name": "",
+					"type": "uint256[]"
 				}
 			],
 			"stateMutability": "view",

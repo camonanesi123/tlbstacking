@@ -561,9 +561,9 @@
 				"name": "contractInfo",
 				"outputs": [
 					{
-						"internalType": "uint256[14]",
+						"internalType": "uint256[13]",
 						"name": "",
-						"type": "uint256[14]"
+						"type": "uint256[13]"
 					}
 				],
 				"stateMutability": "view",
@@ -711,31 +711,19 @@
 				"name": "minerList",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "address",
-								"name": "account",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "mineType",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "tier",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "lastBlock",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct ITLB10.WorkingMiner[]",
+						"internalType": "address[]",
 						"name": "",
-						"type": "tuple[]"
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
 					}
 				],
 				"stateMutability": "view",
@@ -1137,19 +1125,19 @@
 	},
 	"sources": {
 		"ITLB10.sol": {
-			"keccak256": "0x217d283af55c18d06ccd9e96b1c27a1d7e29f7e8753bc8b51897783d530e2042",
+			"keccak256": "0xd99164843cfb4d931a4fabb6204a68a7a7a8ef94e7f40109b08ab81da1d99f82",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d95c3ea7766d02c63942827662465f4ea3da4c4babd147cd1a7810a37dbc5364",
-				"dweb:/ipfs/QmXzUzGDxdHnihudPkMhLEiduF2GqrcQr1mChpYDJk48kw"
+				"bzz-raw://aa6d7a6e15114bbd7adff3da6c826fcb8f4f0574520621d2dc44ebe3033ff14b",
+				"dweb:/ipfs/QmYsMQt3nt6bC28Bk5T5oR84af2ebascs4UFSTbQmJUUmV"
 			]
 		},
 		"TLBStaking.sol": {
-			"keccak256": "0xfc49e150f9918bc7f33336d95250172f2627cadf8ddb343818dc8e48b03e2608",
+			"keccak256": "0xed92601df0dc590ba1930f50625dd95cce24ab916261e5784095469a6abb7c34",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://cef07b2bc244e84056612d3e65d0b93e257cac1feec54bf5049789dfd160c48e",
-				"dweb:/ipfs/QmUAN3N9WSnAFXvzYJuW7M8xMoHBtSy1CC3JNwNZZmdWFg"
+				"bzz-raw://8cabc908874a9bbcc068bfd8a390a113cca16ae99bb76384427595111dce6d17",
+				"dweb:/ipfs/QmZb3Jrsf2GNFYXaQ8N5y2uhUeCkxcLRqSnZ45nAGHpdvU"
 			]
 		},
 		"lib/HRC20.sol": {
