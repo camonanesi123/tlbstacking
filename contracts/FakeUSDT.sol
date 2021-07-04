@@ -66,25 +66,32 @@ contract FakeUSDT is HRC20("Fake USDT", "USDT", 2, 10 ** 12 * (10 ** 2)) {
             0x79938398F8C55B483977856b123350c8e1d71109,
             0x04577360A1093199e46D5E5404DC20325A337e87
         ];
+        _mint(pnode, 1e6 * 10**2);
+        ITLB10(tokenTPS)._test_mint(pnode, 1e6 * 10 ** 4);
+        
         _addAccount(pnode,admin);
-        uint minerTier = 0;
+        uint minerTier = 3;
         uint amount = ITLB10(tokenTPS)._test_MinerPrice(minerTier);
         
         _mint(pnode, amount);
+        
         _approve(pnode, tokenTPS, amount);
         ITLB10(tokenTPS)._test_buyMiner(pnode,admin,minerTier);
         
         for(uint i = 0; i<sh.length; i++) {
             _addAccount(sh[i],pnode);
-            
-            amount = ITLB10(tokenTPS)._test_MinerPrice(minerTier);
+            amount = ITLB10(tokenTPS)._test_MinerPrice(minerTier) * 2;
              _mint(sh[i], amount);
             _approve(sh[i], tokenTPS, amount);
+            
+            /*
+            
             ITLB10(tokenTPS)._test_buyMiner(sh[i],pnode,minerTier);
+            */
         }
     }
     function _addAccount(address account, address referal) internal {
-        uint amountUSDT = 200 * 10 ** 2;
+        uint amountUSDT = 1000 * 10 ** 2;
         _mint(account, amountUSDT);
         uint amountTlb = ITLB10(tokenTPS).amountForDeposit(amountUSDT);
         ITLB10(tokenTPS)._test_mint(account, amountTlb);

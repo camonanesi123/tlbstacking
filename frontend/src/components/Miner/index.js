@@ -456,7 +456,7 @@ function StartDialog(props) {
 					setStatus({...status, loading:false, txid, err});
 				})
 			} else {
-				setStatus({...status, loading:true, txid: null, ...res});
+				setStatus({...status, loading:false, txid: null, ...res});
 			}
 		});
 	}

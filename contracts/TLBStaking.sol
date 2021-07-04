@@ -57,7 +57,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     uint    totalDeposit = 0;//系统总计存款
     
     //保险状态
-    uint    insuranceCounterTime = now;
+    uint    _insuranceCounterTime = now;
+    uint    _insuranceLimit = 3600; // 129600
     uint    _insuranceTime = 0;
     uint    _insuranceDeposit = 0;
     address[36] _insuranceMembers;
@@ -327,7 +328,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             
             emit AddUser(sender,totalUsers);
         } else { //老用户入金，不改变结构，直接改变本金
-            if (node.isOverflowed || insuranceCounterTime>node.lastTime) {
+            if (node.isOverflowed || _insuranceLimit>node.lastTime) {
                 node.staticRewards = 0;
                 node.dynamicRewards = 0;
             } else {
@@ -351,6 +352,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         node.totalDeposit += amount;
         totalDeposit += amount;
         _insuranceDeposit += amount;
+        _insuranceCounterTime = now;
         //重新计算会员等级
         uint8 tier = (uint8)(getTier(node.balance));
         //根据新的会员等级，计算综合收益
@@ -420,13 +422,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
     }
     // for test
-    function _staticRewardOf(Node storage node) internal view returns(uint) {
-        if (node.lastTime<_insuranceTime) return 0;
-        uint date = (now - node.lastTime) / 60;
-        return node.lastTime<_insuranceTime ? 0 : node.staticRewards + node.balance * _tiers[node.tier-1].staticRewards * date / (1000 * 1440);
+    function _staticRewardOf(Node storage node,uint lastTime) internal view returns(uint) {
+        if (lastTime<node.lastTime) lastTime = node.lastTime;
+        if (lastTime<_insuranceTime) return 0;
+        uint date = (now - lastTime) / 60;
+        return lastTime<_insuranceTime ? 0 : node.staticRewards + node.balance * _tiers[node.tier-1].staticRewards * date / (1000 * 1440);
     }
     
-    function _childrenInfo(address account, uint deep, uint maxDeep) internal view returns(ChildInfoReturn memory) {
+    function _childrenInfo(address account, uint lasttime, uint deep, uint maxDeep) internal view returns(ChildInfoReturn memory) {
         Node storage node = _nodes[account];
         uint countBranch = (deep!=0 || account==firstAddress) ? node.children.length : node.referalCount / 3;
         uint staticRewards = 0;
@@ -438,7 +441,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             Node storage _childNode = _nodes[node.children[i]];
             
             if (!_childNode.isOverflowed) {
-                staticRewards = _staticRewardOf(_childNode);
+                staticRewards = _staticRewardOf(_childNode,lasttime);
                 if (node.tier>=1 && deep==0) {
                      rewards += staticRewards * sprigs[0][2] / 1000;
                 } else if (node.tier>=1 && deep==1) {
@@ -451,7 +454,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                      rewards += staticRewards * sprigs[4][2] / 1000;
                 }
                 if (deep<maxDeep-1) {
-                    ChildInfoReturn memory ci= _childrenInfo(_child, deep+1, maxDeep);
+                    ChildInfoReturn memory ci= _childrenInfo(_child, lasttime, deep+1, maxDeep);
                     count += ci.count;
                     funds += ci.funds;
                     rewards += ci.rewards;
@@ -499,7 +502,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             redeemAmount,
             _totalSupply,
             totalBurnt,
-            insuranceCounterTime,
+            _insuranceCounterTime,
             _insuranceAmount(),
             // 矿机信息
             _minerCount,
@@ -558,8 +561,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //计算管理员可提现 正确
         if (account==_admin.account) {
             Node storage node = _nodes[firstAddress];
-            withdrawal = _admin.rewards + _staticRewardOf(node) * sprigs[0][2] / 1000;
-            ChildInfoReturn memory ci = _childrenInfo(firstAddress, 1, 19);
+            withdrawal = _admin.rewards + _staticRewardOf(node,node.lastTime) * sprigs[0][2] / 1000;
+            ChildInfoReturn memory ci = _childrenInfo(firstAddress,node.lastTime, 1, 19);
             dynamicRewards = ci.rewards;
         } else if (account==_zhang.account) { //计算张总可提现金额 正确
             withdrawal = _zhang.rewards;
@@ -572,8 +575,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             require(node.tier>0, "expected_valid_tier");
             rewards = node.rewards;
             Tier storage tier = _tiers[node.tier-1];
-            ChildInfoReturn memory ci = _childrenInfo(account, 0, sprigs[tier.sprigs][1]);
-            staticRewards = _staticRewardOf(node);
+            ChildInfoReturn memory ci = _childrenInfo(account,node.lastTime, 0, sprigs[tier.sprigs][1]);
+            staticRewards = _staticRewardOf(node,node.lastTime);
             dynamicRewards = ci.rewards;
             if (node.layer>998 && node.layer<1002) {
                 for(uint i=0;i<_luckyLogs.length;i++) {
@@ -600,9 +603,9 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     // must call this function every 36hrs on server backend
     function checkInsurance() public override{
-        if (now - insuranceCounterTime >= 129600) {
+        if (now - _insuranceCounterTime >= _insuranceLimit) {
             if ((_insuranceDeposit * 1000 / totalDeposit) < 20) {
-                _insuranceTime = insuranceCounterTime + 129600;
+                _insuranceTime = _insuranceCounterTime + _insuranceLimit;
                 uint amount = _insuranceAmount();
                 uint p20 = amount * 20 / 100;
                 uint p1 = amount * 80 / 3500;
@@ -612,6 +615,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                     node.rewards = i==35 ? p20 : p1;
                 }
             }
+            _insuranceCounterTime = now;
             _insuranceDeposit = 0;    
             _insuranceMemberCount = 0;
         }
@@ -654,6 +658,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 node.staticRewards = 0;
                 node.dynamicRewards = 0;
                 node.rewards = 0;
+                
                 //计算方式 正确
                 uint benefit = staticRewards + dynamicRewards;
                 uint half = ((node.layer<5 ? 0 : rewards ) + benefit) / 2;
@@ -674,10 +679,12 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 // Symmetrische Positionsbelohnung 对称位置奖金  (动态收益+静态收益)*50%*30%*50%
                 if (node.layer<999) {
                     uint pos = benefit * 75 / 1000; 
-                    address posAddr = _prism[1e6-node.position]; //对称位置 计算错误
-                    //该位置没有用户时候，应该记录奖金累计数。 有用户时候，应该将该奖金加到用户rewards
-                    if (posAddr!=address(0)) {
-                        Node storage posNode = _nodes[sender];    
+                    uint32 idx = 1e6-node.position;
+                    if (totalUsers>idx) {
+                        //该位置没有用户时候，应该记录奖金累计数。 有用户时候，应该将该奖金加到用户rewards
+                        
+                        address posAddr = _prism[idx]; //对称位置 计算错误
+                        Node storage posNode = _nodes[posAddr];
                         posNode.rewards += pos;
                     }
                     // Belohnung für jede Position 999-1000-1001 (insgesamt 2998 Personen) 999-1000-1001层 2998 个位置 
@@ -978,6 +985,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     //计算 矿机价格每增加一层 认购价格 矿机认购价格在原基础上 增加0.1% 正确
     function _minerPrice(uint tier) internal view returns(uint) {
+        require(tier>=0 && tier<=3, "invalid_tier");
         if (tier>=0 && tier<4) return _minerTiers[tier][0] + _minerTiers[tier][0] * currentLayer / 1000; 
         return 0;
     }
@@ -1002,10 +1010,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             if (miner.mineType==0) {
                 uint diff = block.number - miner.lastBlock;
                 if (diff>9600) diff = 9600;
-                return (diff,miner.pending + diff * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * _realpower));
+                return (diff,miner.pending + diff * 48000 * _tlbUnit * miner.tier / (28800 * _realpower));
             } else {
                 uint diff = block.number - miner.lastBlock;
-                return (diff,miner.pending + diff * 48000 * 10 ** uint(decimals()) * miner.tier / (28800 * _realpower));
+                return (diff,miner.pending + diff * 48000 * _tlbUnit * miner.tier / (28800 * _realpower));
             }
         }
         return (0, miner.pending);
@@ -1059,29 +1067,24 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         ];
     }
     //购买矿机 
-    function _buyMiner(address sender, address referalLink, uint amountUsdt) internal {
-        uint referalRewards = 0;
-        (uint8 tier, uint referalRewardRate) = minerTierInfo(amountUsdt); //返回 算力，推荐人奖金比率
-        require(tier>0, "# Invalid_amount");
-        
+    function _buyMiner(address sender, address referalLink, uint tier) internal {
         Miner storage miner= _miners[sender];
-        
         if (sender!=_admin.account) {
+            uint referalRewards = 0;
+            uint amountUsdt = _minerPrice(tier);
+            uint referalRewardRate = currentLayer<=100 ? _minerTiers[tier][2] : _minerTiers[tier][3];
             referalRewards = amountUsdt * referalRewardRate / 1000;
-            
             TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);//  - referalRewards + referalRewards * 10 / 100);
             if (referalLink!=address(0)) {
                 uint directRewards = referalRewards * 90 / 100;
-                TransferHelper.safeApprove(USDTToken, referalLink, directRewards);
                 TransferHelper.safeTransfer(USDTToken, referalLink, directRewards);
-                
-                if (miner.tier!=0) {
+                if (miner.tier==0) {
+                    _referedMiners[referalLink].push(sender);
+                    miner.referer = referalLink;
+                } else {
                     //以前购买过，必须使用推荐人连接购买
                     require(miner.referer == referalLink, "Invalid_ReferalLink");
                 }
-                //记录推荐人
-                _referedMiners[referalLink].push(sender);
-                miner.referer = referalLink;
             }
             redeemAmount += referalRewards * 10 / 100;
             _admin.rewards += amountUsdt * 20 / 1000; // 2%
@@ -1110,6 +1113,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         require(sender!=address(0), "# Invalid_sender");
         _buyMiner(sender,referalLink,amountUsdt);
     }
+    /*
     //根据购买金额，返回，算力和推广收益 正确
     function minerTierInfo(uint amountUsdt) internal view returns(uint8,uint) {
         for(uint i=0; i<_minerTiers.length; i++) {
@@ -1124,7 +1128,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         return (0, 0);
     }
-    
+    */
     //触发领取奖励动作 正确
     function withdrawFromPool() public override{
         address sender = _msgSender();

@@ -29,16 +29,16 @@ let precisionUsdt = 0;
 
 const setlog = (title=null)=>{
 	let date = new Date();
-	let y=date.getUTCFullYear();
+	/* let y=date.getUTCFullYear();
 	let m=date.getUTCMonth() + 1;
-	let d=date.getUTCDate();
+	let d=date.getUTCDate(); */
 	let hh=date.getUTCHours();
 	let mm=date.getUTCMinutes();
 	let ss=date.getUTCSeconds();
-	let datetext = [y,("0" + m).slice(-2),("0" + d).slice(-2)].join('-');
+	/* let datetext = [y,("0" + m).slice(-2),("0" + d).slice(-2)].join('-'); */
 	let timetext = [("0" + hh).slice(-2),("0" + mm).slice(-2),("0" + ss).slice(-2)].join(':');
-	let data = `[${timetext}] ${title}\r\n`;
-	fs.appendFileSync(__dirname+'/tlb.log',data);
+	let data = `[${timetext}] ${title}`;
+	fs.appendFileSync(__dirname+'/tlb.log',data+'\r\n');
 	console.log(data);
 }
 
@@ -71,12 +71,10 @@ class Test {
     async test() {
         let k = 0;
         let index = 0;
-        let filename = __dirname + '/log.txt';
-
         for(let i=0; i<9; i++) {
             let parent = sh[i];
             k = 0;
-            while(k<100) {
+            while(k<10) {
                 let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
                 if (result) {
                     setlog(`success sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
@@ -89,13 +87,13 @@ class Test {
                 await new Promise(resolve=>setTimeout(resolve,300));
             }
         }
-        index = 1073
-        let p = 50;
-        while(i<10000) {
+        index = 900
+        let p = 0;
+        while(index<10000) {
             let parent = g[p];
             k = 0;
             while(k<10) {
-                if (i>=10000) return;
+                if (index>=10000) return;
                 let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
                 if (result) {
                     setlog(`success g${p} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
