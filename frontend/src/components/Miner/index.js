@@ -684,7 +684,7 @@ const Section_4_d = () => {
 							<button onClick={()=>setStatus({...status, open:DLG_MODE, param:1, title:'固定挖矿'})} className={"h4 btn "+(contract._mineType===1?'btn-primary':'btn-light text_blue')+" w-50"}>固定挖矿</button>
 						</div>
 						<div className="mt-5 text-center">
-							<button disabled={contract._mineStatus} onClick={()=>setStatus({...status, open:DLG_START})} className="h4 btn btn-primary w-100 rounded-pill">立即挖矿</button>
+							<button disabled={contract._mineStatus || contract._minerTier===0} onClick={()=>setStatus({...status, open:DLG_START})} className="h4 btn btn-primary w-100 rounded-pill">立即挖矿</button>
 						</div>
 						<div className="d-flex mt-5">
 							<div style={{marginRight:10}}>
