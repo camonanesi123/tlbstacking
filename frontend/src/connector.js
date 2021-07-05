@@ -199,9 +199,9 @@ export default class Metamask {
 				result.minerList = [];
 				for(let i = 0; i<res[0].length; i++) {
 					let address = res[0][i];
-					if (address) {
-						let power = Number(res[1][i]);
-						let lastblock = Number(res[2][i]);
+					let power = Number(res[1][i]);
+					let lastblock = Number(res[2][i]);
+					if (lastblock) {
 						result.minerList.push([
 							address,
 							power,

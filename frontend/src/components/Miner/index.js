@@ -190,7 +190,7 @@ const Section_2_d = () => {
 						<tr className="text-white">
 							<td>区块高度</td>
 							<td>出块时间</td>
-							<td>所有矿机</td>
+							<td>活跃矿工</td>
 						</tr>
 						<tr className="text_cyan">
 							<td>{contract.block.number}</td>
@@ -804,13 +804,12 @@ const Section_5_d = () => {
 									{v[0].slice(0,8) + '...' + v[0].slice(-4)}
 								</td>
 								<td className="pb-2 pb-md-3">
-									18.72%
+									{((contract.block.number - v[2]) * 100 / 9600).toFixed(2)} %
 								</td>
 								<td className="pb-2 pb-md-3">
 									{(v[1] * 100 / contract.minerTotalPower).toFixed(2)} %
 								</td>
 							</tr>))}
-							
 						</tbody>
 					</table>
 					<button className="btn btn-muted shadow-0 text-white">
