@@ -68,16 +68,7 @@ export const contractSlice = createSlice({
         allowance: 0,
         
         orders: [],
-        pendingTlb: {
-            time:0,
-            initial: 0,
-            balance: 0
-        },
-        pendingUsdt: {
-            time:0,
-            initial: 0,
-            balance: 0
-        },
+        pending: [],
         blocks: [],
         lastTime: 0
 

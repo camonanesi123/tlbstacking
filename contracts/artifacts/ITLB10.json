@@ -184,6 +184,25 @@
 			"type": "event"
 		},
 		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "guest",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "UpdateUser",
+			"type": "event"
+		},
+		{
 			"inputs": [
 				{
 					"internalType": "uint256",

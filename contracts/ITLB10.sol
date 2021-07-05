@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 
 interface ITLB10{
     event AddUser(address guest, uint amount);
+    event UpdateUser(address guest, uint amount);
     event AddLayer(uint layer);
     
     event BuyOrderAdded(address guest, uint amount);

@@ -554,11 +554,11 @@
 			]
 		},
 		"ITLB10.sol": {
-			"keccak256": "0xd99164843cfb4d931a4fabb6204a68a7a7a8ef94e7f40109b08ab81da1d99f82",
+			"keccak256": "0xaca4ec65b41778668bd76c12c5a104740df05883f97da1061a8aa7fe0ad4704e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://aa6d7a6e15114bbd7adff3da6c826fcb8f4f0574520621d2dc44ebe3033ff14b",
-				"dweb:/ipfs/QmYsMQt3nt6bC28Bk5T5oR84af2ebascs4UFSTbQmJUUmV"
+				"bzz-raw://47fdcd33fde91dacabd836920695f7a5bf926713f2ba46db7d63c937f1ab476e",
+				"dweb:/ipfs/QmS3dFKXpZNC5MYMwfKDXHa3q5mz9Hy4Fmd4SQ2xURrcxX"
 			]
 		},
 		"lib/HRC20.sol": {

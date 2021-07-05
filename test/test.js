@@ -71,7 +71,7 @@ class Test {
     async test() {
         let k = 0;
         let index = 0;
-        /* for(let i=0; i<9; i++) {
+        for(let i=0; i<9; i++) {
             let parent = sh[i];
             k = 0;
             while(k<10) {
@@ -86,8 +86,8 @@ class Test {
                 }
                 await new Promise(resolve=>setTimeout(resolve,300));
             }
-        } */
-        index = 1325
+        }
+        /* index = 1325 */
         while(index<10000) {
             let parent = g[index-5];
             k = 0;
@@ -106,24 +106,6 @@ class Test {
             }
         }
     }
-    /* callRPC(method,params,id=0) {
-        if (id===0) id = Math.round(Math.random()*89999998)+10000001;
-        return new Promise(resolve=>{
-            request(RPCAPI,{method: "post",headers:{'Content-Type': 'application/json'},json:{jsonrpc:"2.0",method,params,id}},(error,res,body)=>{
-                if (error) return resolve({error});
-                resolve(body);
-            })
-        })
-    }
-    async call(to, method, ...args) {
-        try {
-            let contract = new web3.eth.Contract(to===contractUsdt?abiErc20:abiTlb, to);
-            let res = await contract.methods[method](...args).call();
-            return res;
-        } catch (err) {
-            return {err};
-        }
-    } */
     async callBySigner(from, to, method, ...args) {
         try {
             let contract = new web3.eth.Contract(to===contractUsdt?abiErc20:abiTlb, to, {from});
