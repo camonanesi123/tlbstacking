@@ -1133,11 +1133,11 @@
 			]
 		},
 		"TLBStaking.sol": {
-			"keccak256": "0xed92601df0dc590ba1930f50625dd95cce24ab916261e5784095469a6abb7c34",
+			"keccak256": "0xaaa52e45f019893467d2bc8e28c6dc8134953c50c210e067fb860d3b9bd35804",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8cabc908874a9bbcc068bfd8a390a113cca16ae99bb76384427595111dce6d17",
-				"dweb:/ipfs/QmZb3Jrsf2GNFYXaQ8N5y2uhUeCkxcLRqSnZ45nAGHpdvU"
+				"bzz-raw://6b64fdc44384d5287351446e5b10008e5c15a545a795f3fbc27fa8f0804dd71a",
+				"dweb:/ipfs/QmZxy6UejDWPAboQ9meXkf3gvRTwQ6eGyoBokgW9Yu3pyE"
 			]
 		},
 		"lib/HRC20.sol": {

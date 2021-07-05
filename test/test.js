@@ -71,7 +71,7 @@ class Test {
     async test() {
         let k = 0;
         let index = 0;
-        for(let i=0; i<9; i++) {
+        /* for(let i=0; i<9; i++) {
             let parent = sh[i];
             k = 0;
             while(k<10) {
@@ -86,9 +86,8 @@ class Test {
                 }
                 await new Promise(resolve=>setTimeout(resolve,300));
             }
-        }
-        /* index = 900 */
-        let p = 0;
+        } */
+        index = 1325
         while(index<10000) {
             let parent = g[index-5];
             k = 0;
@@ -96,16 +95,15 @@ class Test {
                 if (index>=10000) return;
                 let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
                 if (result) {
-                    setlog(`success g${p} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+                    setlog(`success g${index-5} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
                     k++
                     index++;
                     continue;
                 } else {
-                    setlog(`failed g${p} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+                    setlog(`failed g${index-5} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
                 }
                 await new Promise(resolve=>setTimeout(resolve,300));
             }
-            p++;
         }
     }
     /* callRPC(method,params,id=0) {

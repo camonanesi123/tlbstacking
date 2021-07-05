@@ -798,17 +798,19 @@ const Section_5_d = () => {
 							</tr>
 						</thead>
 						<tbody className=" text-center">
-							<tr>
+							{contract.minerList.map(v=>(<tr>
 								<td className="pb-2 pb-md-3">
-									<span style={{ background: '#FF0000' }} className="d-inline-block me-3 rounded-circle align-middle" ></span> tlb156862
+									<span style={{ background: '#FF0000' }} className="d-inline-block me-3 rounded-circle align-middle" ></span> 
+									{v[0].slice(0,8) + '...' + v[0].slice(-4)}
 								</td>
 								<td className="pb-2 pb-md-3">
 									18.72%
 								</td>
 								<td className="pb-2 pb-md-3">
-									3.42%
+									{(v[1] * 100 / contract.minerTotalPower).toFixed(2)} %
 								</td>
-							</tr>
+							</tr>))}
+							
 						</tbody>
 					</table>
 					<button className="btn btn-muted shadow-0 text-white">
