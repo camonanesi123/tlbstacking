@@ -81,8 +81,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     Tier[]  _tiers;
     
-    address _redeemAddress; // 1.5% redeem
-    uint    redeemAmount; // 1.5% redeem
+    
     uint    _controlAmount; // 1.5% redeem
     
     FundLog[] _inLogs; // all deposit logs; 所有入金账本
@@ -90,11 +89,15 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     FundLog[] _luckyLogs;  // for 999 ~ 1001 layers; 位置奖金账本
 
 
+    
+    address _redeemAddress; // 1.5% redeem
+    uint    redeemAmount; // 1.5% redeem
     /*
     Order[] _buyBook;
     Order[] _sellBook;
     uint[][] _txBook;
     */
+    uint _lastRedeem = 0;
     uint _usdtInPool = 0;
     uint _tlbInPool = 0;
     uint[10][] _txBook;
@@ -553,6 +556,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             (_children,_totalDeposit) = _childrenInfoAll(account, 0);
         }
         
+        
         return [
             _userid,_tlb,_lastAmount,_adep,_aw,_limit,_children,_totalDeposit
         ];
@@ -769,13 +773,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _trader[3] += amountUsdt;
             _trader[4] += _tlb * price / _tlbUnit;
         }
-        // _processSellOrder();
+        _updateRedeem();
     }
     //购买TLB 方法正确
     function buy(uint amountUsdt) public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
         _buy(sender, amountUsdt);
+        
     }
 
     //撤销买单，当 卖队列无法满足 买队列时 正确
@@ -790,7 +795,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             TransferHelper.safeTransfer(USDTToken, sender, _trader[4]);
             emit BuyOrderCancelled(sender, _trader[4]);
         }
-        // _processSellOrder();
+        _updateRedeem();
     }
     function _sell(address sender, uint amountTlb) internal {
         uint _usdt = amountTlb * price / _tlbUnit;
@@ -828,7 +833,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _trader[1] += amountTlb;
             _trader[2] += _usdt * _tlbUnit / price;
         }
-        // _processSellOrder();
+        _updateRedeem();
     }
     //卖出 TLB 方法正确
     function sell(uint amountTlb) public override {
@@ -848,6 +853,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _transfer(address(this), sender, _trader[2]);
             emit SellOrderCancelled(sender, _trader[2]);
         }
+        _updateRedeem();
     }
     //查询订单历史记录
     function orderHistory() public override view returns(uint[4][] memory) {
@@ -861,12 +867,12 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         return logs;
     }
-    function pendingOrder(address account) public view returns(uint[4][] memory) {
+    function pendingOrder(address account) internal view returns(uint[4][] memory) {
         uint[5] storage _trader = _pools[account];
-        uint count = (_trader[1]>0?1:0) + (_trader[3]>0?1:0);
+        uint count = (_trader[2]>0?1:0) + (_trader[4]>0?1:0);
         uint[4][] memory logs = new uint[4][](count);
         uint k=0;
-        if (_trader[1]>0) {
+        if (_trader[2]>0) {
             logs[k][0] = _trader[0];    // time
             logs[k][1] = 1;             // 0: buy, 1: sell
             logs[k][2] = _trader[1]; // initial
@@ -881,6 +887,22 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             k++;
         }
         return logs;
+    }
+    function commitOrder() public {
+        address sender = _msgSender();
+        require(sender!=address(0), "# Invalid_sender");
+        uint[5] storage _trader = _pools[sender];
+        if (_trader[2]>0) _sell(sender, _trader[2]);
+        if (_trader[4]>0) _buy(sender, _trader[4]);
+    }
+    
+    function _updateRedeem() internal {
+        if (_lastRedeem==0) {
+            _lastRedeem = now;
+        } else if (now-_lastRedeem>86400) {
+            _usdtInPool += redeemAmount;
+            _lastRedeem = now;
+        }
     }
     /*
     //触发回购操作

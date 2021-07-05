@@ -558,6 +558,13 @@
 			},
 			{
 				"inputs": [],
+				"name": "commitOrder",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "contractInfo",
 				"outputs": [
 					{
@@ -811,25 +818,6 @@
 						"internalType": "address payable",
 						"name": "",
 						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					}
-				],
-				"name": "pendingOrder",
-				"outputs": [
-					{
-						"internalType": "uint256[4][]",
-						"name": "",
-						"type": "uint256[4][]"
 					}
 				],
 				"stateMutability": "view",
@@ -1133,11 +1121,11 @@
 			]
 		},
 		"TLBStaking.sol": {
-			"keccak256": "0x1d441695406df08faa469707ef32e8407d954d383ed05b9bfb90f99529849247",
+			"keccak256": "0x13ecc913d65386faaa5c959feaf14350ecc428d01ca7d43ae13807556cac1374",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2c34fc0b8a47f42995031d5b30a4cb89b256dff4a5807c36ca9bd531629a849c",
-				"dweb:/ipfs/QmYbpmV5mUcpX5wbXLekdZ3Z61FZwUsqfc4qRS934oTK9i"
+				"bzz-raw://ed946f81f5d015296388b3a8547b079c282c26ba7763433173ff02a1e61b651e",
+				"dweb:/ipfs/QmTRjyFMHGXS7rLTDcgtX5AUh9gFMAsh6SL3uEEvwQdeRP"
 			]
 		},
 		"lib/HRC20.sol": {
