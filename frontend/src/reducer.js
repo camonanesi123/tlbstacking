@@ -26,7 +26,6 @@ export const contractSlice = createSlice({
         minerTier3: 0,
         minerTier4: 0,
         minerList: [],
-
         
         _userid: 0,
         _tlb: 0,
@@ -63,17 +62,11 @@ export const contractSlice = createSlice({
             hash:null,
             time:0,
         },
-        /* blockHash: 0,
-        blockTime: 0, */
         allowance: 0,
-        
         orders: [],
         pending: [],
         blocks: [],
         lastTime: 0
-
-
-        
     }, 
     reducers: {
         login: (state, action) => {

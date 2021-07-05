@@ -19,14 +19,18 @@ import ImgGoogle from '../../img/social-google.webp'
 import ImgYoutube from '../../img/social-youtube.webp'
 
 import {IgrRadialGauge, IgrRadialGaugeModule} from 'igniteui-react-gauges';
-import {IgrLegendModule, IgrDoughnutChartModule, IgrItemLegend, IgrDoughnutChart, IgrRingSeries, IgrLegend, IgrCategoryChart} from 'igniteui-react-charts';
+import {IgrLegendModule, IgrDoughnutChartModule, IgrItemLegend, IgrDoughnutChart, IgrRingSeries, IgrLegend, IgrCategoryChart, IgrCategoryChartModule} from 'igniteui-react-charts';
+
+
+/* .register(); */
 
 import Loading from '../Layout/Loading';
 
 const mods = [
     IgrLegendModule,
     IgrDoughnutChartModule,
-	IgrRadialGaugeModule
+	IgrRadialGaugeModule,
+	IgrCategoryChartModule
 ];
 
 mods.forEach((m) => m.register());
@@ -118,19 +122,25 @@ const Dialog = styled.div`
 		}
 	}
 `;
-
+// https://codesandbox.io/examples/package/igniteui-react-charts
 const Section_1_d = () => {
 	let contract = useSelector(state => state.contract);
 	const dispatch = useDispatch()
 	const connectWallet = () => {
 		Metamask.connect(dispatch);
 	};
+	
+	
 	const data = [
-		{x:37,y:37, label:"超级矿工 37%"},
-		{x:25,y:37, label:"优质矿工 25%"},
-		{x:25,y:37, label:"普通矿工 12%"},
-		{x:25,y:37, label:"惰性矿工 8%"}
+		{x:1597763454, y:0},
+		{x:1597767054, y:10},
+		{x:1597770654, y:20},
+		{x:1597774254, y:40}
 	];
+	data.push({
+		x: contract.block.time,
+		y: contract.minerTotalPower
+	});
 	return (
 		<Section>
 			<div className="wallet-panel">
@@ -151,16 +161,35 @@ const Section_1_d = () => {
 				<IgrCategoryChart
 					height="200px"
 					width="100%"
-					
-					dataSource={data}
 
-                    chartType="Spline"
-                    isTransitionInEnabled="true"
-                    /* yAxisTitle="TWh" */
-                    /* legend={this.legend} */
-                    isHorizontalZoomEnabled="false"
-                    isVerticalZoomEnabled="false"
-                    toolTipType="Category"
+					chartType="Spline"
+					dataSource={data}
+					xAxisFormatLabel={(item)=>{
+						const date = new Date(item.x * 1000);
+						const h = date.getHours();
+						const m = date.getMinutes();
+						return (h>9?'':'0') + h + ':' + (m>9?'':'0') + m;
+					}}
+					/* yAxisFormatLabel={(item)=>''} */
+					/* yAxisInterval={10}
+					yAxisMinimumValue={0}
+					yAxisMaximumValue={50} */
+					/* xAxisLabelLocation="none" */
+					/* yAxisLabelLocation="OutsideRight" */
+					includedProperties={['x','y']}
+					thickness={2}
+
+					/* calloutsVisible={this.state.calloutsVisible} */
+					/* calloutsXMemberPath="index"
+					calloutsYMemberPath="value" */
+					/* calloutsLabelMemberPath="info" */
+
+					/* crosshairsSnapToData={false} */
+					/* crosshairsDisplayMode={this.state.crosshairsMode}
+					crosshairsAnnotationEnabled={this.state.crosshairsVisible}
+
+					finalValueAnnotationsVisible={this.state.finalValuesVisible} */
+					
 					>
                 </IgrCategoryChart>
 			</div>
@@ -798,7 +827,7 @@ const Section_5_d = () => {
 							</tr>
 						</thead>
 						<tbody className=" text-center">
-							{contract.minerList.map(v=>(<tr>
+							{contract.minerList.map((v,k)=>(<tr key={k}>
 								<td className="pb-2 pb-md-3">
 									<span style={{ background: '#FF0000' }} className="d-inline-block me-3 rounded-circle align-middle" ></span> 
 									{v[0].slice(0,8) + '...' + v[0].slice(-4)}

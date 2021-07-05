@@ -70,24 +70,26 @@ class Test {
     }
     async test() {
         let k = 0;
-        let index = 0;
-        for(let i=0; i<9; i++) {
-            let parent = sh[i];
-            k = 0;
-            while(k<10) {
-                let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
-                if (result) {
-                    setlog(`success sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
-                    k++;
-                    index++;
-                    continue;
-                } else {
-                    setlog(`failed sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+        let index = 1325;
+        if (index===0) {
+            for(let i=0; i<9; i++) {
+                let parent = sh[i];
+                k = 0;
+                while(k<10) {
+                    let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
+                    if (result) {
+                        setlog(`success sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+                        k++;
+                        index++;
+                        continue;
+                    } else {
+                        setlog(`failed sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+                    }
+                    await new Promise(resolve=>setTimeout(resolve,300));
                 }
-                await new Promise(resolve=>setTimeout(resolve,300));
             }
         }
-        /* index = 1325 */
+        
         while(index<10000) {
             let parent = g[index-5];
             k = 0;

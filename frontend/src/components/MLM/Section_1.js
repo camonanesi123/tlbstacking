@@ -6,12 +6,15 @@ import { contractSlice } from '../../reducer';
 import Metamask from '../../connector';
 import {NF} from '../../util';
 
-import LineChart from '../reuse_components/LineChart/LineChart'
+/* import LineChart from '../reuse_components/LineChart/LineChart' */
 
 /* import MetaMaskOnboarding from '@metamask/onboarding' */
 
 
 import ImgLogo from '../../img/logo.webp'
+
+import {IgrCategoryChart, IgrCategoryChartModule} from 'igniteui-react-charts';
+IgrCategoryChartModule.register();
 
 
 const Section = styled.section`
@@ -49,14 +52,23 @@ const Section = styled.section`
 			text-transform: none;
 		}
 	}
-
 `
-
 
 function Section_1(props) {
 	let contract = useSelector(state => state.contract);
 	const dispatch = useDispatch();
 	const connectWallet = () => Metamask.connect(dispatch);
+
+	const data = [
+		{x:1597763454, y:0},
+		{x:1597767054, y:10},
+		{x:1597770654, y:20},
+		{x:1597774254, y:40}
+	];
+	data.push({
+		x: contract.block.time,
+		y: contract.minerTotalPower
+	});
 
 	return (
 		<Section>
@@ -84,8 +96,37 @@ function Section_1(props) {
 					{contract.totalDeposit ? '$ ' + NF(contract.totalDeposit) : '-'}
 				</h2>
 			</div>
-			<div>
-			<LineChart></LineChart>
+			<div style={{marginLeft:-30,marginRight:-30}}>
+			<IgrCategoryChart
+				height="200px"
+				width="100%"
+
+				chartType="Spline"
+				dataSource={data}
+				xAxisFormatLabel={item=>''}
+				yAxisFormatLabel={item=>''}
+				/* yAxisFormatLabel={(item)=>''} */
+				/* yAxisInterval={10}
+				yAxisMinimumValue={0}
+				yAxisMaximumValue={50} */
+				/* xAxisLabelLocation="none" */
+				/* yAxisLabelLocation="OutsideRight" */
+				includedProperties={['x','y']}
+				thickness={1}
+
+				/* calloutsVisible={this.state.calloutsVisible} */
+				/* calloutsXMemberPath="index"
+				calloutsYMemberPath="value" */
+				/* calloutsLabelMemberPath="info" */
+
+				/* crosshairsSnapToData={false} */
+				/* crosshairsDisplayMode={this.state.crosshairsMode}
+				crosshairsAnnotationEnabled={this.state.crosshairsVisible}
+
+				finalValueAnnotationsVisible={this.state.finalValuesVisible} */
+				
+				>
+			</IgrCategoryChart>
 			</div>
 			<span className="text-end d-block text_cyan">
 				+{contract.price} TLBstaking (+4.57%) <span>过去24小时</span>
@@ -100,9 +141,6 @@ function Section_1(props) {
 					<p>这个创新让你可以在主权国家之间自由交换资产和数据</p>
 				</div>
 			</div>
-
-			<br /><br /><br /><br />
-			
 		</Section>
 	);
 }
