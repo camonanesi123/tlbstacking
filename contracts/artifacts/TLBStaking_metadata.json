@@ -1125,19 +1125,19 @@
 	},
 	"sources": {
 		"ITLB10.sol": {
-			"keccak256": "0xd99164843cfb4d931a4fabb6204a68a7a7a8ef94e7f40109b08ab81da1d99f82",
+			"keccak256": "0xc992560cc030015c6b65e7b9fc28948de06c30b519e495a82e757c4418816826",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://aa6d7a6e15114bbd7adff3da6c826fcb8f4f0574520621d2dc44ebe3033ff14b",
-				"dweb:/ipfs/QmYsMQt3nt6bC28Bk5T5oR84af2ebascs4UFSTbQmJUUmV"
+				"bzz-raw://45dc0a61f2cbc311d2403a2bf2fa24fb15abacce5bff85a21f5f339c3e4be0ac",
+				"dweb:/ipfs/QmZ6QTagzcxj1h6GZ65k8fTu3ZmGJ5d4aK8EWQVLjteEkR"
 			]
 		},
 		"TLBStaking.sol": {
-			"keccak256": "0xaaa52e45f019893467d2bc8e28c6dc8134953c50c210e067fb860d3b9bd35804",
+			"keccak256": "0x1d441695406df08faa469707ef32e8407d954d383ed05b9bfb90f99529849247",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6b64fdc44384d5287351446e5b10008e5c15a545a795f3fbc27fa8f0804dd71a",
-				"dweb:/ipfs/QmZxy6UejDWPAboQ9meXkf3gvRTwQ6eGyoBokgW9Yu3pyE"
+				"bzz-raw://2c34fc0b8a47f42995031d5b30a4cb89b256dff4a5807c36ca9bd531629a849c",
+				"dweb:/ipfs/QmYbpmV5mUcpX5wbXLekdZ3Z61FZwUsqfc4qRS934oTK9i"
 			]
 		},
 		"lib/HRC20.sol": {

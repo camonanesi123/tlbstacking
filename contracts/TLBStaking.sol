@@ -90,9 +90,17 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     FundLog[] _luckyLogs;  // for 999 ~ 1001 layers; 位置奖金账本
 
 
+    /*
     Order[] _buyBook;
     Order[] _sellBook;
     uint[][] _txBook;
+    */
+    uint _usdtInPool = 0;
+    uint _tlbInPool = 0;
+    uint[10][] _txBook;
+    uint _txCount = 0;
+    mapping(address=>uint[5]) _pools; // uint[2] [time, _tlbTotal, _tlbBalance,_usdtTotal, _usdtBalance]
+    
     
     //矿工初始价格，和推广收益表
     uint[][] _minerTiers = [
@@ -111,7 +119,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     uint _minerCount; //矿工个数
     uint _minedTotal;
 
-    address[] _minerlist = new address[](10); // [startBlock, tier]; // 10ge
+    address[] _minerlist = new address[](10); //address  10ge
     // mapping(address=>uint) _minePool; // _minerlist index
     
     
@@ -391,7 +399,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             shareholderNode.rewards += amount * 40 / 1000; // 4%; 股东奖金
         }
         checkInsurance();
-        _processSellOrder();
+        // _processSellOrder();
     }
     
     // update dynamicRewards of all parents (max 20)
@@ -711,7 +719,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 totalBurnt += _needTps;
             }
         }
-        _processSellOrder();
+        // _processSellOrder();
     }
     
     /**
@@ -726,54 +734,42 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     */
 
     function _buy(address sender, uint amountUsdt) internal {
-        uint _tlbInit = amountUsdt * _tlbUnit / price;
-        uint _tlb = _tlbInit;
-        
-        uint countRemove = 0;
-        uint txCount = _txBook.length;
         TransferHelper.safeTransferFrom(USDTToken, sender, address(this), amountUsdt);
-        for(uint i=0; i<_sellBook.length; i++) {
-            Order storage order = _sellBook[i];
-            if (order.balance>=_tlb) {
-                uint amount = (_tlb * price * 998 )  / (_tlbUnit * 1000);
-                TransferHelper.safeTransfer(USDTToken, order.account, amount);
-                _txBook.push([10001 + (txCount++),0,_tlb,now]);
-                order.balance -= _tlb;
-                _tlb = 0;
-                if (order.balance==0) countRemove++;
-                break;
-            } else {
-                uint amount = (order.balance * price * 998 )  / (_tlbUnit * 1000);
-                TransferHelper.safeTransfer(USDTToken, order.account, amount);
-                _txBook.push([10001 + (txCount++),0,order.balance,now]);
-                _tlb -= order.balance;
-                order.balance = 0;
-                countRemove++;
-            }
+        uint _tlb = amountUsdt * _tlbUnit / price;
+        uint _amount = 0;
+        if (_tlbInPool>=_tlb) {
+            _amount = _tlb;
+            _tlbInPool -= _amount;
+            _tlb = 0;
+        } else {
+            _amount = _tlbInPool;
+            _tlb -= _tlbInPool; 
+            _tlbInPool = 0;
         }
-        
-        if (countRemove>0) {
-            for(uint i=countRemove;i<_sellBook.length;i++) {
-                _sellBook[i-countRemove].account = _sellBook[i].account;
-                _sellBook[i-countRemove].initial = _sellBook[i].initial;
-                _sellBook[i-countRemove].balance = _sellBook[i].balance;
+        if (_amount>0) {
+            _transfer(address(this), sender, _amount);
+            if (_txCount>9) {
+                for(uint i=0; i<9; i++) {
+                    _txBook[i][0] = _txBook[i+1][0];
+                    _txBook[i][1] = _txBook[i+1][1];
+                    _txBook[i][2] = _txBook[i+1][2];
+                    _txBook[i][3] = _txBook[i+1][3];
+                }
             }
-            for(uint i=0;i<countRemove;i++) _sellBook.pop();
+            uint _newIndex = _txCount>9 ? 9 : _txCount;
+            _txBook[_newIndex][0] = 10001 + _txCount;
+            _txBook[_newIndex][1] = 1;
+            _txBook[_newIndex][2] = _amount;
+            _txBook[_newIndex][3] = now;
+            _txCount++;
         }
         if (_tlb>0) {
-            uint balance = _tlb * price / _tlbUnit;
-            _buyBook.push(Order({
-                time:now,
-                account:sender,
-                initial:amountUsdt,
-                balance:balance
-            }));
-            emit BuyOrderAdded(sender, balance);
+            uint[5] storage _trader = _pools[sender];
+            _trader[0] = now;
+            _trader[3] += amountUsdt;
+            _trader[4] += _tlb * price / _tlbUnit;
         }
-        if (_tlbInit - _tlb>0) {
-            _transfer(address(this), sender, _tlbInit - _tlb);
-        }
-        _processSellOrder();
+        // _processSellOrder();
     }
     //购买TLB 方法正确
     function buy(uint amountUsdt) public override {
@@ -786,80 +782,53 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     function cancelBuyOrder() public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
-        uint count = 0;
-        uint balance = 0;
-        for(uint i=0;i<_buyBook.length;i++) {
-            Order storage order = _buyBook[i];
-            
-            if (order.account==sender) {
-                
-                // require(false,"1");
-                balance += order.balance;
-                count++;
-                continue;
-            }
-            if (count>0) {
-                _buyBook[i-count].account = _buyBook[i].account;
-                _buyBook[i-count].initial = _buyBook[i].initial;
-                _buyBook[i-count].balance = _buyBook[i].balance;    
-            }
+        uint[5] storage _trader = _pools[sender];
+        if (_trader[4]>0) {
+            _trader[0] = 0;
+            _trader[3] = 0;
+            _trader[4] = 0;
+            TransferHelper.safeTransfer(USDTToken, sender, _trader[4]);
+            emit BuyOrderCancelled(sender, _trader[4]);
         }
-        if (count>0) {
-            for(uint i=0; i<count; i++) _buyBook.pop();
-            // TransferHelper.safeApprove(USDTToken, sender, balance);
-            TransferHelper.safeTransfer(USDTToken, sender, balance);
-            emit BuyOrderCancelled(sender, balance);
-        }
-        _processSellOrder();
+        // _processSellOrder();
     }
     function _sell(address sender, uint amountTlb) internal {
-        uint _usdtInit = amountTlb * price / _tlbUnit;
-        uint _usdt = _usdtInit;
-        
-        uint countRemove = 0;
-        uint txCount = _txBook.length;
+        uint _usdt = amountTlb * price / _tlbUnit;
         _transfer(sender, address(this), amountTlb);
-        for(uint i=0; i<_buyBook.length; i++) {
-            Order storage order = _buyBook[i];
-            if (order.balance>=_usdt) {
-                uint _tlb = _usdt * _tlbUnit / price;
-                _transfer(address(this), order.account, _tlb);
-                _txBook.push([10001 + (txCount++),1,_tlb,now]);
-                order.balance -= _usdt;
-                _usdt = 0;
-                if (order.balance==0) countRemove++;
-                break;
-            } else {
-                uint _tlb = order.balance * _tlbUnit / price;
-                _transfer(address(this), order.account, _tlb);
-                _txBook.push([10001 + (txCount++), 1, _tlb, now]);
-                _usdt -= order.balance;
-                order.balance = 0;
-                countRemove++;
-            }
+        uint _amount = 0;
+        if (_usdtInPool>=_usdt) {
+            _amount = _usdt;
+            _usdtInPool -= _amount;
+            _usdt = 0;
+        } else {
+            _amount = _usdtInPool;
+            _usdt -= _usdtInPool; 
+            _usdtInPool = 0;
         }
-        if (countRemove>0) {
-            for(uint i=countRemove;i<_buyBook.length;i++) {
-                _buyBook[i-countRemove].account = _buyBook[i].account;
-                _buyBook[i-countRemove].initial = _buyBook[i].initial;
-                _buyBook[i-countRemove].balance = _buyBook[i].balance;
+        if (_amount>0) {
+            TransferHelper.safeTransfer(USDTToken, sender, _amount * 998 / 1000);
+            if (_txCount>9) {
+                for(uint i=0; i<9; i++) {
+                    _txBook[i][0] = _txBook[i+1][0];
+                    _txBook[i][1] = _txBook[i+1][1];
+                    _txBook[i][2] = _txBook[i+1][2];
+                    _txBook[i][3] = _txBook[i+1][3];
+                }
             }
-            for(uint i=0;i<countRemove;i++) _buyBook.pop();
+            uint _newIndex = _txCount>9 ? 9 : _txCount;
+            _txBook[_newIndex][0] = 10001 + _txCount;
+            _txBook[_newIndex][1] = 1;
+            _txBook[_newIndex][2] = _amount;
+            _txBook[_newIndex][3] = now;
+            _txCount++;
         }
         if (_usdt>0) {
-            uint balance = _usdt * _tlbUnit / price;
-            _sellBook.push(Order({
-                time: now,
-                account:sender,
-                initial:amountTlb,
-                balance:balance
-            }));
-            emit SellOrderAdded(sender, balance);
+            uint[5] storage _trader = _pools[sender];
+            _trader[0] = now;
+            _trader[1] += amountTlb;
+            _trader[2] += _usdt * _tlbUnit / price;
         }
-        if (_usdtInit - _usdt>0) {
-            TransferHelper.safeTransfer(USDTToken, sender, (_usdtInit - _usdt) * 998 / 1000);
-        }
-        _processSellOrder();
+        // _processSellOrder();
     }
     //卖出 TLB 方法正确
     function sell(uint amountTlb) public override {
@@ -871,80 +840,49 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     function cancelSellOrder() public override {
         address sender = _msgSender();
         require(sender!=address(0), "# Invalid_sender");
-        uint count = 0;
-        uint balance = 0;
-        for(uint i=0;i<_sellBook.length;i++) {
-            Order storage order = _sellBook[i];
-            if (order.account==sender) {
-                balance += order.balance;
-                count++;
-                continue;
-            }
-            if (count>0) {
-                _sellBook[i-count].time = _sellBook[i].time;
-                _sellBook[i-count].account = _sellBook[i].account;
-                _sellBook[i-count].initial = _sellBook[i].initial;
-                _sellBook[i-count].balance = _sellBook[i].balance;
-            }
+        uint[5] storage _trader = _pools[sender];
+        if (_trader[2]>0) {
+            _trader[0] = 0;
+            _trader[1] = 0;
+            _trader[2] = 0;
+            _transfer(address(this), sender, _trader[2]);
+            emit SellOrderCancelled(sender, _trader[2]);
         }
-        if (count>0) {
-            for(uint i=0; i<count; i++) _sellBook.pop();
-            _transfer(address(this), sender, balance);
-            emit SellOrderCancelled(sender, balance);
-        }
-        _processSellOrder();
     }
     //查询订单历史记录
     function orderHistory() public override view returns(uint[4][] memory) {
-        uint count = _txBook.length>10 ? 10 : _txBook.length;
-        // uint[][] memory logs = new uint[][](count);
+        uint count = _txCount>10 ? 10 : _txCount;
         uint[4][] memory logs = new uint[4][](count);
         for(uint i=0; i<count; i++) {
-            uint[] storage order= _txBook[_txBook.length - count + i];
-            // logs.push(order);
-            // logs.push([order[0],order[1],order[2],order[3]]);
-            // OrderTx storage order = _txBook[_txBook.length-count];
-            logs[i][0] = order[0];  // order id
-            logs[i][1] = order[1];  // 0: buy, 1: sell
-            logs[i][2] = order[2];  // amount
-            logs[i][3] = order[3];  // time
+            logs[i][0] = _txBook[i][0];  // order id
+            logs[i][1] = _txBook[i][1];  // 0: buy, 1: sell
+            logs[i][2] = _txBook[i][2];  // amount
+            logs[i][3] = _txBook[i][3];  // time
         }
         return logs;
     }
     function pendingOrder(address account) public view returns(uint[4][] memory) {
-        uint count = 0;
-        for(uint i=0;i<_buyBook.length;i++) {
-            Order storage order = _buyBook[i];
-            if (order.account==account) count++;
-        }
-        for(uint i=0;i<_sellBook.length;i++) {
-            Order storage order = _sellBook[i];
-            if (order.account==account) count++;
-        }
+        uint[5] storage _trader = _pools[account];
+        uint count = (_trader[1]>0?1:0) + (_trader[3]>0?1:0);
         uint[4][] memory logs = new uint[4][](count);
         uint k=0;
-        for(uint i=0;i<_buyBook.length;i++) {
-            Order storage order = _buyBook[i];
-            if (order.account==account) {
-                logs[k][0] = order.time;    // time
-                logs[k][1] = 0;             // 0: buy, 1: sell
-                logs[k][2] = order.initial; // initial
-                logs[k][3] = order.balance; // amount
-                k++;
-            }
+        if (_trader[1]>0) {
+            logs[k][0] = _trader[0];    // time
+            logs[k][1] = 1;             // 0: buy, 1: sell
+            logs[k][2] = _trader[1]; // initial
+            logs[k][3] = _trader[2]; // amount
+            k++;
         }
-        for(uint i=0;i<_sellBook.length;i++) {
-            Order storage order = _sellBook[i];
-            if (order.account==account) {
-                logs[k][0] = order.time;    // time
-                logs[k][1] = 1;             // 0: buy, 1: sell
-                logs[k][2] = order.initial; // initial
-                logs[k][3] = order.balance; // amount
-                k++;
-            }
+        if (_trader[4]>0) {
+            logs[k][0] = _trader[0];    // time
+            logs[k][1] = 0;             // 0: buy, 1: sell
+            logs[k][2] = _trader[3]; // initial
+            logs[k][3] = _trader[4]; // amount
+            k++;
         }
         return logs;
     }
+    /*
     //触发回购操作
     function _processSellOrder() internal {
         uint count = 0;
@@ -969,6 +907,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         }
         if (sumTps>0) _transfer(address(this), _redeemAddress, sumTps);
     }
+    */
 
     /**
     =======================================================================================
@@ -1011,7 +950,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         Miner storage miner= _miners[account];
         require(miner.tier!=0, "# Invalid_miner");
         require(miner.lastBlock==0, "# Already_started");
-        
         
         uint i = 0;
         for(i=0; i<10; i++) {

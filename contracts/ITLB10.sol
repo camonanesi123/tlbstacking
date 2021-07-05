@@ -68,6 +68,7 @@ interface ITLB10{
         uint16 referalCount;
         //分支数，子节点个数
         address[] children; // first child address (may be not his referee) in every branch
+        
     }
     
     //矿工
