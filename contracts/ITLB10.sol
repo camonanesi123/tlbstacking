@@ -70,6 +70,9 @@ interface ITLB10{
         //分支数，子节点个数
         address[] children; // first child address (may be not his referee) in every branch
         
+        address shareholder;
+        address oma;
+        address lastChild;
     }
     
     //矿工
@@ -116,7 +119,7 @@ interface ITLB10{
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
     
-    function nodeinfo(address sender) external view returns(uint, address, address[] memory);
+    function nodeinfo(address sender) external view returns(uint, address, address, address[] memory);
     function contractInfo() external view returns(uint[13] memory);
     function accountInfo(address account) external view returns(uint[8] memory);
     function profits(address account) external view returns(bool, uint, uint, uint, uint);

@@ -70,7 +70,7 @@ class Test {
     }
     async test() {
         let k = 0;
-        let index = 1325;
+        let index = 0;
         if (index===0) {
             for(let i=0; i<9; i++) {
                 let parent = sh[i];
@@ -130,4 +130,20 @@ class Test {
     }
 }
 
+
+
+
 new Test().test();
+/* 
+
+
+const _minerlist =  [1,2,3,4,5,6,7,8,9,10];
+let count = 10;
+let k = 0;
+let i = 0;
+
+for(i = count - 1;i > k; i--) {
+    _minerlist[i] = _minerlist[i-1];
+}
+_minerlist[0] = 11;
+console.log(_minerlist); */

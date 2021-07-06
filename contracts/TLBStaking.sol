@@ -241,11 +241,12 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
      * internal
      * @dev returns shareholder of linked chain of sender. 向上查找股东节点
      */
+     /*
     function getShareholderInBranch(address parent) internal returns(address){
         Node storage parentNode = _nodes[parent];
         return parentNode.role==NodeType.Shareholder ? parent : getShareholderInBranch(parentNode.parent);
     }
-    
+    *
     /**
      * internal
      * @dev Add or update a node when a user is deposited into the pool. 当用户存钱的时候，更新树形结构
@@ -254,18 +255,18 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         uint32 userCount = totalUsers;
         require(userCount < maxUsers, "# full_users");
         if (userCount==0) {
-            require(referalLink==_admin.account, "# Need_Admin_refereal_link");
+            require(referalLink==_admin.account, "# Need_Admin");
         } else if (userCount<10){
-            require(referalLink==firstAddress, "# NeedpNode_refereal_linkAddress");
+            require(referalLink==firstAddress, "# Need_pNode");
         } else {
             if (_nodes[sender].lastAmount!=0) {
-                require(_nodes[sender].referer==referalLink, "# invalid_referal_link");
+                require(_nodes[sender].referer==referalLink, "# invalid_referal");
             }
         }
         uint lastDeposit = _nodes[sender].lastAmount;
         if (lastDeposit!=0) {
             if (amount<10000) {
-                require(amount - lastDeposit >= 100 * _usdtUnit, "# Too_Low_Invest");
+                require(amount - lastDeposit >= 100 * _usdtUnit, "# too_low_invest");
             }
         } else {
             require(amount >= 200 * _usdtUnit, "# Too_Low_Invest");
@@ -281,12 +282,9 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         
         
         Node storage node = _nodes[sender];
-        Node storage refererNode = _nodes[referalLink];
-        
         
         //新用户第一次入金，改变树形结构
         if (node.lastTime==0) {
-            
             uint32 position = addUserToPrism();
             address parent;
             //共生节点
@@ -299,7 +297,12 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 node.role = NodeType.Shareholder;
                 _nodes[parent].children.push(sender);
             } else { //其他用户
+                Node storage refererNode = _nodes[referalLink];
+                refererNode.referalCount++;
                 node.role = NodeType.Guest;
+                // Node storage shareholderNode;
+                node.shareholder = refererNode.role==NodeType.Shareholder ? referalLink : refererNode.shareholder;
+                
                 uint16 countBranch = refererNode.referalCount / 3;
                 uint16 remainInBranch = refererNode.referalCount % 3;
                 //如果之前的路径上 推荐满了3个用户，则新开分支
@@ -312,7 +315,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 _nodes[parent].children.push(sender);
             }
             //推荐人的推荐数量+1
-            refererNode.referalCount++;
+            
             node.userid = 100880011 + userCount;
             node.referer = referalLink;
             node.position = position;
@@ -326,7 +329,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             if (position > 502503) { // save prism position from 1002 layer
                 _prism[position] = sender;
             }
-            
             emit AddUser(sender,totalUsers);
         } else { //老用户入金，不改变结构，直接改变本金
             if (node.isOverflowed || _insuranceLimit>node.lastTime) {
@@ -345,7 +347,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 }
             }
             node.balance += amount;
+            
         }
+        if (node.shareholder!=address(0)) _nodes[node.shareholder].rewards += amount * 40 / 1000; // 4%; 股东奖金
+        
         //更新最后一次存款金额    
         node.lastAmount = amount;
         //更新最后一次存款时间
@@ -378,18 +383,20 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         _insuranceMembers[_insuranceMemberCount] = sender;
         _insuranceMemberCount++;
         
-        
+        /*
         if (node.role == NodeType.Guest) {
             Node storage shareholderNode;
             if (refererNode.role==NodeType.Shareholder) {
+                node.shareholder = referalLink; 
                 shareholderNode = refererNode;
             } else {
-                //查找该用户的股东
-                address shareholder = getShareholderInBranch(referalLink);
-                shareholderNode = _nodes[shareholder];
+                node.shareholder = refererNode.shareholder;
+                // address shareholder = getShareholderInBranch(referalLink);
+                shareholderNode = _nodes[node.shareholder];
             }
             shareholderNode.rewards += amount * 40 / 1000; // 4%; 股东奖金
         }
+        */
         checkInsurance();
         _processSellOrder();
     }
@@ -467,6 +474,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         
         return ChildInfoReturn(count, funds, rewards);
     }
+    
     function _childrenInfoAll(address account, uint deep) internal view returns(uint, uint) {
         Node storage node = _nodes[account];
         uint _children = 0;
@@ -549,8 +557,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             _userid,_tlb,_lastAmount,_adep,_aw,_limit,_children,_totalDeposit
         ];
     }
-    function nodeinfo(address sender) public override view returns(uint, address, address[] memory) {
-        return (_nodes[sender].referalCount, _nodes[sender].parent,_nodes[sender].children);
+    function nodeinfo(address sender) public override view returns(uint, address, address, address[] memory) {
+        return (_nodes[sender].referalCount, _nodes[sender].shareholder, _nodes[sender].parent,_nodes[sender].children);
     }
     
     function profits(address account) public override view returns(bool, uint, uint, uint, uint) {
@@ -1015,13 +1023,28 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         require(miner.lastBlock==0, "# Already_started");
         
         uint i = 0;
-        for(i=0; i<10; i++) {
-            if (_minerlist[i]!=address(0) && miner.tier>_miners[_minerlist[0]].tier) {
-                _minerlist[i] = account;
+        uint count = 0;
+        for (i=0; i<10; i++) {
+            if (_minerlist[i]==address(0)) break;
+            if (_miners[_minerlist[i]].lastBlock != 0 && block.number - _miners[_minerlist[i]].lastBlock <= 9600) _minerlist[count++] = _minerlist[i];
+        }
+        uint k = 100;
+        for (i=0; i<count; i++) {
+            if (miner.tier>_miners[_minerlist[i]].tier) {
+                k = i;
                 break;
             }
         }
-        if (i==10) _minerlist[0] = account;
+        if (k==100) {
+            if (count<10) _minerlist[count] = account;
+        } else {
+            if (count < 10) count++;
+            for(i = count - 1;i > k; i--) {
+                _minerlist[i] = _minerlist[i - 1];
+            }
+            _minerlist[k] = account;
+        }
+        
         (,uint withdrawal) = _pendingPool(account);
         miner.pending = withdrawal;
         miner.lastBlock = block.number;
