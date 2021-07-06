@@ -70,17 +70,28 @@ class Test {
     }
     async test() {
         let k = 0;
-        let index = 0;
+        let index = 170;
         if (index===0) {
             for(let i=0; i<9; i++) {
                 let parent = sh[i];
                 k = 0;
                 while(k<10) {
-                    let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
+                    let result = await this.callBySigner(admin, contractUsdt, 'addBulk', [
+                        g[index],
+                        g[index+1],
+                        g[index+2],
+                        g[index+3],
+                        g[index+4],
+                        g[index+5],
+                        g[index+6],
+                        g[index+7],
+                        g[index+8],
+                        g[index+9]
+                    ], parent);
                     if (result) {
-                        setlog(`success sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
-                        k++;
-                        index++;
+                        setlog(`success sh${i} > ${k+1} ~ ${k+10} / ${index}\t${parent}\t${g[index]}`);
+                        k+=10;
+                        index+=10;
                         continue;
                     } else {
                         setlog(`failed sh${i} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
@@ -92,20 +103,26 @@ class Test {
         
         while(index<10000) {
             let parent = g[index-5];
-            k = 0;
-            while(k<5) {
+            /* k = 0; */
+            /* while(k<5) { */
                 if (index>=10000) return;
-                let result = await this.callBySigner(admin, contractUsdt, 'addAccount', g[index], parent);
+                let result = await this.callBySigner(admin, contractUsdt, 'addBulk', [
+                    g[index],
+                    g[index+1],
+                    g[index+2],
+                    g[index+3],
+                    g[index+4]
+                ], parent);
                 if (result) {
-                    setlog(`success g${index-5} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
-                    k++
-                    index++;
+                    setlog(`success g${index-5} > 5 / ${index}\t${parent}\t${g[index]}`);
+                    /* k+=5; */
+                    index+=5;
                     continue;
                 } else {
-                    setlog(`failed g${index-5} > ${k+1} / ${index}\t${parent}\t${g[index]}`);
+                    setlog(`failed g${index-5} > 5 / ${index}\t${parent}\t${g[index]}`);
                 }
                 await new Promise(resolve=>setTimeout(resolve,300));
-            }
+            /* } */
         }
     }
     async callBySigner(from, to, method, ...args) {

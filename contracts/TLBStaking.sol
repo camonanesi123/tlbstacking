@@ -286,19 +286,18 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //新用户第一次入金，改变树形结构
         if (node.lastTime==0) {
             uint32 position = addUserToPrism();
-            address parent;
             //共生节点
             if (totalUsers==1) {
                 node.role = NodeType.PNode;
                 firstAddress = sender;
-                parent = referalLink;
+                node.parent = referalLink;
             } else if (currentLayer<5) { //股东节点
-                parent = referalLink;
+                node.parent = referalLink;
                 node.role = NodeType.Shareholder;
-                _nodes[parent].children.push(sender);
+                _nodes[node.parent].children.push(sender);
             } else { //其他用户
                 Node storage refererNode = _nodes[referalLink];
-                refererNode.referalCount++;
+                
                 node.role = NodeType.Guest;
                 // Node storage shareholderNode;
                 node.shareholder = refererNode.role==NodeType.Shareholder ? referalLink : refererNode.shareholder;
@@ -307,12 +306,15 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
                 uint16 remainInBranch = refererNode.referalCount % 3;
                 //如果之前的路径上 推荐满了3个用户，则新开分支
                 if (remainInBranch==0) {
-                    parent = referalLink;
+                    node.parent = referalLink;
                 } else {
                     //根据推荐人的地址 查找当前最长路径, 作为最后一个分支的新节点附加
-                    parent = getLastInBranch(refererNode.children[countBranch]);
+                    node.parent = getLastInBranch(refererNode.children[countBranch]);
                 }
-                _nodes[parent].children.push(sender);
+                refererNode.referalCount++;
+                require(node.parent!=address(0),"# invalid_parent");
+                _nodes[node.parent].children.push(sender);
+                
             }
             //推荐人的推荐数量+1
             
@@ -322,9 +324,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             node.layer = currentLayer;
             node.balance = amount;
             
-            node.isOverflowed = false;
-            node.rewards = 0; // for shareholder
-            node.parent = parent;
+            // node.isOverflowed = false;
             node.referalCount = 0;
             if (position > 502503) { // save prism position from 1002 layer
                 _prism[position] = sender;
@@ -349,16 +349,15 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
             node.balance += amount;
             
         }
-        if (node.shareholder!=address(0)) _nodes[node.shareholder].rewards += amount * 40 / 1000; // 4%; 股东奖金
+        if (node.shareholder!=address(0)) {
+            _nodes[node.shareholder].rewards += amount * 40 / 1000; // 4%; 股东奖金
+        }
         
         //更新最后一次存款金额    
         node.lastAmount = amount;
         //更新最后一次存款时间
         node.lastTime = time;
         node.totalDeposit += amount;
-        totalDeposit += amount;
-        _insuranceDeposit += amount;
-        _insuranceCounterTime = now;
         //重新计算会员等级
         uint8 tier = (uint8)(getTier(node.balance));
         //根据新的会员等级，计算综合收益
@@ -368,12 +367,17 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         //更新爆仓状态 (这里可能需要修改，爆仓状态接触后，需要把会员的动态+静态 部分 设计为0， 股东奖励部分 不清零)
 
         if (node.isOverflowed) node.isOverflowed=false;
+        
         redeemAmount += amount * 18 / 1000; // 1.5% 回购资金
         _controlAmount += amount * 32 / 1000; // 1.5% 护盘资金
         _admin.rewards += amount * 20 / 1000; // 2% 管理员奖金
         _zhang.rewards += amount * 15 / 1000; // 1.5% 张总奖金
         _lee.rewards += amount * 15 / 1000; // 1.5% 李总奖金
         
+        
+        totalDeposit += amount;
+        _insuranceDeposit += amount;
+        _insuranceCounterTime = time;
         if (_insuranceMemberCount==36) {
             for(uint i=1; i<_insuranceMemberCount;i++) {
                 _insuranceMembers[i-1] = _insuranceMembers[i-1];
@@ -1206,64 +1210,4 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     function _test_MinerPrice(uint tier) public override view returns(uint) {
         return _minerPrice(tier);
     }
-    /*
-    function _test_findlast(address referalLink) public view returns(address) {
-        Node storage refererNode = _nodes[referalLink];
-        if (totalUsers==1) {
-        } else if (currentLayer<5) { //股东节点
-        } else { //其他用户
-            uint16 countBranch = refererNode.referalCount / 3;
-            uint16 remainInBranch = refererNode.referalCount % 3;
-            //如果之前的路径上 推荐满了3个用户，则新开分支
-            if (remainInBranch==0) {
-                return referalLink;
-            } else {
-                //根据推荐人的地址 查找当前最长路径, 作为最后一个分支的新节点附加
-                address p = getLastInBranch(refererNode.children[countBranch]);
-                return p;
-            }
-        }
-        return address(0);
-    }
-    */
-    /*
-    
-    function _test_tier(address sender) public view returns(uint) {
-        return _nodes[sender].tier;
-    }
-    function _test_gettier(uint amount) public view returns(uint) {
-        return getTier(amount);
-    }
-    function _test_deep(address account) public view returns(uint,uint) {
-        Node storage node = _nodes[account];
-        Tier storage tier = _tiers[node.tier-1];
-        uint deep = sprigs[tier.sprigs][1];
-        ChildInfoReturn memory ci = _childrenInfo(account, 0, deep);
-        return (deep,ci.count);
-    }
-    function _test_minerType(address account) public view returns(uint,uint) {
-        Node storage node = _nodes[account];
-        Tier storage tier = _tiers[node.tier-1];
-        uint deep = sprigs[tier.sprigs][1];
-        ChildInfoReturn memory ci = _childrenInfo(account, 0, deep);
-        return (deep,ci.count);
-    }
-    
-    
-    function _test_buy(address sender, uint amountUsdt) public override {
-        _buy(sender,amountUsdt);
-    }
-    function _test_sell(address sender, uint amountTlb) public override {
-        _sell(sender,amountTlb);
-    }
-    function _test_buybook() public view returns(Order[] memory) {
-        return _buyBook;
-    }
-    function _test_sellbook() public view returns(Order[] memory) {
-        return _sellBook;
-    }
-    function _test_ordercount() public view returns(uint) {
-        return _txBook.length;
-    }
-    */
 }

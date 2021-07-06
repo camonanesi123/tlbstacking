@@ -6,6 +6,17 @@
 	"output": {
 		"abi": [
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "tps",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -75,13 +86,7 @@
 				"type": "event"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tps",
-						"type": "address"
-					}
-				],
+				"inputs": [],
 				"name": "_address_init",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -127,6 +132,47 @@
 					}
 				],
 				"name": "addAccount",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "addrs",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address",
+						"name": "referal",
+						"type": "address"
+					}
+				],
+				"name": "addBulk",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "addrs",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address",
+						"name": "referal",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minerTier",
+						"type": "uint256"
+					}
+				],
+				"name": "addBulkMiner",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -546,11 +592,11 @@
 	},
 	"sources": {
 		"FakeUSDT.sol": {
-			"keccak256": "0xe9a0e0f31bde9b1871c5e08cdc0be8b4ace60c6d0ff518655572073b5e4b547b",
+			"keccak256": "0x523975e5002e462fc0f911b96b9355862c45a019b77e0d18b7b25cfe64d62018",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://522ea02e92056186738082f39874cc670fff13e5e5d2b72af7ef7b7b0c8144da",
-				"dweb:/ipfs/QmdN1aJEKbfEAfKnw6hJfexEWraCDHaZJYL4Ax3HE8VGEL"
+				"bzz-raw://e6279387cc638dbd4d7b2b421fe5b2290593af21fdb0ec0241937d00d89785d5",
+				"dweb:/ipfs/QmY1qcSovcGUKut9EkKVrxma3MwvgAGFpws6L49Y4YN9Cg"
 			]
 		},
 		"ITLB10.sol": {

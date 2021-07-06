@@ -1,5 +1,16 @@
 [
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "tps",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -69,13 +80,7 @@
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "tps",
-				"type": "address"
-			}
-		],
+		"inputs": [],
 		"name": "_address_init",
 		"outputs": [],
 		"stateMutability": "nonpayable",
@@ -121,6 +126,47 @@
 			}
 		],
 		"name": "addAccount",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "addrs",
+				"type": "address[]"
+			},
+			{
+				"internalType": "address",
+				"name": "referal",
+				"type": "address"
+			}
+		],
+		"name": "addBulk",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "addrs",
+				"type": "address[]"
+			},
+			{
+				"internalType": "address",
+				"name": "referal",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "minerTier",
+				"type": "uint256"
+			}
+		],
+		"name": "addBulkMiner",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
