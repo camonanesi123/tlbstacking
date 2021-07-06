@@ -216,7 +216,7 @@ export default class Metamask {
 						}
 					}
 				}
-				result.minerList.sort((a,b)=>a[1]-b[1]);
+				/* result.minerList.sort((a,b)=>a[1]-b[1]); */
 				result.minerTier1 = Math.round(t1 * 100 / result.minerCount);
 				result.minerTier2 = Math.round(t2 * 100 / result.minerCount);
 				result.minerTier3 = Math.round(t3 * 100 / result.minerCount);
