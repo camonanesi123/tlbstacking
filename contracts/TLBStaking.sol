@@ -109,7 +109,9 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     uint _minerTotalPower; //总算力
     uint _minerCount; //矿工个数
+    uint[] _minerClass = new uint[](3); // 0:超级, 1:优质, 2:普通
     uint _minedTotal;
+    
 
     address[] _minerlist = new address[](10); //address  10ge
     // mapping(address=>uint) _minePool; // _minerlist index
@@ -259,7 +261,9 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         } else if (userCount<10){
             require(referalLink==firstAddress, "# Need_pNode");
         } else {
-            if (_nodes[sender].lastAmount!=0) {
+            if (_nodes[sender].lastAmount==0) {
+                require(_nodes[referalLink].lastAmount!=0, "# invalid_referal");
+            } else {
                 require(_nodes[sender].referer==referalLink, "# invalid_referal");
             }
         }
@@ -1025,6 +1029,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         Miner storage miner= _miners[account];
         require(miner.tier!=0, "# Invalid_miner");
         require(miner.lastBlock==0, "# Already_started");
+        
         
         uint i = 0;
         uint count = 0;
