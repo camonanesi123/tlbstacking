@@ -81,7 +81,7 @@ class WebApp {
 				} else {
 					const acmeFile = __dirname + '/../certs/.dnskey';
 					if (fs.existsSync(acmeFile)) {
-						const acme = fs.readFileSync(__dirname + '/../certs/.dnskey').toString();
+						const acme = fs.readFileSync(acmeFile).toString();
 						res.send(acme);
 					} else {
 						res.send('no found');
