@@ -6,7 +6,8 @@
 /artifacts
 address.csv
 tlb.log
-
+*compiled.js
+*.js.map
 # misc
 .DS_Store
 .env
