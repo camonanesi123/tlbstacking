@@ -201,6 +201,7 @@ const Section_2_d = () => {
 	const totalSupply = (Math.round(contract.totalSupply/100)/100) + ' 万枚';
 	const circulating = (Math.round((contract.totalSupply-contract.totalBurnt)/100)/100) + ' 万枚';
 	const totalBurnt = contract.totalBurnt>10000 ? (Math.round(contract.totalBurnt/100)/100) + '万枚' : contract.totalBurnt + 'TLB';
+	
 	return (
 		<Section>
 			<div className="content_wrapper bg_blue_9 px-2 py-3 py-md-5 radius">
