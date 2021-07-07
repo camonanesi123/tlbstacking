@@ -6,8 +6,10 @@
 	"output": {
 		"abi": [],
 		"devdoc": {
+			"details": "Math operations with safety checks that revert on error",
 			"kind": "dev",
 			"methods": {},
+			"title": "SafeMath",
 			"version": 1
 		},
 		"userdoc": {
@@ -18,7 +20,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"lib/HRC20.sol": "Context"
+			"lib/SafeMath.sol": "SafeMath"
 		},
 		"evmVersion": "istanbul",
 		"libraries": {},
@@ -32,28 +34,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"lib/HRC20.sol": {
-			"keccak256": "0x68edb6029d3e7d8f3bd1a15dce32a8420eeda6dea3354978cc2be473efbb358a",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://b6fca1f876b563b1fd620dc6b081977417e35d6d73007d7da51584bf30c592b5",
-				"dweb:/ipfs/QmSPtyvnTKo6WfR3LHniYrv35dyPGMceofo6zvv7YSjznp"
-			]
-		},
 		"lib/SafeMath.sol": {
 			"keccak256": "0x34ddddbb070730db7d9c63a537344145b22bb8242a392b9bb4aa21f8993ecdfb",
 			"license": "MIT",
 			"urls": [
 				"bzz-raw://57c5f40371daf051474ba4fdb55b5c4939201dc9977ef54497fbb26f24ec2286",
 				"dweb:/ipfs/QmbFwtkVihc4XXi4pQBenrB8opAEppqYopR2zCLerfwFbz"
-			]
-		},
-		"lib/TransferHelper.sol": {
-			"keccak256": "0x735370a0946ff53f41763480bc6c2cd5703301d36926adfde1ca9efe778ed6cf",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://c852563287d97c8bc2ca93c60570275dda9785be9f096a6a3bf8aa7dbb9e7a86",
-				"dweb:/ipfs/Qmb9uH7CmWS4xbjX7UTZcqE1ejxf4ecQqKdaq7Xz813FFx"
 			]
 		}
 	},

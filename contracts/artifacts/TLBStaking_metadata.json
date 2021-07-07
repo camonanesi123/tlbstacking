@@ -497,7 +497,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "basicInfoAdmin",
+				"name": "basicInfo",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -580,9 +580,9 @@
 				"name": "contractInfo",
 				"outputs": [
 					{
-						"internalType": "uint256[13]",
+						"internalType": "uint256[17]",
 						"name": "",
-						"type": "uint256[13]"
+						"type": "uint256[17]"
 					}
 				],
 				"stateMutability": "view",
@@ -690,6 +690,44 @@
 						"type": "bool"
 					}
 				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "usdtToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint8",
+						"name": "usdtPrecision",
+						"type": "uint8"
+					},
+					{
+						"internalType": "address",
+						"name": "admin",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "lee",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "zhang",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "redeem",
+						"type": "address"
+					}
+				],
+				"name": "initContract",
+				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -908,40 +946,41 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
 						"internalType": "uint256",
-						"name": "amountTlb",
+						"name": "value",
 						"type": "uint256"
 					}
 				],
-				"name": "sell",
-				"outputs": [],
+				"name": "safetransfer",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "admin",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "lee",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "zhang",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "redeem",
-						"type": "address"
+						"internalType": "uint256",
+						"name": "amountTlb",
+						"type": "uint256"
 					}
 				],
-				"name": "setAdmin",
+				"name": "sell",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -1105,8 +1144,8 @@
 				"renounceOwnership()": {
 					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
 				},
-				"setAdmin(address,address,address,address)": {
-					"details": "Returns the amount of tokens in existence."
+				"safetransfer(address,address,uint256)": {
+					"details": "See {BEP20-safetransfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`."
 				},
 				"symbol()": {
 					"details": "Returns the token symbol."
@@ -1149,35 +1188,27 @@
 	},
 	"sources": {
 		"ITLB10.sol": {
-			"keccak256": "0x4b88887396325abe390e816eba2f92fe0759427b8ab12d0eba0da47e2a130553",
+			"keccak256": "0x0eb0fcb9c2d6326ea4b4a21b1769e4f46e0e326b05436f58a7a1424c49d94204",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://07785606536cedd1549cc0a446f26baacbe7bd42155c6f1c5d2326752b70c9b6",
-				"dweb:/ipfs/QmWgntjJf9nKLnDnCbpF2C2CtVXrymU1scm25oGLpHHgVL"
+				"bzz-raw://3a99c228c45552d4f8f4308e7a64f4e0dc01bc27277f8b026a1867ec35278338",
+				"dweb:/ipfs/QmQB1hp1HrYkzSaeTSHYFRuDind5CRJn8o2UMj1frNKGaW"
 			]
 		},
 		"TLBStaking.sol": {
-			"keccak256": "0xa77bc922a87db02e68c7bce4e7ef961a445500aeced152a0387716a90994d113",
+			"keccak256": "0xccd73101c41f3f0a8ee3876e6cdc33feaae6ae18d78b988024e0f128fadc741b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2392da0a95326b4c7316398d7a117dbc0d3ab70f19fcd679a828ba99a7ba4075",
-				"dweb:/ipfs/QmNeKUHW84KTUCkZ57X6PaepwNGhBx8u6mUo72qVyXEm2c"
+				"bzz-raw://3012a1a1363e7f27bbf24353cc51c3cbc628987df0609f2ba59216817aba307f",
+				"dweb:/ipfs/QmcBZgwxKzwUj3Seg2KYHfnjcvybsdDtFycEh15VvfEQAf"
 			]
 		},
 		"lib/HRC20.sol": {
-			"keccak256": "0x3b8974a451ac6e9db62a965d1030450eed281d5960fee2448e0a2c56055580d2",
+			"keccak256": "0x68edb6029d3e7d8f3bd1a15dce32a8420eeda6dea3354978cc2be473efbb358a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://95c1e0af5a5b127a3a642134e83878388871b0ae8ec70804362a559a9079715a",
-				"dweb:/ipfs/QmSGqxFc29dHxnzeaWoZEZS6x3owxAiPyY5dZFnEMNRS4u"
-			]
-		},
-		"lib/Ownable.sol": {
-			"keccak256": "0x06cec334e502b2f432b05ac50d57394fe76066936273a4a4b253d1cef65bfed2",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://fbd3872565262d434d3d1d1e4b00c3571d63ef8af19f809431e75d9015412002",
-				"dweb:/ipfs/QmaUL7FVmyymhic4nisDYyS9ZxiMLWWnyF4gLZaGuVB3n5"
+				"bzz-raw://b6fca1f876b563b1fd620dc6b081977417e35d6d73007d7da51584bf30c592b5",
+				"dweb:/ipfs/QmSPtyvnTKo6WfR3LHniYrv35dyPGMceofo6zvv7YSjznp"
 			]
 		},
 		"lib/SafeMath.sol": {

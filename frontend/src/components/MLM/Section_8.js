@@ -219,8 +219,8 @@ function Section_8(props) {
 	let contract = useSelector(state => state.contract);
 	const amount2 = contract.price ? Number(status.type===TYPE_BUY?(status.amount/contract.price).toFixed(Metamask.precisionTlb):(status.amount*contract.price*0.998).toFixed(6)) : '';
 
-	console.log(NF(contract._usdt, 6));
-	console.log(NF(contract._tlb, Metamask.precisionTlb));
+	/* console.log(NF(contract._usdt, 6));
+	console.log(NF(contract._tlb, Metamask.precisionTlb)); */
 	const balance = contract.address ? (status.type===TYPE_BUY ? NF(contract._usdt, 6) + ' USDT' : NF(contract._tlb, Metamask.precisionTlb) + ' TLB') : '-';
 
 	const changeAmount = (amount) => {

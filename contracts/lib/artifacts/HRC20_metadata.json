@@ -8,9 +8,24 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "tps",
-						"type": "address"
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "symbol",
+						"type": "string"
+					},
+					{
+						"internalType": "uint8",
+						"name": "decimals",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "maxSupply",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "nonpayable",
@@ -87,13 +102,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "_address_init",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "_maxSupply",
 				"outputs": [
 					{
@@ -116,88 +124,6 @@
 					}
 				],
 				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "referal",
-						"type": "address"
-					}
-				],
-				"name": "addAccount",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address[]",
-						"name": "addrs",
-						"type": "address[]"
-					},
-					{
-						"internalType": "address",
-						"name": "referal",
-						"type": "address"
-					}
-				],
-				"name": "addBulk",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address[]",
-						"name": "addrs",
-						"type": "address[]"
-					},
-					{
-						"internalType": "address",
-						"name": "referal",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "minerTier",
-						"type": "uint256"
-					}
-				],
-				"name": "addBulkMiner",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "referal",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "minerTier",
-						"type": "uint256"
-					}
-				],
-				"name": "addMiner",
-				"outputs": [],
-				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -437,19 +363,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "start",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "symbol",
 				"outputs": [
 					{
@@ -553,6 +466,9 @@
 				"balanceOf(address)": {
 					"details": "See {HRC20-balanceOf}."
 				},
+				"constructor": {
+					"details": "Sets the values for {name} and {symbol}, initializes {decimals} with a default value of 18. To select a different value for {decimals}, use {_setupDecimals}. All three of these values are immutable: they can only be set once during construction."
+				},
 				"decimals()": {
 					"details": "Returns the token decimals."
 				},
@@ -609,7 +525,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"FakeUSDT.sol": "FakeUSDT"
+			"lib/HRC20.sol": "HRC20"
 		},
 		"evmVersion": "istanbul",
 		"libraries": {},
@@ -623,22 +539,6 @@
 		"remappings": []
 	},
 	"sources": {
-		"FakeUSDT.sol": {
-			"keccak256": "0x523975e5002e462fc0f911b96b9355862c45a019b77e0d18b7b25cfe64d62018",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://e6279387cc638dbd4d7b2b421fe5b2290593af21fdb0ec0241937d00d89785d5",
-				"dweb:/ipfs/QmY1qcSovcGUKut9EkKVrxma3MwvgAGFpws6L49Y4YN9Cg"
-			]
-		},
-		"ITLB10.sol": {
-			"keccak256": "0x0eb0fcb9c2d6326ea4b4a21b1769e4f46e0e326b05436f58a7a1424c49d94204",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://3a99c228c45552d4f8f4308e7a64f4e0dc01bc27277f8b026a1867ec35278338",
-				"dweb:/ipfs/QmQB1hp1HrYkzSaeTSHYFRuDind5CRJn8o2UMj1frNKGaW"
-			]
-		},
 		"lib/HRC20.sol": {
 			"keccak256": "0x68edb6029d3e7d8f3bd1a15dce32a8420eeda6dea3354978cc2be473efbb358a",
 			"license": "MIT",

@@ -113,14 +113,11 @@ interface ITLB10{
     /**
      * @dev Returns the amount of tokens in existence.
      */
-    function setAdmin(address admin,address lee,address zhang,address redeem) external;
-    // function admin() external view returns(address,address,address,address);
-    function basicInfoAdmin() external view returns(uint,uint,uint,uint);
     function amountForDeposit(uint amount) external view returns(uint256);
     function amountForWithdraw(address account) external view returns(uint256);
     
     function nodeinfo(address sender) external view returns(uint, address, address, address[] memory);
-    function contractInfo() external view returns(uint[13] memory);
+    function contractInfo() external view returns(uint[17] memory);
     function accountInfo(address account) external view returns(uint[8] memory);
     function profits(address account) external view returns(bool, uint, uint, uint, uint);
     

@@ -5,6 +5,7 @@
 # production
 *compiled.js
 *.js.map
+*.css.map
 # misc
 .DS_Store
 .env

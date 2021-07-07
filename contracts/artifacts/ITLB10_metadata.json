@@ -329,34 +329,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "basicInfoAdmin",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -413,9 +385,9 @@
 				"name": "contractInfo",
 				"outputs": [
 					{
-						"internalType": "uint256[13]",
+						"internalType": "uint256[17]",
 						"name": "",
-						"type": "uint256[13]"
+						"type": "uint256[17]"
 					}
 				],
 				"stateMutability": "view",
@@ -581,34 +553,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "admin",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "lee",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "zhang",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "redeem",
-						"type": "address"
-					}
-				],
-				"name": "setAdmin",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "startMine",
 				"outputs": [],
@@ -633,7 +577,7 @@
 		"devdoc": {
 			"kind": "dev",
 			"methods": {
-				"setAdmin(address,address,address,address)": {
+				"amountForDeposit(uint256)": {
 					"details": "Returns the amount of tokens in existence."
 				}
 			},
@@ -662,11 +606,11 @@
 	},
 	"sources": {
 		"ITLB10.sol": {
-			"keccak256": "0x4b88887396325abe390e816eba2f92fe0759427b8ab12d0eba0da47e2a130553",
+			"keccak256": "0x0eb0fcb9c2d6326ea4b4a21b1769e4f46e0e326b05436f58a7a1424c49d94204",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://07785606536cedd1549cc0a446f26baacbe7bd42155c6f1c5d2326752b70c9b6",
-				"dweb:/ipfs/QmWgntjJf9nKLnDnCbpF2C2CtVXrymU1scm25oGLpHHgVL"
+				"bzz-raw://3a99c228c45552d4f8f4308e7a64f4e0dc01bc27277f8b026a1867ec35278338",
+				"dweb:/ipfs/QmQB1hp1HrYkzSaeTSHYFRuDind5CRJn8o2UMj1frNKGaW"
 			]
 		}
 	},

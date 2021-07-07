@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from 'react';
+import React,{useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch} from 'react-redux';
 /* import { useHistory } from "react-router-dom"; */
 import styled from 'styled-components';
@@ -19,7 +19,15 @@ import ImgGoogle from '../../img/social-google.webp'
 import ImgYoutube from '../../img/social-youtube.webp'
 
 import {IgrRadialGauge, IgrRadialGaugeModule} from 'igniteui-react-gauges';
-import {IgrLegendModule, IgrDoughnutChartModule, IgrItemLegend, IgrDoughnutChart, IgrRingSeries, IgrLegend, IgrCategoryChart, IgrCategoryChartModule} from 'igniteui-react-charts';
+import {IgrLegendModule, IgrItemLegendModule, IgrRingSeriesModule, IgrDoughnutChartModule, IgrItemLegend, IgrDoughnutChart, IgrRingSeries, IgrLegend, IgrCategoryChart, IgrCategoryChartModule} from 'igniteui-react-charts';
+
+/* 
+
+import { IgrSliceClickEventArgs } from 'igniteui-react-charts';
+
+IgrDoughnutChartModule.register();
+IgrRingSeriesModule.register();
+IgrItemLegendModule.register(); */
 
 
 /* .register(); */
@@ -28,7 +36,9 @@ import Loading from '../Layout/Loading';
 
 const mods = [
     IgrLegendModule,
+	IgrItemLegendModule,
     IgrDoughnutChartModule,
+	IgrRingSeriesModule,
 	IgrRadialGaugeModule,
 	IgrCategoryChartModule
 ];
@@ -769,45 +779,80 @@ const Section_4_d = () => {
 }
 
 const Section_5_d = () => {
+	const legend = useRef(null);
+	const chart = useRef(null);
+	const [status,setStatus] = useState(false);
+
 	const contract = useSelector(state => state.contract);
 	const data = [
-		{val:contract.minerTier1, label:"超级矿工 "+contract.minerTier1+"%"},
-		{val:contract.minerTier2, label:"优质矿工 "+contract.minerTier2+"%"},
-		{val:contract.minerTier3, label:"普通矿工 "+contract.minerTier3+"%"},
-		{val:contract.minerTier4, label:"惰性矿工 "+contract.minerTier4+"%"}
+		{val:contract.minerTier1, label:"超级矿工 "+contract.minerTier1+"%", summary:"超级矿工"},
+		{val:contract.minerTier2, label:"优质矿工 "+contract.minerTier2+"%", summary:"优质矿工"},
+		{val:contract.minerTier3, label:"普通矿工 "+contract.minerTier3+"%", summary:"普通矿工"},
+		{val:contract.minerTier4, label:"惰性矿工 "+contract.minerTier4+"%", summary:"惰性矿工"}
 	];
+	
+	useEffect(() => {
+		if (legend && chart) {
+            chart.current.actualSeries[0].legend = legend.current;
+			if (chart.current.actualSeries && chart.current.actualSeries.length > 0) {
+				let series = chart.current.actualSeries[0];//  as IgrRingSeries;
+				series.selectedSlices.add(0);
+			}
+			/* chart.current.actualSeries[0].legend = legend.current; */
+        }
+	});
 	return (
 		<Section>
 			<div className="content_wrapper bg_blue_9 radius">
 				<h4 className="text-end text_cyan">矿工监视</h4>
-					<div className="gauge">
-						<div className="text">
-							<img style={{ height: '2em' }} src={ImgTLB} alt="TLB" />
-						</div>
-						<IgrDoughnutChart 
-							allowSliceExplosion="true" 
-							width="100%" 
-							height="300px">
-							<IgrRingSeries
-							
-								brush="white"
-								outline="white" 
-								fontSize={16}
-								labelColor="white"
-
-								dataSource={data}
-								valueMemberPath="val"
-								labelMemberPath="label"
-								labelsPosition="OutsideEnd"
-								/* legend={this.legend} */
-								labelExtent="30"
-								startAngle="30"
-								outlines="white"
-								radiusFactor="0.6"
-								name="series">
-							</IgrRingSeries>
-						</IgrDoughnutChart>
+				<div>
+					<IgrItemLegend
+						orientation="Horizontal"
+						ref={legend}>
+					</IgrItemLegend>
+				</div>
+				<div className="gauge">
+					<div className="text">
+						<img style={{ height: '2em' }} src={ImgTLB} alt="TLB" />
 					</div>
+					<IgrDoughnutChart 
+						ref={chart}
+
+						allowSliceExplosion="true" 
+						width="100%" 
+						height="300px">
+						<IgrRingSeries
+							dataSource={data}
+							valueMemberPath="val"
+							labelMemberPath="label"
+							legendLabelMemberPath="summary"
+							labelsPosition="OutsideEnd"
+							labelExtent={30}
+							radiusFactor={0.7}
+							startAngle={30}
+							name="series"
+
+							/* brush="white"
+							outline="white" 
+							fontSize={16}
+							labelColor="white" */
+
+							/* dataSource={data}
+							valueMemberPath="val"
+							labelMemberPath="label"
+							labelsPosition="OutsideEnd"
+							legend={legend}
+							legendLabelMemberPath="summary"
+
+							labelExtent="30"
+							startAngle="30"
+							outlines="white"
+							radiusFactor="0.6"
+							name="series" */
+						/>
+					</IgrDoughnutChart>
+					
+				</div>
 					
 					
 				<hr className="bg-white mx-n2 mx-md-n5" style={{ height: '5px', opacity: '1' }} />

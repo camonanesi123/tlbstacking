@@ -83,7 +83,7 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     
     address _redeemAddress; // 1.5% redeem
     uint    redeemAmount; // 1.5% redeem
-    uint    _controlAmount; // 1.5% redeem
+    // uint    _controlAmount; // 1.5% redeem
     
     FundLog[] _inLogs; // all deposit logs; 所有入金账本
     FundLog[] _totalLogs;
@@ -154,21 +154,16 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     }
 
     //设置管理员，张总，李总 钱包地址。需要设置管理员地址，张总地址，李总地址。注意（张总，李总）作为股东身份参与，请另外使用地址
-    function setAdmin(address admin,address lee,address zhang,address redeem) public override {
+    function initContract(address usdtToken,uint8 usdtPrecision, address admin,address lee,address zhang,address redeem) public onlyOwner {
         require(owner() == msg.sender, 'Ownable: caller is not the owner');
+        USDTToken = usdtToken;
+        USDTPrecision = usdtPrecision;
         _admin.account = admin;
         _lee.account = lee;
         _zhang.account = zhang;
         _redeemAddress = redeem;
     }
-    /*
-    function admin() public override view returns(address,address,address,address) {
-        require(owner() == msg.sender, 'Ownable: caller is not the owner');
-        return (_admin.account,_zhang.account,_lee.account,_redeemAddress);
-    }
-    */
-    function basicInfoAdmin() public override view returns(uint,uint,uint,uint) {
-        require(owner() == msg.sender, 'Ownable: caller is not the owner');
+    function basicInfo() public onlyOwner view returns(uint,uint,uint,uint) {
         return (currentLayer,totalUsers,totalMineable,_insuranceTime);
     }
     
@@ -239,16 +234,6 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         return parentNode.children.length==0 ? parent : getLastInBranch(parentNode.children[0]);
     }
     
-    /**
-     * internal
-     * @dev returns shareholder of linked chain of sender. 向上查找股东节点
-     */
-     /*
-    function getShareholderInBranch(address parent) internal returns(address){
-        Node storage parentNode = _nodes[parent];
-        return parentNode.role==NodeType.Shareholder ? parent : getShareholderInBranch(parentNode.parent);
-    }
-    *
     /**
      * internal
      * @dev Add or update a node when a user is deposited into the pool. 当用户存钱的时候，更新树形结构
@@ -372,8 +357,8 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
 
         if (node.isOverflowed) node.isOverflowed=false;
         
-        redeemAmount += amount * 18 / 1000; // 1.5% 回购资金
-        _controlAmount += amount * 32 / 1000; // 1.5% 护盘资金
+        redeemAmount += amount * 50 / 1000; // 5% 回购资金
+        // _controlAmount += amount * 32 / 1000; // 1.5% 护盘资金
         _admin.rewards += amount * 20 / 1000; // 2% 管理员奖金
         _zhang.rewards += amount * 15 / 1000; // 1.5% 张总奖金
         _lee.rewards += amount * 15 / 1000; // 1.5% 李总奖金
@@ -511,10 +496,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         return _totalUsdtBalance() * 50 / 1000;
     }
     
-    function contractInfo() public override view returns(uint[13] memory) {
+    function contractInfo() public override view returns(uint[17] memory) {
         // (uint _mCount,) = _minerRealPower();
         return [
             price,
+            currentLayer,
+            totalUsers,
+            totalMineable,
+            _insuranceTime,
             totalDeposit,
             redeemAmount,
             _totalSupply,
@@ -1011,14 +1000,10 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     function _pendingPool(address account) internal view returns(uint,uint) {
         Miner storage miner= _miners[account];
         if (miner.lastBlock!=0) {
-            // (,uint _realpower) = _minerRealPower();
             if (miner.mineType==0) {
                 uint diff = block.number - miner.lastBlock;
                 if (diff>9600) diff = 9600;
                 return (diff,miner.pending + diff * 48000 * _tlbUnit * miner.tier / (28800 * _minerTotalPower));
-            // } else {
-            //    uint diff = block.number - miner.lastBlock;
-            //    return (diff,miner.pending + diff * 48000 * _tlbUnit * miner.tier / (28800 * _minerTotalPower));
             }
         }
         return (0, miner.pending);
@@ -1033,30 +1018,40 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         
         uint i = 0;
         uint count = 0;
+        uint k = 100;
         for (i=0; i<10; i++) {
             if (_minerlist[i]==address(0)) break;
-            if (_miners[_minerlist[i]].lastBlock != 0 && block.number - _miners[_minerlist[i]].lastBlock <= 9600) _minerlist[count++] = _minerlist[i];
-        }
-        uint k = 100;
-        for (i=0; i<count; i++) {
-            if (miner.tier>_miners[_minerlist[i]].tier) {
-                k = i;
-                break;
+            if (_miners[_minerlist[i]].lastBlock != 0 && block.number - _miners[_minerlist[i]].lastBlock <= 9600) {
+                if (_minerlist[i]==account) {
+                    k = count;
+                }
+                _minerlist[count++] = _minerlist[i];
             }
+        }
+        for (i=count; i<10; i++) {
+            _minerlist[i]=address(0);
         }
         if (k==100) {
-            if (count<10) _minerlist[count] = account;
-        } else {
-            if (count < 10) count++;
-            for(i = count - 1;i > k; i--) {
-                _minerlist[i] = _minerlist[i - 1];
+            for (i=0; i<count; i++) {
+                if (miner.tier>_miners[_minerlist[i]].tier) {
+                    k = i;
+                    break;
+                }
             }
-            _minerlist[k] = account;
+            if (k==100) {
+                if (count<10) _minerlist[count] = account;
+            } else {
+                if (count < 10) count++;
+                for(i = count - 1;i > k; i--) {
+                    _minerlist[i] = _minerlist[i - 1];
+                }
+                _minerlist[k] = account;
+            }
         }
-        
         (,uint withdrawal) = _pendingPool(account);
         miner.pending = withdrawal;
         miner.lastBlock = block.number;
+        
     }
     
     function mineInfo(address account) public override view returns(uint[11] memory) {

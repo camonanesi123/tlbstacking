@@ -151,7 +151,7 @@ export default class Metamask {
 	}
 	static async getInfo(state) {
 		if (Web3) {
-			const result = {lastTime:+new Date()};
+			const result = {};
 			const web3 = new Web3(process.env.REACT_APP_NETWORK_URL);
 			let res = await web3.eth.getBlock("latest");
 			if (res && !res.err) {
@@ -174,6 +174,11 @@ export default class Metamask {
 			if (res && !res.err) {
 				let i = 0;
 				result.price = 			Number(res[i++]) / p2;
+				result.currentLayer = 	Number(res[i++]);
+				result.totalUsers = 	Number(res[i++]);
+				result.totalMineable = 	Number(res[i++]) / p1;
+				result.insuranceTime = 	Number(res[i++]);
+
 				result.totalDeposit = 	Number(res[i++]) / p2;
 				result.redeemAmount = 	Number(res[i++]) / p2;
 				result.totalSupply = 	Number(res[i++]) / p1;
@@ -280,7 +285,7 @@ export default class Metamask {
 				}
 			}
 			if (Object.keys(result).length) {
-				console.log('info',result);
+				/* console.log('info',result); */
 				return result;
 			}
 		}

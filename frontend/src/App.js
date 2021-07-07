@@ -19,54 +19,75 @@ const Style = styled.div`
 	margin: auto;
 	background: url(${ImgBg}) center/cover no-repeat;
 `;
-
 const blockTime = (Number(process.env.REACT_APP_BLOCKTIME) || 3)*1000;
 
 function App() {
 	const contract = useSelector(state => state.contract);
-	const [loading, setLoading] = useState(true)
+	const [status, setStatus] = useState({
+		loading:true,
+		pending:false,
+		spent:0
+	})
 	const dispatch = useDispatch();
 
 	const accountChange = (newAccount)=>{
-		setLoading(true)
+		setStatus({...status,loading:true});
 		dispatch(contractSlice.actions.login(newAccount));
 	}
+	const connect = () => {
+		setStatus({...status,pending:true});
+		Metamask.connect().then(address=>{
+			dispatch(contractSlice.actions.login(address));
+			Metamask.setHandler((address)=>accountChange(address),(chainid)=>chainChanged(chainid));
+			setStatus({...status,pending:false});
+		})
+	}
+	const getContract = () => {
+		setStatus({...status,pending:true});
+		let time = +new Date();
+		Metamask.getInfo(contract).then(res=>{
+			dispatch(contractSlice.actions.update(res))
+			const date = new Date();
+			const hh = date.getHours();
+			const mm = date.getMinutes();
+			const ss = date.getSeconds();
+			const spent = +new Date()-time;
+			console.log((hh>9?'':'0')+hh+':'+(mm>9?'':'0')+mm+':'+(ss>9?'':'0')+ss + (spent?' spent: '+spent+'ms' : ''),res);
+			setStatus({...status,loading:false,pending:false,spent});
+		})
+	}
 	const chainChanged = (valid)=>{
-		setLoading(true);
+		setStatus({...status,loading:true});
 		if (valid) {
-			Metamask.connect().then(address=>{
-				dispatch(contractSlice.actions.login(address));
-				Metamask.setHandler((address)=>accountChange(address),(chainid)=>chainChanged(chainid));
-			})
+			
 		} else {
 			dispatch(contractSlice.actions.logout());
 		}
 	}
 	useEffect(() => {
-		if (!contract.address) {
-			Metamask.connect().then(address=>{
-				dispatch(contractSlice.actions.login(address));
-				Metamask.getInfo(contract,address).then(res=>dispatch(contractSlice.actions.update(res)));
-				Metamask.setHandler((address)=>accountChange(address),(chainid)=>chainChanged(chainid));
-			})
+		let timer;
+		if (!status.pending) {
+			if (!contract.address) {
+				connect();
+			}
+			if (status.loading) {
+				getContract();
+			} else {
+				let delay = status.spent ? blockTime - status.spent : blockTime;
+				if (delay>3000) {
+					delay = blockTime;
+				} else if (delay<0) {
+					delay = 10;
+				}
+				timer = setTimeout(()=>getContract(delay), delay)
+			}
 		}
-		let delay = contract.lastTime ? blockTime - (+new Date() - contract.lastTime) : blockTime;
-		if (delay>3000) {
-			delay = blockTime;
-		} else if (delay<0) {
-			delay = 1;
-		}
-		console.log('delay',delay+'ms');
-		let timer = setTimeout(()=>Metamask.getInfo(contract).then(res=>{
-			if (loading) setLoading(false);
-			dispatch(contractSlice.actions.update(res))
-		}), delay)
-		return () => clearTimeout(timer);
+		return () => timer && clearTimeout(timer);
 	});
 	return (
 		<Router>
 			<Style>
-				{loading ? <Loader></Loader> : <>
+				{status.loading ? <Loader></Loader> : <>
 					<Header></Header>
 					<menu className="m-0 p-0">
 						<Switch>

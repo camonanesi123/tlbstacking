@@ -18,7 +18,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"lib/HRC20.sol": "Context"
+			"lib/HRC20.sol": "Address"
 		},
 		"evmVersion": "istanbul",
 		"libraries": {},

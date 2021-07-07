@@ -7,6 +7,10 @@ export const contractSlice = createSlice({
         referer: null,
         
         price: 0,
+        currentLayer:0,
+        totalUsers:0,
+        totalMineable:0,
+        insuranceTime:0,
         totalDeposit: 0,
         redeemAmount: 0,
         totalSupply: 0,
@@ -65,8 +69,7 @@ export const contractSlice = createSlice({
         allowance: 0,
         orders: [],
         pending: [],
-        blocks: [],
-        lastTime: 0
+        blocks: []
     }, 
     reducers: {
         login: (state, action) => {
