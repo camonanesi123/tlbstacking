@@ -73,11 +73,12 @@ class WebApp {
 		const FRONTENDPATH = path.normalize(__dirname + '/../../frontend/build');
 		app.use(express.static(FRONTENDPATH));
 		app.use(bodyParser.json());
-		app.use((req, res) => {
+		app.use((req, res,next) => {
 			let hostname = req.headers.host;
 			if(req.protocol==='http') {
 				if(!req.url || req.url.indexOf('/.well-known/acme-challenge')===-1) {
-					return res.redirect('https://' + hostname + (req.url||''));
+					//return res.redirect('https://' + hostname + (req.url||''));
+					return next();
 				} else {
 					const acmeFile = __dirname + '/../certs/.dnskey';
 					if (fs.existsSync(acmeFile)) {

@@ -21,17 +21,6 @@ import ImgYoutube from '../../img/social-youtube.webp'
 import {IgrRadialGauge, IgrRadialGaugeModule} from 'igniteui-react-gauges';
 import {IgrLegendModule, IgrItemLegendModule, IgrRingSeriesModule, IgrDoughnutChartModule, IgrItemLegend, IgrDoughnutChart, IgrRingSeries, IgrLegend, IgrCategoryChart, IgrCategoryChartModule} from 'igniteui-react-charts';
 
-/* 
-
-import { IgrSliceClickEventArgs } from 'igniteui-react-charts';
-
-IgrDoughnutChartModule.register();
-IgrRingSeriesModule.register();
-IgrItemLegendModule.register(); */
-
-
-/* .register(); */
-
 import Loading from '../Layout/Loading';
 
 const mods = [
