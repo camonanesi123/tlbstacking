@@ -49,23 +49,25 @@ export default class Metamask {
 							const address = accounts[0];
 							const currrentChainId = await this.getChainId();
 							if (chainId===currrentChainId) {
-								resolve(address);
+								resolve({address,chainId:currrentChainId});	
 							} else {
-								console.log(`🦊 Invalid chainid. expected [${chainId}]`);
-								resolve(null);
+								resolve({address:null,chainId:currrentChainId});
+								// console.log(`🦊 Invalid chainid. expected [${chainId}]`);
+								// resolve(null);
 							}
+							
 						} else {
 							console.log("🦊 No selected address.");
-							resolve(null);
+							resolve({address:null,chainId:null});	
 						}
 					})
 				} catch (error) {
 					console.log("🦊 Connect to Metamask using the button on the top right.");
-					resolve(null);
+					resolve({address:null,chainId:null});	
 				}
 			} else {
 				console.log("🦊 You must install Metamask into your browser: https://metamask.io/download.html");
-				resolve(null);
+				resolve({address:null,chainId:null});	
 			}
 		})
 	}

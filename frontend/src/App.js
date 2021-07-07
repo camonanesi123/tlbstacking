@@ -19,14 +19,45 @@ const Style = styled.div`
 	margin: auto;
 	background: url(${ImgBg}) center/cover no-repeat;
 `;
+const Dialog = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgb(0 0 0 / 20%);
+	z-index: 100;
+	.dialog {
+		position: fixed;
+		width: 800px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: #424242;
+		border-radius: 10px;
+		padding: 20px;
+		box-shadow: 0px 11px 15px -7px rgb(0 0 0 / 20%), 0px 24px 38px 3px rgb(0 0 0 / 14%), 0px 9px 46px 8px rgb(0 0 0 / 12%);
+		z-index: 100;
+		@media (max-width: 768px) {
+			width: 600px;
+		}
+		@media (max-width: 576px) {
+			width: 90%;
+		}
+	}
+`;
+
 const blockTime = (Number(process.env.REACT_APP_BLOCKTIME) || 3)*1000;
+
 
 function App() {
 	const contract = useSelector(state => state.contract);
 	const [status, setStatus] = useState({
+		done: false,
 		loading:true,
 		pending:false,
-		spent:0
+		spent:0,
+		invalidChain:false,
 	})
 	const dispatch = useDispatch();
 
@@ -36,10 +67,18 @@ function App() {
 	}
 	const connect = () => {
 		setStatus({...status,pending:true});
-		Metamask.connect().then(address=>{
-			dispatch(contractSlice.actions.login(address));
+		Metamask.connect().then((res)=>{
 			Metamask.setHandler((address)=>accountChange(address),(chainid)=>chainChanged(chainid));
-			setStatus({...status,pending:false});
+			
+			const {address,chainId} = res;
+			if (address) {
+				dispatch(contractSlice.actions.login(address));
+				setStatus({...status,pending:false,done:true});
+			} else if(chainId) {
+				setStatus({...status,pending:false,done:true});
+			} else {
+				setStatus({...status,pending:false,done:true});
+			}
 		})
 	}
 	const getContract = () => {
@@ -59,15 +98,16 @@ function App() {
 	const chainChanged = (valid)=>{
 		setStatus({...status,loading:true});
 		if (valid) {
-			
+			setStatus({...status,loading:false});
 		} else {
+			setStatus({...status,loading:false});
 			dispatch(contractSlice.actions.logout());
 		}
 	}
 	useEffect(() => {
 		let timer;
 		if (!status.pending) {
-			if (!contract.address) {
+			if (!contract.address && !status.done) {
 				connect();
 			}
 			if (status.loading) {
@@ -87,7 +127,12 @@ function App() {
 	return (
 		<Router>
 			<Style>
-				{status.loading ? <Loader></Loader> : <>
+				{status.invalidChain?<Dialog>
+					<div className="dialog">
+						<h3 className="text-center">无效网络ID</h3>
+					</div>
+				</Dialog>:(
+					status.loading ? <Loader></Loader> : <>
 					<Header></Header>
 					<menu className="m-0 p-0">
 						<Switch>
@@ -98,7 +143,8 @@ function App() {
 						</Switch>
 					</menu>
 					<Footer></Footer>
-					</>}
+					</>	
+				)}
 			</Style>
 		</Router>
 	);
