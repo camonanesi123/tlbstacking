@@ -88,7 +88,7 @@ function Section_1(props) {
 					<span className="text_red">TLB</span>
 					<span className="text_cyan">staking</span>
 				</h1>
-				<h1 className="text-white" style={{letterSpacing: '15px'}}>
+				<h1 className="text-white" style={{letterSpacing: '10px'}}>
 					全网投币量
 				</h1>
 				<br /><br /> <br />

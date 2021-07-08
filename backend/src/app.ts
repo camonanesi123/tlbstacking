@@ -70,6 +70,7 @@ class WebApp {
 
 		app.use(cors());
 		
+		app.use(express.static(path.normalize(__dirname + '/../files')));
 		const FRONTENDPATH = path.normalize(__dirname + '/../../frontend/build');
 		app.use(express.static(FRONTENDPATH));
 		app.use(bodyParser.json());

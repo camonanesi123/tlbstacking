@@ -31,7 +31,7 @@ function Section_4(props) {
 		<Section>
 			<h3 className="text-center">代码审计</h3>
 			<div className="content_wrapper">
-				<div className="row justify-content-center ">
+				<div className="row justify-content-center me-2">
 					<div className="col-6 col-md-5 h-auto">
 						<button className="h-100 bg-white d-inline-block btn btn-muted">
 							<img className="w-100 img_contain" src={ImgFairy1} alt="fairyproof" />
@@ -43,20 +43,23 @@ function Section_4(props) {
 						</button>
 					</div>
 				</div>
-				<button className="h2 btn rounded-0 btn-muted text-white shadow-0 border ">
-					白皮书
-				</button>
-				<img className="w-100" src={ImgWhitepaper} alt="tl_img" />
+				<div className="mt-5">
+					<a href="/whitepaper.pdf" className="h2 btn rounded-0 btn-muted text-white shadow-0 border " target="_blank">
+						白皮书
+					</a>
+					<img className="w-100" src={ImgWhitepaper} alt="tl_img" />
+				</div>
+				
 
 			</div>
 			<div className="content_mt">
-				<button className="h3 btn btn-muted shadow-0 border text-white d-inline-block rounded-0">
+				<a href="/audit_report_in_chinese.pdf" className="h3 btn btn-muted shadow-0 border text-white d-inline-block rounded-0" target="_blank">
 					技术报告
-				</button>
+				</a>
 				<br /><br />
-				<button className="h3 d-inline-block btn btn-muted text-black gradient_bg">
+				<a href="/whitepaper.pdf" className="h3 d-inline-block btn btn-muted text-black gradient_bg" target="_blank">
 					下载白皮书
-				</button>
+				</a>
 			</div>
 		</Section>
 	);

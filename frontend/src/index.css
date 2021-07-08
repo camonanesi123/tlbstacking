@@ -21,10 +21,10 @@ section {padding:15px;}
 }
 @media (max-width: 576px) {
 	body 	{ font-size: 16px; }
-	h1, .h1 { font-size: 60px; }
-	h2, .h2 { font-size: 50px; }
-	h3, .h3 { font-size: 30px; }
-	h4, .h4 { font-size: 24px; }
+	h1, .h1 { font-size: 50px; }
+	h2, .h2 { font-size: 35px; }
+	h3, .h3 { font-size: 25px; }
+	h4, .h4 { font-size: 20px; }
 }
 
 a.cmd {
