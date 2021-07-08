@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector} from 'react-redux';
 import styled from 'styled-components';
 
-import {NF} from '../../util';
+import {NF, copyToClipboard} from '../../util';
 import Metamask from '../../connector';
 
 const Section = styled.section`
@@ -24,9 +24,6 @@ const Section = styled.section`
         }
     }
 `
-
-
-
 function Section_13(props) {
     const contractAddress = Metamask.contract;
 	let contract = useSelector(state => state.contract);
@@ -48,7 +45,7 @@ function Section_13(props) {
                         </tr>
                         <tr>
                             <td>我的邀请地址</td>
-                            <td>{contract.address ? contract.address.slice(0,8)+'***'+contract.address.slice(-4) : '-'}</td>
+                            <td onClick={()=>copyToClipboard('https://'+window.location.host+'/mlm/'+contract.address || '')}>{contract.address ? contract.address.slice(0,8)+'***'+contract.address.slice(-4) : '-'}</td>
                         </tr>
                         <tr>
                             <td>回购金额</td>

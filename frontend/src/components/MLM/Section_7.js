@@ -2,7 +2,7 @@ import React,{useEffect} from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch} from 'react-redux';
 
-import {NF} from '../../util';
+import {NF,copyToClipboard} from '../../util';
 import ImgWave from '../../img/wave.webp'
 
 const Section = styled.section`
@@ -45,6 +45,8 @@ const Section = styled.section`
 
 function Section_7(props) {
 	let contract = useSelector(state => state.contract);
+	
+	
 	return (
 		<Section>
 			<div className="content_wrapper p-0 p-md-5">
@@ -58,7 +60,7 @@ function Section_7(props) {
 						</tr>
 						<tr>
 							<td>钱包地址</td>
-							<td>{contract.address ? contract.address.slice(0,8)+'***'+contract.address.slice(-4) : '-' }</td>
+							<td onClick={()=>copyToClipboard('https://'+window.location.host+'/mlm/'+contract.address || '')}>{contract.address ? contract.address.slice(0,8)+'***'+contract.address.slice(-4) : '-' }</td>
 						</tr>
 						<tr>
 							<td>USDT总收益</td>

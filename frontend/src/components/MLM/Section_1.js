@@ -6,7 +6,6 @@ import { contractSlice } from '../../reducer';
 import Metamask from '../../connector';
 import {NF} from '../../util';
 
-/* import LineChart from '../reuse_components/LineChart/LineChart' */
 
 /* import MetaMaskOnboarding from '@metamask/onboarding' */
 

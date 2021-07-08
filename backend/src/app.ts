@@ -1,6 +1,6 @@
 require("dotenv").config();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-const isProduction = process.env.NODE_ENV !== 'development';
+const isProduction = process.env.NODE_ENV === 'production';
 
 import * as http from 'http';
 import * as https from 'https';
@@ -37,23 +37,30 @@ class WebApp {
 		
 		let appDomainKey = null, appDomainPem = null;
 		if (!isProduction) {
-			appDomainKey = __dirname+'/certs/'+process.env.DOMAIN+'.key';
-			appDomainPem = __dirname+'/certs/'+process.env.DOMAIN+'.pem';
+			appDomainKey = __dirname+'/../certs/'+process.env.DOMAIN+'.key';
+			appDomainPem = __dirname+'/../certs/'+process.env.DOMAIN+'.pem';
 		} else {
 			appDomainKey = '/etc/letsencrypt/live/bitotc.me/privkey.pem';
 			appDomainPem = '/etc/letsencrypt/live/bitotc.me/fullchain.pem';
 		}
 		const appKey = fs.existsSync(appDomainKey) && fs.readFileSync(appDomainKey).toString();
 		const appPem = fs.existsSync(appDomainPem) && fs.readFileSync(appDomainPem).toString();
-		const contextApp = (appKey && appPem) && tls.createSecureContext({key: appKey,cert: appPem});
+
+		let options = {
+			cert: appPem,
+			key: appKey 
+		};
+		const httpsServer = https.createServer(options,app);
+
+		/* const contextApp = (appKey && appPem) && tls.createSecureContext({key: appKey,cert: appPem});
 		const httpsServer = https.createServer({
 			SNICallback: function(domain, cb) {
 				cb(null, contextApp);
 			},
 			key: appKey,
 			cert: appPem
-		}, app);
-		
+		}, app); */
+
 		/* 
 		if (fs.existsSync(__dirname+'/../certs/cert.crt')) {
 			const cert = fs.readFileSync(__dirname+'/../certs/cert.crt');
@@ -115,7 +122,7 @@ class WebApp {
 				let port = Number(process.env.HTTP_PORT);
 				await new Promise(resolve=>{
 					server.listen(port, ()=>{
-						resolve(true)
+						resolve(true)	
 					});
 				});
 				setlog(`Started HTTP service on port ${port}. ${+new Date()-time}ms`);
@@ -123,8 +130,9 @@ class WebApp {
 				port = Number(process.env.HTTPS_PORT);
 				await new Promise(resolve=>{
 					httpsServer.listen(port, ()=>{
-						resolve(true)
+						resolve(true)	
 					});
+					
 				});
 				setlog(`Started HTTPS service on port ${port}. ${+new Date()-time}ms`);
 			} else {

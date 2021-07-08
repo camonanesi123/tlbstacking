@@ -1179,14 +1179,14 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
         return (_aaddrs,_atiers,_aBlocks);
     }
     
-/* 
-=================================================================================================
-                        
-                        █▀▀ █▀█ █▀█   ▀█▀ █▀▀ █▀ ▀█▀ █▀█ █▄░█ █░░ █▄█
-                        █▀░ █▄█ █▀▄   ░█░ ██▄ ▄█ ░█░ █▄█ █░▀█ █▄▄ ░█░
-                                  必须在主网发布前移除。
-=================================================================================================
-*/
+    /* 
+    =================================================================================================
+                            
+                            █▀▀ █▀█ █▀█   ▀█▀ █▀▀ █▀ ▀█▀ █▀█ █▄░█ █░░ █▄█
+                            █▀░ █▄█ █▀▄   ░█░ ██▄ ▄█ ░█░ █▄█ █░▀█ █▄▄ ░█░
+                                    必须在主网发布前移除。
+    =================================================================================================
+
     function _test_admin(address usdtAddress, address adminAddress,address lee,address zhang,address redeem) public override {
         USDTToken = usdtAddress;
         _admin.account = adminAddress;
@@ -1210,4 +1210,5 @@ contract TLBStaking is HRC20("TLB Staking", "TLB", 4, 48000 * 365 * 2 * (10 ** 4
     function _test_MinerPrice(uint tier) public override view returns(uint) {
         return _minerPrice(tier);
     }
+    */
 }

@@ -303,7 +303,7 @@ export default class Metamask {
 		return null;
 	}
 	static async amountForDeposit(amount) {
-		let res = await this.call(contractTlb, 'amountForDeposit', Math.round(amount * 10 ** precisionUsdt))
+		let res = await this.call(contractTlb, 'amountForDeposit', String(amount * 10 ** precisionUsdt))
 		if (res && !res.err) {
 			console.log('amountForDeposit',res);
 			return Number(res) / 10 ** precisionTlb;
@@ -320,22 +320,22 @@ export default class Metamask {
 	}
 	
 	static approve(address,amount) {
-		return this.callBySigner(address, contractUsdt, 'approve', contractTlb, Math.round(amount * 10 ** precisionUsdt));
+		return this.callBySigner(address, contractUsdt, 'approve', contractTlb, String(amount * 10 ** precisionUsdt));
 	}
 	static deposit(address, referalLink, amount) {
-		return this.callBySigner(address, contractTlb, 'deposit', referalLink, Math.round(amount * 10 ** precisionUsdt));
+		return this.callBySigner(address, contractTlb, 'deposit', referalLink, String(amount * 10 ** precisionUsdt));
 	}
 	static withdraw(address) {
 		return this.callBySigner(address, contractTlb, 'withdraw');
 	}
 	static buy(address, amount) {
-		return this.callBySigner(address, contractTlb, 'buy', Math.round(amount * 10 ** precisionUsdt));
+		return this.callBySigner(address, contractTlb, 'buy', String(amount * 10 ** precisionUsdt));
 	}
 	static cancelBuyOrder(address) {
 		return this.callBySigner(address, contractTlb, 'cancelBuyOrder');
 	}
 	static sell(address, amount) {
-		return this.callBySigner(address, contractTlb, 'sell', Math.round(amount * 10 ** precisionTlb));
+		return this.callBySigner(address, contractTlb, 'sell', String(amount * 10 ** precisionTlb));
 	}
 	static cancelSellOrder(address) {
 		return this.callBySigner(address, contractTlb, 'cancelSellOrder');

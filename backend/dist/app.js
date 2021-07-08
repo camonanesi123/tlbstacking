@@ -11,11 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-const isProduction = process.env.NODE_ENV !== 'development';
+const isProduction = process.env.NODE_ENV === 'production';
 const http = require("http");
 const https = require("https");
 const fs = require("fs");
-const tls = require("tls");
 /* const tls = require('tls'); */
 const path = require("path");
 const express = require("express");
@@ -40,8 +39,8 @@ class WebApp {
         const server = http.createServer(app);
         let appDomainKey = null, appDomainPem = null;
         if (!isProduction) {
-            appDomainKey = __dirname + '/certs/' + process.env.DOMAIN + '.key';
-            appDomainPem = __dirname + '/certs/' + process.env.DOMAIN + '.pem';
+            appDomainKey = __dirname + '/../certs/' + process.env.DOMAIN + '.key';
+            appDomainPem = __dirname + '/../certs/' + process.env.DOMAIN + '.pem';
         }
         else {
             appDomainKey = '/etc/letsencrypt/live/bitotc.me/privkey.pem';
@@ -49,14 +48,19 @@ class WebApp {
         }
         const appKey = fs.existsSync(appDomainKey) && fs.readFileSync(appDomainKey).toString();
         const appPem = fs.existsSync(appDomainPem) && fs.readFileSync(appDomainPem).toString();
-        const contextApp = (appKey && appPem) && tls.createSecureContext({ key: appKey, cert: appPem });
+        let options = {
+            cert: appPem,
+            key: appKey
+        };
+        const httpsServer = https.createServer(options, app);
+        /* const contextApp = (appKey && appPem) && tls.createSecureContext({key: appKey,cert: appPem});
         const httpsServer = https.createServer({
-            SNICallback: function (domain, cb) {
+            SNICallback: function(domain, cb) {
                 cb(null, contextApp);
             },
             key: appKey,
             cert: appPem
-        }, app);
+        }, app); */
         /*
         if (fs.existsSync(__dirname+'/../certs/cert.crt')) {
             const cert = fs.readFileSync(__dirname+'/../certs/cert.crt');

@@ -6,9 +6,6 @@ import styled from 'styled-components';
 import { contractSlice } from '../../reducer';
 import {NF,TF} from '../../util';
 
-
-import SynChart from '../reuse_components/SynChart/SynChart';
-
 import Metamask from '../../connector';
 import ImgCell from '../../img/btn-cell.webp'
 import ImgUSDT from '../../img/usdt.svg'

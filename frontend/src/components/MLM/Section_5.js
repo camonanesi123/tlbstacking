@@ -185,9 +185,9 @@ function DepositDialog(props) {
 			{status.loading?<Loading/>:null}
 			<div className="dialog">
 				<h3 className="mb-4">存款</h3>
-				<h4 className="mb-4">存款额 USDT {NF(props.amount)}</h4>
-				<h4 className="mb-4">TLB消费 {status.tlb ? NF(status.tlb,4) : '检查中...'}</h4>
-				<h4 className="mb-4">TLB余额 {NF(contract._tlb,4)} {(status.tlb===null || contract._tlb>=status.tlb) ? null : <span className="text-danger">余额不够</span>}</h4>
+				<h4 className="mb-4">存款额 USDT {NF(props.amount)} {(contract._usdt>=props.amount) ? null : <span className="text-danger">余额不够</span>}</h4>
+				<h4 className="mb-4">TLB消费 {status.tlb ? NF(status.tlb,4) : '检查中...'} {(status.tlb===null || contract._tlb>=status.tlb) ? null : <span className="text-danger">余额不够</span>}</h4>
+				
 				{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 				{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 				<div className="text-center mt-3">
@@ -246,8 +246,7 @@ function WithdrawDialog(props) {
 			<div className="dialog">
 				<h3 className="mb-4">提币</h3>
 				<h4 className="mb-4">提现金额 {NF(contract._withdrawable)} USDT</h4>
-				<h4 className="mb-4">TLB消费 {status.tlb===null ? '检查中...' : NF(status.tlb,4)}</h4>
-				<h4 className="mb-4">TLB余额 {NF(contract._tlb,4)} {(status.tlb===null || contract._tlb>=status.tlb) ? null : <span className="text-danger">余额不够</span>}</h4>
+				<h4 className="mb-4">TLB消费 {status.tlb===null ? '检查中...' : NF(status.tlb,4)}  {(status.tlb===null || contract._tlb>=status.tlb) ? null : <span className="text-danger">余额不够</span>}</h4>
 				{status.err ? <div className="text-center text-danger">{status.err}</div> : null}
 				{status.txid ? <div className="text-center">交易哈希 【<a className="cmd" href={Metamask.explorer+'/tx/'+status.txid} target="_new">{status.txid.slice(0,10)+'***'+status.txid.slice(-4)}</a>】</div> : null}
 				<div className="text-center mt-3">

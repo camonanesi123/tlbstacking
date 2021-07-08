@@ -1,4 +1,4 @@
-export const NF = (num,p=2) => Number(num).toFixed(p).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+export const NF = (num,p=2) => Number(num).toFixed(p);// .replace(/(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 export const TF = (time,offset=2) => {
     let iOffset = Number(offset);
 	let date = time===undefined ? new Date(Date.now()*1000 + (3600000 * iOffset)) : (typeof time==='number'?new Date(time*1000 + (3600000 * iOffset)):new Date(+time + (3600000 * iOffset)));
@@ -23,3 +23,12 @@ export const TF = (time,offset=2) => {
 	} */
     return y+'-'+dt+' '+tt;
 }
+
+export const copyToClipboard = (text) => {
+	var textField = document.createElement('textarea')
+	textField.innerText = text
+	document.body.appendChild(textField)
+	textField.select()
+	document.execCommand('copy')
+	textField.remove()
+};
