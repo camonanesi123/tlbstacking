@@ -65,6 +65,11 @@ export default function (props) {
                                             矿机
                                         </Link>
                                     </li>
+                                    <li>
+                                        <Link to="/official_announcement_video.mp4" className="dropdown-item text-white" target="_blank">
+                                            官宣视频
+                                        </Link>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
