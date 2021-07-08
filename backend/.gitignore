@@ -1,8 +1,6 @@
 # dependencies
 /node_modules
 # production
-/build
-/dist
 /certs
 /logs
 artifacts
