@@ -377,7 +377,7 @@ function BuyDialog(props) {
 	const {param} = props;
 	const [status, setStatus] = useState({
 		allowance: null,
-		usdt: null,
+		/* usdt: null, */
 		err: null,
 		loading: true,
 		txid: null,
@@ -392,8 +392,8 @@ function BuyDialog(props) {
 		} else {
 			if (status.allowance===null) {
 				Metamask.allowance(contract.address).then(res=>setStatus({...status, loading:false, allowance:res}));
-			} else if (status.usdt===null) {
-				Metamask.amountForDeposit(Number(amount)).then(res=>setStatus({...status, loading:false, usdt:res}));
+			/* } else if (status.usdt===null) {
+				Metamask.amountForDeposit(Number(amount)).then(res=>setStatus({...status, loading:false, usdt:res})); */
 			}
 		}
 	});

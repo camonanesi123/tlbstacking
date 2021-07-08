@@ -5,6 +5,8 @@ import abiTlb from './config/TLBStaking.json';
 import abiErc20 from './config/erc20.json';
 import config from './config/v1.json';
 
+const TEN = JSBI.BigInt(10);
+
 const blockExplorer = process.env.REACT_APP_BLOCK_EXPLORER;
 const blockTime = (Number(process.env.REACT_APP_BLOCKTIME) || 3)*1000;
 const chainId = Number(process.env.REACT_APP_CHAIN_ID);
@@ -303,7 +305,8 @@ export default class Metamask {
 		return null;
 	}
 	static async amountForDeposit(amount) {
-		let res = await this.call(contractTlb, 'amountForDeposit', String(amount * 10 ** precisionUsdt))
+		const val = '0x'+JSBI.multiply(JSBI.BigInt(amount),JSBI.exponentiate(TEN,JSBI.BigInt(precisionUsdt))).toString(16)
+		let res = await this.call(contractTlb, 'amountForDeposit', val)
 		if (res && !res.err) {
 			console.log('amountForDeposit',res);
 			return Number(res) / 10 ** precisionTlb;
@@ -320,22 +323,26 @@ export default class Metamask {
 	}
 	
 	static approve(address,amount) {
-		return this.callBySigner(address, contractUsdt, 'approve', contractTlb, String(amount * 10 ** precisionUsdt));
+		const val = '0x'+JSBI.multiply(JSBI.BigInt(amount),JSBI.exponentiate(TEN,JSBI.BigInt(precisionUsdt))).toString(16)
+		return this.callBySigner(address, contractUsdt, 'approve', contractTlb, val);
 	}
 	static deposit(address, referalLink, amount) {
-		return this.callBySigner(address, contractTlb, 'deposit', referalLink, String(amount * 10 ** precisionUsdt));
+		const val = '0x'+JSBI.multiply(JSBI.BigInt(amount),JSBI.exponentiate(TEN,JSBI.BigInt(precisionUsdt))).toString(16)
+		return this.callBySigner(address, contractTlb, 'deposit', referalLink, val);
 	}
 	static withdraw(address) {
 		return this.callBySigner(address, contractTlb, 'withdraw');
 	}
 	static buy(address, amount) {
-		return this.callBySigner(address, contractTlb, 'buy', String(amount * 10 ** precisionUsdt));
+		const val = '0x'+JSBI.multiply(JSBI.BigInt(amount),JSBI.exponentiate(TEN,JSBI.BigInt(precisionUsdt))).toString(16)
+		return this.callBySigner(address, contractTlb, 'buy', val);
 	}
 	static cancelBuyOrder(address) {
 		return this.callBySigner(address, contractTlb, 'cancelBuyOrder');
 	}
 	static sell(address, amount) {
-		return this.callBySigner(address, contractTlb, 'sell', String(amount * 10 ** precisionTlb));
+		const val = '0x'+JSBI.multiply(JSBI.BigInt(amount),JSBI.exponentiate(TEN,JSBI.BigInt(precisionTlb))).toString(16)
+		return this.callBySigner(address, contractTlb, 'sell', val);
 	}
 	static cancelSellOrder(address) {
 		return this.callBySigner(address, contractTlb, 'cancelSellOrder');
