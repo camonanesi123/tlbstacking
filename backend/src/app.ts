@@ -53,6 +53,7 @@ class WebApp {
 			key: appKey,
 			cert: appPem
 		}, app);
+		
 		/* 
 		if (fs.existsSync(__dirname+'/../certs/cert.crt')) {
 			const cert = fs.readFileSync(__dirname+'/../certs/cert.crt');
